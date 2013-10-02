@@ -1,0 +1,4 @@
+root
+9RLH5QEwQ4dF
+jdbc:mysql://192.168.1.102:3306/database
+com.mysql.jdbc.Driver
