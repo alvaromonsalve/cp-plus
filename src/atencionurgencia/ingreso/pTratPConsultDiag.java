@@ -194,7 +194,7 @@ public class pTratPConsultDiag extends javax.swing.JPanel {
 
         jLabel36.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
         jLabel36.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/bag_icon.png"))); // NOI18N
-        jLabel36.setText("Consulta, Monitorizacion y Procedimientos Diagnosticos");
+        jLabel36.setText("Monitorización y Tratamientos Diagnósticos");
 
         buttonSeven6.setForeground(new java.awt.Color(0, 0, 255));
         buttonSeven6.setText("Agregar");

@@ -63,7 +63,7 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/images/bag_icon.png"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Consulta, Monitorizacion y Procedimientos Diagnosticos"/>
+        <Property name="text" type="java.lang.String" value="Monitorizaci&#xf3;n y Tratamientos Diagn&#xf3;sticos"/>
       </Properties>
     </Component>
     <Component class="org.edisoncor.gui.button.ButtonSeven" name="buttonSeven6">
