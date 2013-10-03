@@ -102,31 +102,35 @@ public class dSelectProcedimiento extends javax.swing.JDialog {
                 }
             }else if(tipo>0 && tipo <=14){
                 if(sec.getId()>0 && sec.getId()<=14){
+                    sec.setDesCapitulo(renombrarString(sec.getDesCapitulo()));
                     dcbm.addElement(sec);
                 }
             }else if(tipo==16){
                 if(sec.getId()==16){
+                    sec.setDesCapitulo("MONITORIZACION Y PROCEDIMIENTOS DIAGNOSTICOS");
                     dcbm.addElement(sec);
                     jComboBox4.setEnabled(false);
                     setDatosTabla();
-                    buttonSeven6.setEnabled(false);
                 }
             }else if(tipo==17){
                 if(sec.getId()==17){
                     dcbm.addElement(sec);
                     jComboBox4.setEnabled(false);
                     setDatosTabla();
-                    buttonSeven6.setEnabled(false);
                 }
             }else if(tipo==15){
                 if(sec.getId()==15){
                     dcbm.addElement(sec);
                     jComboBox4.setEnabled(false);
                     setDatosTabla();
-                    buttonSeven6.setEnabled(false);
                 }
             }
         }
+    }
+    
+    private String renombrarString(String val){
+        String[] arrayText = val.split(" - ");
+        return arrayText[0];
     }
     
     private void setDatosTabla(){
@@ -150,7 +154,6 @@ public class dSelectProcedimiento extends javax.swing.JDialog {
     private void initComponents() {
 
         jLabel34 = new javax.swing.JLabel();
-        buttonSeven6 = new org.edisoncor.gui.button.ButtonSeven();
         jComboBox4 = new org.jdesktop.swingx.JXComboBox();
         jLabel35 = new javax.swing.JLabel();
         jTextField14 = new javax.swing.JTextField();
@@ -164,19 +167,13 @@ public class dSelectProcedimiento extends javax.swing.JDialog {
         jLabel34.setForeground(new java.awt.Color(0, 51, 255));
         jLabel34.setText("Tipo");
 
-        buttonSeven6.setForeground(new java.awt.Color(0, 0, 255));
-        buttonSeven6.setText("...");
-        buttonSeven6.setColorBrillo(new java.awt.Color(255, 255, 255));
-        buttonSeven6.setColorDeSombra(new java.awt.Color(255, 255, 255));
-        buttonSeven6.setFont(new java.awt.Font("Arial", 0, 10)); // NOI18N
-        buttonSeven6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonSeven6ActionPerformed(evt);
-            }
-        });
-
         jComboBox4.setForeground(new java.awt.Color(0, 102, 255));
         jComboBox4.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jComboBox4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox4ActionPerformed(evt);
+            }
+        });
 
         jLabel35.setForeground(new java.awt.Color(0, 51, 255));
         jLabel35.setText("Buscar");
@@ -230,11 +227,8 @@ public class dSelectProcedimiento extends javax.swing.JDialog {
                             .addComponent(jLabel34, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jComboBox4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(buttonSeven6, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jTextField14)))
+                            .addComponent(jTextField14)
+                            .addComponent(jComboBox4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -245,7 +239,6 @@ public class dSelectProcedimiento extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel34)
-                    .addComponent(buttonSeven6, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -295,12 +288,13 @@ public class dSelectProcedimiento extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jTable1MouseClicked
 
-    private void buttonSeven6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven6ActionPerformed
-        setDatosTabla();
-    }//GEN-LAST:event_buttonSeven6ActionPerformed
+    private void jComboBox4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox4ActionPerformed
+        if(((javax.swing.JComboBox) evt.getSource()).getSelectedIndex()>-1){
+            setDatosTabla();
+        }
+    }//GEN-LAST:event_jComboBox4ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven6;
     public org.jdesktop.swingx.JXComboBox jComboBox4;
     private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel35;
