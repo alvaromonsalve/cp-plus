@@ -7,7 +7,6 @@ package atencionurgencia.ingreso;
 import atencionurgencia.ListadoPacientes.addMedicamentos;
 import atencionurgencia.AtencionUrgencia;
 import atencionurgencia.ListadoPacientes.Ftriaje;
-import entidades.Configdecripcionlogin;
 import entidades.InfoAdmision;
 import entidades.InfoAntPersonales;
 import entidades.InfoHcExpfisica;
@@ -35,7 +34,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-import jpa.ConfigloginJpaController;
 import jpa.InfoAntPersonalesJpaController;
 import jpa.InfoHcExpfisicaJpaController;
 import jpa.InfoHistoriacJpaController;
@@ -263,7 +261,7 @@ public class HC extends javax.swing.JPanel {
         
     public void CrearHistoriaC(){
         factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
-        saveHistoryClinic();
+        saveHistoryClinic();        
         saveFisicExplorer();
         saveHelpDiag();
         infohistoriac = infohistoriaJPA.findInfoHistoriac(this.infohistoriac.getId());
@@ -316,7 +314,10 @@ public class HC extends javax.swing.JPanel {
                 infohistoriac = new InfoHistoriac();
             }
             infohistoriac.setIdInfoAdmision(infoadmision);
-            infohistoriac.setCausaExterna(jComboBox1.getSelectedItem().toString());
+            if(jComboBox1.getSelectedIndex()>-1)
+                infohistoriac.setCausaExterna(jComboBox1.getSelectedItem().toString());
+            else
+                infohistoriac.setCausaExterna("");
             infohistoriac.setMotivoConsulta(jTextArea10.getText().toUpperCase());
             infohistoriac.setNivelTriaje(getSelectionNivelTriage());
             infohistoriac.setAlergias(jTextArea11.getText().toUpperCase());
@@ -341,8 +342,10 @@ public class HC extends javax.swing.JPanel {
             infohistoriac.setDiagnostico5(idDiag5);
             infohistoriac.setHallazgo(jTextArea19.getText().toUpperCase());
             infohistoriac.setTipoHc(0);//0 = urgencias; 
+            
             infohistoriac.setEstado(finalizar);
             infohistoriac.setIdConfigdecripcionlogin(AtencionUrgencia.configdecripcionlogin);
+                    
             //Falta tiempo de consulta que se generara cuando finalize la consulta
             //calculando desde fecha_dato
             Boolean active = false;
