@@ -7,6 +7,7 @@ package atencionurgencia.ingreso;
 import atencionurgencia.ListadoPacientes.addMedicamentos;
 import atencionurgencia.AtencionUrgencia;
 import atencionurgencia.ListadoPacientes.Ftriaje;
+import entidades.Configdecripcionlogin;
 import entidades.InfoAdmision;
 import entidades.InfoAntPersonales;
 import entidades.InfoHcExpfisica;
@@ -34,6 +35,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import jpa.ConfigloginJpaController;
 import jpa.InfoAntPersonalesJpaController;
 import jpa.InfoHcExpfisicaJpaController;
 import jpa.InfoHistoriacJpaController;
@@ -729,6 +731,28 @@ public class HC extends javax.swing.JPanel {
             String month =String.valueOf(ahoraCal.get(Calendar.MONTH));
             return infoadmision.getIdDatosPersonales().getNumDoc()+s+year+s+month+s+infoadmision.getId()+s+tipo;
         }
+        
+        private Boolean getValidaFirma(){
+            boolean f = false;
+            try {
+                String sFile = this.infohistoriac.getIdConfigdecripcionlogin().getRuta_firma();
+                File sFile1 = null;
+                if(sFile==null){
+                    JOptionPane.showMessageDialog(this, "Errores leyendo archivo de firma del usuario.");
+                }else{
+                    sFile1 = new File(sFile);
+                    if(sFile1.exists()){
+                        f=true;
+                    }else{
+                        JOptionPane.showMessageDialog(this, "Errores leyendo archivo de firma del usuario.");
+                    }  
+                }                
+                              
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "10116:\n"+e.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }
+            return f;
+        }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -934,6 +958,7 @@ public class HC extends javax.swing.JPanel {
         jButton1 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
         jButton10 = new javax.swing.JButton();
+        jButton11 = new javax.swing.JButton();
 
         jpMotivoC.setMaximumSize(new java.awt.Dimension(584, 472));
         jpMotivoC.setMinimumSize(new java.awt.Dimension(584, 472));
@@ -2571,8 +2596,9 @@ public class HC extends javax.swing.JPanel {
 
         jLabel36.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel36.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/bag_icon.png"))); // NOI18N
-        jLabel36.setText("Consulta, Diagnosticos");
+        jLabel36.setText("<html><p> Monitorización y Tratamientos Diagnósticos</p></html>");
         jLabel36.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel36.setDoubleBuffered(true);
         jLabel36.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel36MouseClicked(evt);
@@ -2590,8 +2616,9 @@ public class HC extends javax.swing.JPanel {
 
         jLabel45.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel45.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/microscope_icon.png"))); // NOI18N
-        jLabel45.setText("Laboratorio");
+        jLabel45.setText("<html><p>Laboratorio Clinico</p></html>");
         jLabel45.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel45.setDoubleBuffered(true);
         jLabel45.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel45MouseClicked(evt);
@@ -2611,6 +2638,7 @@ public class HC extends javax.swing.JPanel {
         jLabel49.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/XRay.png"))); // NOI18N
         jLabel49.setText("Imagenologia");
         jLabel49.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel49.setDoubleBuffered(true);
         jLabel49.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel49MouseClicked(evt);
@@ -2630,6 +2658,7 @@ public class HC extends javax.swing.JPanel {
         jLabel50.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Skalpell.png"))); // NOI18N
         jLabel50.setText("Quirúrgicos");
         jLabel50.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel50.setDoubleBuffered(true);
         jLabel50.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel50MouseClicked(evt);
@@ -2649,6 +2678,7 @@ public class HC extends javax.swing.JPanel {
         jLabel51.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Hospital.png"))); // NOI18N
         jLabel51.setText("Mas Procedimientos");
         jLabel51.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel51.setDoubleBuffered(true);
         jLabel51.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel51MouseClicked(evt);
@@ -3197,54 +3227,82 @@ public class HC extends javax.swing.JPanel {
             }
         });
 
+        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/print_22x22.png"))); // NOI18N
+        jButton11.setBorderPainted(false);
+        jButton11.setContentAreaFilled(false);
+        jButton11.setFocusable(false);
+        jButton11.setMaximumSize(new java.awt.Dimension(32, 32));
+        jButton11.setMinimumSize(new java.awt.Dimension(32, 32));
+        jButton11.setPreferredSize(new java.awt.Dimension(32, 32));
+        jButton11.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/images/print_22x22_1.png"))); // NOI18N
+        jButton11.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton11MouseExited(evt);
+            }
+        });
+        jButton11.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton11MouseMoved(evt);
+            }
+        });
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel33, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox5))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel26, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox13))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel27, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox4))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox6))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel33, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jCheckBox5))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel26, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jCheckBox13))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel27, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jCheckBox4))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jCheckBox6))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel25, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jCheckBox12))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel24, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jCheckBox11))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jCheckBox10)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel25, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox12))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel24, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox11))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox10)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(jpCentro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jlbNombrePaciente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3256,7 +3314,7 @@ public class HC extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jpCentro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(1, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -3289,8 +3347,9 @@ public class HC extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(30, 30, 30))))
+                        .addGap(43, 43, 43))))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -3722,6 +3781,7 @@ public class HC extends javax.swing.JPanel {
         pConsultDiag.setVisible(true);
         jPanel35.validate();
         jPanel35.repaint();
+        pConsultDiag.formularioOpen();
     }//GEN-LAST:event_jLabel36MouseClicked
 
     private void jLabel45MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel45MouseClicked
@@ -3735,6 +3795,7 @@ public class HC extends javax.swing.JPanel {
         pLaboratorio.setVisible(true);
         jPanel35.validate();
         jPanel35.repaint();
+        pLaboratorio.formularioOpen();
     }//GEN-LAST:event_jLabel45MouseClicked
 
     private void jLabel49MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel49MouseClicked
@@ -3748,6 +3809,7 @@ public class HC extends javax.swing.JPanel {
         pImagenologia.setVisible(true);
         jPanel35.validate();
         jPanel35.repaint();
+        pImagenologia.formularioOpen();
     }//GEN-LAST:event_jLabel49MouseClicked
 
     private void jLabel50MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel50MouseClicked
@@ -3761,6 +3823,7 @@ public class HC extends javax.swing.JPanel {
         pQuirurgico.setVisible(true);
         jPanel35.validate();
         jPanel35.repaint();
+        pQuirurgico.formularioOpen();
     }//GEN-LAST:event_jLabel50MouseClicked
 
     private void jLabel51MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel51MouseClicked
@@ -3774,6 +3837,7 @@ public class HC extends javax.swing.JPanel {
         pProcedimientos.setVisible(true);
         jPanel35.validate();
         jPanel35.repaint();
+        pProcedimientos.formularioOpen();
     }//GEN-LAST:event_jLabel51MouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -3980,22 +4044,25 @@ public class HC extends javax.swing.JPanel {
     }//GEN-LAST:event_jXTaskPane5MouseReleased
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        Object[] objeto ={"Si","No"};
-            int n = JOptionPane.showOptionDialog(this, "¿Desea Finalizar la Nota de Ingreso?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
-                    JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
-        if(n==0){
-            impresionesHC imp = new impresionesHC();
-            imp.setidHC(this.infohistoriac);
-            imp.setdestinoHc("OBSERVACION DE URGENCIAS");
-            imp.setLocationRelativeTo(null);
-            imp.setVisible(true);
-            finalizar=1;
-            CrearHistoriaC();//guardo en hc
-            SaveAntPersonales();
-        }else{
-            finalizar=0;
-            CrearHistoriaC();//guardo en hc
-            SaveAntPersonales();
+        if(getValidaFirma()){
+            Object[] objeto ={"Si","No"};
+                int n = JOptionPane.showOptionDialog(this, "¿Desea Finalizar la Nota de Ingreso?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
+                        JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+            if(n==0){
+                finalizar=1;
+                CrearHistoriaC();//guardo en hc
+                SaveAntPersonales();
+                impresionesHC imp = new impresionesHC();
+                imp.setidHC(this.infohistoriac);
+                imp.setdestinoHc("OBSERVACION DE URGENCIAS");
+                imp.setLocationRelativeTo(null);
+                imp.setNoValido(false);
+                imp.setVisible(true);
+            }else{
+                finalizar=0;
+                CrearHistoriaC();//guardo en hc
+                SaveAntPersonales();
+            }            
         }
     }//GEN-LAST:event_jButton10ActionPerformed
 
@@ -4418,6 +4485,25 @@ public class HC extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jTextArea8KeyPressed
 
+    private void jButton11MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton11MouseExited
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton11MouseExited
+
+    private void jButton11MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton11MouseMoved
+        Funciones.setLabelInfo("IMPRIMIR");
+    }//GEN-LAST:event_jButton11MouseMoved
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        if(getValidaFirma()){
+                impresionesHC imp = new impresionesHC();
+                imp.setidHC(this.infohistoriac);
+                imp.setdestinoHc("OBSERVACION DE URGENCIAS");
+                imp.setLocationRelativeTo(null);
+                imp.setNoValido(true);
+                imp.setVisible(true);
+        }
+    }//GEN-LAST:event_jButton11ActionPerformed
+
     // </editor-fold>
     
     // <editor-fold desc="Variables declaration - do not modify"> 
@@ -4425,6 +4511,7 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
+    private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;

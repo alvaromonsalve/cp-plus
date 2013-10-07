@@ -169,7 +169,11 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
             }
         }
     }
-
+    
+    public void formularioOpen(){
+        dProcedimiento = new dSelectProcedimiento(null,true,0);
+        dProcedimiento.setVisible(true);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -307,8 +311,7 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonSeven6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven6ActionPerformed
-        dProcedimiento = new dSelectProcedimiento(null,true,0);
-        dProcedimiento.setVisible(true);
+        formularioOpen();
     }//GEN-LAST:event_buttonSeven6ActionPerformed
 
     private void buttonSeven7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven7ActionPerformed
