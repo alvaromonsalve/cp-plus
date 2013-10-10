@@ -458,7 +458,7 @@ public class HC extends javax.swing.JPanel {
        private void setHistoryC(){
            infoadmision = infohistoriac.getIdInfoAdmision();
            infopaciente = infoadmision.getIdDatosPersonales();
-           jlbNombrePaciente.setText(infopaciente.getNombre1()+" "+infopaciente.getApellido1()+" ["+infopaciente.getNumDoc()+"]");
+           jlbNombrePaciente.setText(infopaciente.getNombre1()+" "+infopaciente.getApellido1()+" ["+infopaciente.getNumDoc()+"]     ["+infohistoriac.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad()+"]");
            jTextArea10.setText(infohistoriac.getMotivoConsulta());
            jTextArea10.setCaretPosition(0);
            jComboBox1.setSelectedItem(infohistoriac.getCausaExterna());
