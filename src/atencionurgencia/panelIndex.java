@@ -265,6 +265,7 @@ public class panelIndex extends javax.swing.JPanel {
         fPacientesCamas pacientesCamas = null;
         pacientesCamas = new fPacientesCamas();
         pacientesCamas.setVisible(true);
+        pacientesCamas.inicio();
         jButton3.setContentAreaFilled(false);
     }//GEN-LAST:event_jButton3ActionPerformed
    
