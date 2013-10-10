@@ -71,7 +71,7 @@ public class panelIndex extends javax.swing.JPanel {
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/FirstAidKit.png"))); // NOI18N
         jButton1.setToolTipText("Atención de Urgencias");
         jButton1.setContentAreaFilled(false);
-        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jButton1.setDoubleBuffered(true);
         jButton1.setFocusable(false);
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -91,9 +91,9 @@ public class panelIndex extends javax.swing.JPanel {
         });
 
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/History.png"))); // NOI18N
-        jButton2.setToolTipText("Pacientes en Atención");
+        jButton2.setToolTipText("Notas sin Finalizar");
         jButton2.setContentAreaFilled(false);
-        jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jButton2.setDoubleBuffered(true);
         jButton2.setFocusable(false);
         jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -115,7 +115,7 @@ public class panelIndex extends javax.swing.JPanel {
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/LastThreeMonths.png"))); // NOI18N
         jButton3.setToolTipText("Evoluciones");
         jButton3.setContentAreaFilled(false);
-        jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jButton3.setDoubleBuffered(true);
         jButton3.setFocusable(false);
         jButton3.setMaximumSize(new java.awt.Dimension(46, 46));
