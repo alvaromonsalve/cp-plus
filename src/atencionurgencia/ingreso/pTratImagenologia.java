@@ -194,11 +194,12 @@ public class pTratImagenologia extends javax.swing.JPanel {
         setMaximumSize(new java.awt.Dimension(380, 420));
         setMinimumSize(new java.awt.Dimension(380, 420));
         setOpaque(false);
+        setPreferredSize(new java.awt.Dimension(380, 420));
 
         jLabel49.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
         jLabel49.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/XRay.png"))); // NOI18N
         jLabel49.setText("Imagenologia");
-        jLabel49.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel49.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         buttonSeven6.setForeground(new java.awt.Color(0, 0, 255));
         buttonSeven6.setText("Agregar");
@@ -303,7 +304,7 @@ public class pTratImagenologia extends javax.swing.JPanel {
                     .addComponent(buttonSeven6, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(buttonSeven7, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
