@@ -396,6 +396,8 @@ public class pTratMedic extends javax.swing.JPanel {
             }
         });
 
+        jPanel1.setOpaque(false);
+
         buttonSeven6.setForeground(new java.awt.Color(0, 0, 255));
         buttonSeven6.setText("Agregar");
         buttonSeven6.setColorBrillo(new java.awt.Color(255, 255, 255));
@@ -463,6 +465,8 @@ public class pTratMedic extends javax.swing.JPanel {
         );
 
         jTabbedPane1.addTab("Único", jPanel1);
+
+        jPanel2.setOpaque(false);
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -536,10 +540,11 @@ public class pTratMedic extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel57, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel57, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jTabbedPane1))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -583,7 +588,7 @@ public class pTratMedic extends javax.swing.JPanel {
             pop.add(p);
             pop.setVisible(true);
             pop.setLocation(jTable1.getLocationOnScreen().x-70,evt.getLocationOnScreen().y-1);
-        }else if(SwingUtilities.isLeftMouseButton(evt) && evt.getClickCount()==2){
+        }else if(SwingUtilities.isLeftMouseButton(evt) && evt.getClickCount()==2 && buttonSeven6.isVisible()){
             medicamentos = new addMedicamentos(null, true);
             medicamentos.editPosologia((SumSuministro)jTable1.getValueAt(rowIndex, 0), jTable1.getValueAt(rowIndex, 5).toString(), 
                     (Float)jTable1.getValueAt(rowIndex, 2), jTable1.getValueAt(rowIndex, 3).toString(), 
@@ -616,7 +621,7 @@ public class pTratMedic extends javax.swing.JPanel {
             pop.add(pc);
             pop.setVisible(true);
             pop.setLocation(jTable2.getLocationOnScreen().x-70,evt.getLocationOnScreen().y-1);
-        }else if(SwingUtilities.isLeftMouseButton(evt) && evt.getClickCount()==2){
+        }else if(SwingUtilities.isLeftMouseButton(evt) && evt.getClickCount()==2 && buttonSeven6.isVisible()){
             medicCombinados = new addMedicCombinados(null, true);
             medicCombinados.editPosologia(model, jTable2.getValueAt(row, 4).toString(), 
                      jTable2.getValueAt(row, 3).toString());
@@ -642,10 +647,10 @@ public class pTratMedic extends javax.swing.JPanel {
     }//GEN-LAST:event_buttonSeven9ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven6;
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven7;
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven8;
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven9;
+    public org.edisoncor.gui.button.ButtonSeven buttonSeven6;
+    public org.edisoncor.gui.button.ButtonSeven buttonSeven7;
+    public org.edisoncor.gui.button.ButtonSeven buttonSeven8;
+    public org.edisoncor.gui.button.ButtonSeven buttonSeven9;
     private javax.swing.JLabel jLabel57;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
