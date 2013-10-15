@@ -195,6 +195,8 @@ public class pTratPConsultDiag extends javax.swing.JPanel {
         jTextArea25 = new javax.swing.JTextArea();
 
         setFocusable(false);
+        setMaximumSize(new java.awt.Dimension(380, 420));
+        setMinimumSize(new java.awt.Dimension(380, 420));
         setOpaque(false);
 
         jLabel36.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
@@ -304,7 +306,7 @@ public class pTratPConsultDiag extends javax.swing.JPanel {
                     .addComponent(buttonSeven6, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(buttonSeven7, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
