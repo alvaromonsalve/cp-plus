@@ -193,6 +193,7 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
         setMaximumSize(new java.awt.Dimension(380, 420));
         setMinimumSize(new java.awt.Dimension(380, 420));
         setOpaque(false);
+        setPreferredSize(new java.awt.Dimension(380, 420));
 
         jLabel49.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
         jLabel49.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Hospital.png"))); // NOI18N
@@ -269,7 +270,7 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel49)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane27, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
+                .addComponent(jScrollPane27, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(36, 36, 36))
