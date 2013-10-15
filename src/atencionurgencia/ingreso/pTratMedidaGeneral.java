@@ -287,12 +287,12 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
                 .addComponent(jLabel49)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane27, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(10, 10, 10)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonSeven6, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(buttonSeven7, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel32, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -331,15 +331,15 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea26KeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven6;
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven7;
+    public org.edisoncor.gui.button.ButtonSeven buttonSeven6;
+    public org.edisoncor.gui.button.ButtonSeven buttonSeven7;
     private javax.swing.JLabel jLabel49;
     private javax.swing.JPanel jPanel32;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane26;
     private javax.swing.JScrollPane jScrollPane27;
     public javax.swing.JTable jTable1;
-    private javax.swing.JTextArea jTextArea26;
-    private javax.swing.JTextArea jTextArea27;
+    public javax.swing.JTextArea jTextArea26;
+    public javax.swing.JTextArea jTextArea27;
     // End of variables declaration//GEN-END:variables
 }

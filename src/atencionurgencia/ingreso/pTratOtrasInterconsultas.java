@@ -250,7 +250,7 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
         );
         jPanel31Layout.setVerticalGroup(
             jPanel31Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane25, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE)
+            .addComponent(jScrollPane25, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -273,23 +273,23 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
                 .addComponent(jScrollPane27, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(36, 36, 36))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        if(SwingUtilities.isLeftMouseButton(evt) && evt.getClickCount()==1){
+            if(SwingUtilities.isLeftMouseButton(evt) && evt.getClickCount()==1){
             jTextArea25.setText((String)ModeloTabla.getValueAt(jTable1.getSelectedRow(), 3));
-        }
-        if(SwingUtilities.isLeftMouseButton(evt) && evt.getClickCount()==2){
-            JCheckBox box = new JCheckBox();
-            if(((JCheckBox)ModeloTabla.getValueAt(jTable1.getSelectedRow(), 1)).isSelected()){
-                box.setSelected(false);
-            }else{
-                box.setSelected(true);
             }
-            ModeloTabla.setValueAt(box, jTable1.getSelectedRow(), 1);        
-        }
+            if(SwingUtilities.isLeftMouseButton(evt) && evt.getClickCount()==2){
+                JCheckBox box = new JCheckBox();
+                if(((JCheckBox)ModeloTabla.getValueAt(jTable1.getSelectedRow(), 1)).isSelected()){
+                    box.setSelected(false);
+                }else{
+                    box.setSelected(true);
+                }
+                ModeloTabla.setValueAt(box, jTable1.getSelectedRow(), 1);        
+            }     
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void jTextArea25KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea25KeyReleased
@@ -306,6 +306,6 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane25;
     private javax.swing.JScrollPane jScrollPane27;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextArea jTextArea25;
+    public javax.swing.JTextArea jTextArea25;
     // End of variables declaration//GEN-END:variables
 }

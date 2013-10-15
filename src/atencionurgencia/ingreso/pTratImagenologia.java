@@ -342,13 +342,13 @@ public class pTratImagenologia extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea25KeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven6;
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven7;
+    public org.edisoncor.gui.button.ButtonSeven buttonSeven6;
+    public org.edisoncor.gui.button.ButtonSeven buttonSeven7;
     private javax.swing.JLabel jLabel49;
     private javax.swing.JPanel jPanel31;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane25;
     public javax.swing.JTable jTable1;
-    private javax.swing.JTextArea jTextArea25;
+    public javax.swing.JTextArea jTextArea25;
     // End of variables declaration//GEN-END:variables
 }

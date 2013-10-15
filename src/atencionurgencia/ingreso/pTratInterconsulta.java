@@ -268,7 +268,7 @@ public class pTratInterconsulta extends javax.swing.JPanel {
                     .addComponent(buttonSeven8, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(52, 52, 52)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(87, Short.MAX_VALUE))
+                .addContainerGap(91, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -290,12 +290,12 @@ public class pTratInterconsulta extends javax.swing.JPanel {
     }//GEN-LAST:event_buttonSeven8ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven7;
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven8;
+    public org.edisoncor.gui.button.ButtonSeven buttonSeven7;
+    public org.edisoncor.gui.button.ButtonSeven buttonSeven8;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel49;
     private javax.swing.JPanel jPanel31;
     private javax.swing.JScrollPane jScrollPane25;
-    private javax.swing.JTextArea jTextArea25;
+    public javax.swing.JTextArea jTextArea25;
     // End of variables declaration//GEN-END:variables
 }

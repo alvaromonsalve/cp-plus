@@ -283,10 +283,10 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel51, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel51, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(buttonSeven6, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -339,13 +339,13 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea25KeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven6;
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven7;
+    public org.edisoncor.gui.button.ButtonSeven buttonSeven6;
+    public org.edisoncor.gui.button.ButtonSeven buttonSeven7;
     private javax.swing.JLabel jLabel51;
     private javax.swing.JPanel jPanel31;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane25;
     public javax.swing.JTable jTable1;
-    private javax.swing.JTextArea jTextArea25;
+    public javax.swing.JTextArea jTextArea25;
     // End of variables declaration//GEN-END:variables
 }
