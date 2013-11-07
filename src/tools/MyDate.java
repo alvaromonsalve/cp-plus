@@ -21,6 +21,7 @@ public class MyDate {
     public static SimpleDateFormat ddMMyyyy = new SimpleDateFormat("dd/MM/yyyy");
     public static SimpleDateFormat yyyyMMddHHmm = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     public static SimpleDateFormat ddMMyyyy2 = new SimpleDateFormat("dd-MM-yyyy");
+    public static SimpleDateFormat HHmm = new SimpleDateFormat("HH:mm");
     
     
     /**
