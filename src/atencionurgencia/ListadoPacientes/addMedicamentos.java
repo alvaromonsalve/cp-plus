@@ -31,6 +31,7 @@ public class addMedicamentos extends javax.swing.JDialog {
     private InvSumGeneralJpaController invSumGeneralJPA=null;
     private EntityManagerFactory factory;
     private SumSuministro suminis=null;
+    public boolean onEvolucion;
 
     /**
      * Creates new form addMedicamentos
@@ -38,7 +39,8 @@ public class addMedicamentos extends javax.swing.JDialog {
     public addMedicamentos(java.awt.Frame parent, boolean modal) {
         super(parent,modal);
         initComponents();
-        setCargaTabla();        
+        setCargaTabla();
+        onEvolucion=false;
     }
     
     private DefaultTableModel getModelo(){
@@ -493,8 +495,14 @@ public class addMedicamentos extends javax.swing.JDialog {
         }
         if(suminis!=null){
             if(!jTextField1.getText().equals("") && jComboBox4.getSelectedIndex()>-1 && jComboBox5.getSelectedIndex()>-1 && !"".equals(jTextArea25.getText()) && !"".equals(jTextPane1.getText())){
-                AtencionUrgencia.panelindex.hc.pMedic.addMedicamento(suminis,Float.parseFloat(jTextField1.getText().replace(",", ".")),num.numericToString(jTextField2.getText()),
+                if(onEvolucion){
+                    AtencionUrgencia.panelindex.evo.pplan.pMedic.addMedicamento(suminis,Float.parseFloat(jTextField1.getText().replace(",", ".")),num.numericToString(jTextField2.getText()),
                         jComboBox4.getSelectedItem().toString(),jComboBox5.getSelectedItem().toString(), jTextArea25.getText().toUpperCase(),Float.parseFloat(jTextField2.getText().replace(",", ".")) );
+                }else{
+                    AtencionUrgencia.panelindex.hc.pMedic.addMedicamento(suminis,Float.parseFloat(jTextField1.getText().replace(",", ".")),num.numericToString(jTextField2.getText()),
+                        jComboBox4.getSelectedItem().toString(),jComboBox5.getSelectedItem().toString(), jTextArea25.getText().toUpperCase(),Float.parseFloat(jTextField2.getText().replace(",", ".")) );
+                
+                }
                 this.dispose();
             }
         }
