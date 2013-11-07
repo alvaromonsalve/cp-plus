@@ -24,8 +24,16 @@ import javax.swing.table.DefaultTableModel;
 import jpa.InfoPosologiaHcuJpaController;
 import jpa.exceptions.NonexistentEntityException;
 import atencionurgencia.ListadoPacientes.addMedicamentos;
+import entidades.HcuEvoMezclasMedicamentos;
+import entidades.HcuEvoMezclasMedicamentosDesc;
+import entidades.HcuEvoPosologia;
+import entidades.HcuEvolucion;
 import entidades.HcuMezclasMedicamentos;
 import entidades.HcuMezclasMedicamentosDesc;
+import jpa.HcuEvoMezclasMedicamentosDescJpaController;
+import jpa.HcuEvoMezclasMedicamentosJpaController;
+import jpa.HcuEvoPosologiaJpaController;
+import jpa.HcuEvolucionJpaController;
 import jpa.HcuMezclasMedicamentosDescJpaController;
 import jpa.HcuMezclasMedicamentosJpaController;
 import jpa.exceptions.IllegalOrphanException;
@@ -46,13 +54,17 @@ public class pTratMedic extends javax.swing.JPanel {
     private pDatosMedicCombi pc=null;
     private HcuMezclasMedicamentosJpaController hcuMezclasMedicamentosJPA = null;
     private HcuMezclasMedicamentosDescJpaController descJpaController=null;
-
+    private HcuEvoPosologiaJpaController hcuEvoPosologiaJpaController=null;
+    private HcuEvoMezclasMedicamentosJpaController hcuEvomedicamentosJpa=null;
+    private HcuEvoMezclasMedicamentosDescJpaController hcuEvomedicamentosDescJpa=null;
+    public boolean onEvolucion;
 
     /**
      * Creates new form pTratMedic
      */
     public pTratMedic() {
         initComponents();
+        onEvolucion=false;
         setCargaTabla();
         setCargaTablaMezcla();
     }
@@ -248,10 +260,8 @@ public class pTratMedic extends javax.swing.JPanel {
                           hcu.setUsuario(AtencionUrgencia.idUsuario);
                           hcu.setCantidad((Float)ModeloTabla.getValueAt(i, 7));
                           infoPosologiaHcuJPA.edit(hcu);
-                      } catch (NonexistentEntityException ex) {
-                          JOptionPane.showMessageDialog(this,"saveChanges pTratMedic: "+ex.getMessage());
                       } catch (Exception ex) {
-                          JOptionPane.showMessageDialog(this,"saveChanges pTratMedic: "+ex.getMessage());
+                          JOptionPane.showMessageDialog(null, "10120:\n"+ex.getMessage(), pTratMedic.class.getName(), JOptionPane.INFORMATION_MESSAGE);
                       }
                   }
               }
@@ -312,6 +322,105 @@ public class pTratMedic extends javax.swing.JPanel {
             }
       }
       
+      public void saveChanges(EntityManagerFactory factory, HcuEvolucion evol){
+          if(hcuEvoPosologiaJpaController==null){
+              hcuEvoPosologiaJpaController=new HcuEvoPosologiaJpaController(factory);
+          }
+          List<HcuEvoPosologia> evoPosologias = hcuEvoPosologiaJpaController.ListFindInfoPosologia(evol);
+          for(int i=0;i<ModeloTabla.getRowCount();i++){
+              HcuEvoPosologia hep = null;
+              boolean exist=false;
+              for(HcuEvoPosologia hep1:evoPosologias){
+                  if(((SumSuministro)ModeloTabla.getValueAt(i, 0)).equals(hep1.getIdSuministro())){
+                      exist=true;
+                      hep=hep1;
+                      break;
+                  }
+              }
+              if(!exist){
+                  hep=new HcuEvoPosologia();
+                  hep.setAdministracion((String)ModeloTabla.getValueAt(i, 5));
+                  hep.setDosisN((Float)ModeloTabla.getValueAt(i, 2));
+                  hep.setCantidadTexto((String)ModeloTabla.getValueAt(i, 6));
+                  hep.setDosisU((String)ModeloTabla.getValueAt(i, 3));
+                  hep.setIdHcuEvolucion(evol);
+                  hep.setIdSuministro((SumSuministro)ModeloTabla.getValueAt(i, 0));
+                  hep.setVia((String)ModeloTabla.getValueAt(i, 4));
+                  hep.setUsuario(AtencionUrgencia.idUsuario);
+                  hep.setCantidad((Float)ModeloTabla.getValueAt(i, 7));
+                  hep.setEstado(1);//1 es activo
+                  hcuEvoPosologiaJpaController.create(hep);                  
+              }else{
+                  if(hep!=null){
+                      try {
+                          hep.setAdministracion((String)ModeloTabla.getValueAt(i, 5));
+                          hep.setDosisN((Float)ModeloTabla.getValueAt(i, 2));
+                          hep.setCantidadTexto((String)ModeloTabla.getValueAt(i, 6));
+                          hep.setDosisU((String)ModeloTabla.getValueAt(i, 3));
+                          hep.setVia((String)ModeloTabla.getValueAt(i, 4));
+                          hep.setUsuario(AtencionUrgencia.idUsuario);
+                          hep.setCantidad((Float)ModeloTabla.getValueAt(i, 7));
+                          hcuEvoPosologiaJpaController.edit(hep);
+                      } catch (Exception ex) {
+                          JOptionPane.showMessageDialog(null, "10119:\n"+ex.getMessage(), pTratMedic.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                      }
+                  }
+              }
+          }
+          for(HcuEvoPosologia hep:evoPosologias){
+              boolean exist = false;
+              for(int i=0;i<ModeloTabla.getRowCount();i++){
+                  if(((SumSuministro)ModeloTabla.getValueAt(i, 0)).equals(hep.getIdSuministro())){
+                      exist=true;
+                      break;
+                  }
+              }
+              if(!exist){
+                  try {
+                      hep.setEstado(0);//inactivo
+                      hcuEvoPosologiaJpaController.edit(hep);
+                  } catch (Exception ex) {
+                      JOptionPane.showMessageDialog(null, "10121:\n"+ex.getMessage(), pTratMedic.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                  }
+              }
+          }
+          if(hcuEvomedicamentosJpa==null)
+              hcuEvomedicamentosJpa = new HcuEvoMezclasMedicamentosJpaController(factory);
+          if(hcuEvomedicamentosDescJpa==null)
+              hcuEvomedicamentosDescJpa= new HcuEvoMezclasMedicamentosDescJpaController(factory);
+          List<HcuEvoMezclasMedicamentos> mezclasMedicamentos = hcuEvomedicamentosJpa.ListFindHcuMezclas(evol);
+          for(HcuEvoMezclasMedicamentos hemm:mezclasMedicamentos){
+              try {
+                  hemm.setEstado(0);//inabilitamos la mezcla
+                  hcuEvomedicamentosJpa.edit(hemm);
+              } catch (Exception ex) {
+                  JOptionPane.showMessageDialog(null, "10122:\n"+ex.getMessage(), pTratMedic.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+              }
+          }
+          for(int i=0;i<MTMezcla.getRowCount();i++){
+              HcuEvoMezclasMedicamentos hemm = new HcuEvoMezclasMedicamentos();
+              hemm.setAdministracion(MTMezcla.getValueAt(i, 4).toString());
+              hemm.setIdHcuEvolucion(evol);
+              hemm.setVia(MTMezcla.getValueAt(i, 3).toString());
+              hemm.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+              hcuEvomedicamentosJpa.create(hemm);//entidad mezcla creada
+              DefaultTableModel model = (DefaultTableModel)MTMezcla.getValueAt(i, 0);
+              for(int a=0;a<model.getRowCount();a++){
+                  HcuEvoMezclasMedicamentosDesc desc = new HcuEvoMezclasMedicamentosDesc();
+                  desc.setIdHcuEvoMezclasMedicamentos(hemm);
+                  desc.setIdSuministro((SumSuministro)model.getValueAt(a, 0));
+                  desc.setDosisN((Float)model.getValueAt(a, 1));
+                  desc.setDosisU(model.getValueAt(a, 2).toString());
+                  desc.setSolDiluir((Boolean)model.getValueAt(a, 3));
+                  desc.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                  desc.setEstado(0);
+                  hcuEvomedicamentosDescJpa.create(desc);
+              }
+          }
+      }
+      
+      
+      
       public void showListExistentes(EntityManagerFactory factory,InfoHistoriac ihc){
           if(infoPosologiaHcuJPA==null){
               infoPosologiaHcuJPA=new InfoPosologiaHcuJpaController(factory);
@@ -351,16 +460,216 @@ public class pTratMedic extends javax.swing.JPanel {
               MTMezcla.setValueAt(toHTMLMezcla(model,0), i, 1);
               jTable2.setRowHeight(i, model.getRowCount()*16);
           }  
-          
+      }
+      
+      public void showListExistentes(EntityManagerFactory factory,HcuEvolucion evol){
+          if(hcuEvoPosologiaJpaController==null){
+              hcuEvoPosologiaJpaController=new HcuEvoPosologiaJpaController(factory);
+          }
+          List<HcuEvoPosologia> evoPosologias = hcuEvoPosologiaJpaController.ListFindInfoPosologia(evol);
+          ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("images/idea.png"));
+          for(int i=0;i<evoPosologias.size();i++){
+              ModeloTabla.addRow(dato);
+              ModeloTabla.setValueAt(evoPosologias.get(i).getIdSuministro(), i, 0);
+              ModeloTabla.setValueAt(new JLabel(icon),i,1);
+              ModeloTabla.setValueAt(evoPosologias.get(i).getDosisN(), i, 2);
+              ModeloTabla.setValueAt(evoPosologias.get(i).getDosisU(), i, 3);
+              ModeloTabla.setValueAt(evoPosologias.get(i).getVia(), i, 4);
+              ModeloTabla.setValueAt(evoPosologias.get(i).getAdministracion(), i, 5);
+              ModeloTabla.setValueAt(evoPosologias.get(i).getCantidadTexto(), i, 6);
+              ModeloTabla.setValueAt(evoPosologias.get(i).getCantidad(), i, 7);
+          }
+          if(hcuEvomedicamentosJpa==null)
+              hcuEvomedicamentosJpa = new HcuEvoMezclasMedicamentosJpaController(factory);
+          List<HcuEvoMezclasMedicamentos> mezclasMedicamentos = hcuEvomedicamentosJpa.ListFindHcuMezclas(evol);
+          for(int i=0;i<mezclasMedicamentos.size();i++){
+              MTMezcla.addRow(dato);
+              MTMezcla.setValueAt(new JLabel(icon),i,2);
+              MTMezcla.setValueAt(mezclasMedicamentos.get(i).getVia(), i, 3);
+              MTMezcla.setValueAt(mezclasMedicamentos.get(i).getAdministracion(), i, 4);
+              medicCombinados = new addMedicCombinados(null, true);                
+              DefaultTableModel model= medicCombinados.getModeloMezcla();
+              medicCombinados.dispose();
+              for(int a=0;a<mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().size();a++){
+                  model.addRow(dato);
+                  model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getIdSuministro(), a, 0);
+                  model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getDosisN(), a, 1);
+                  model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getDosisU(), a, 2);
+                  model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getSolDiluir(), a, 3);
+              }
+              MTMezcla.setValueAt(model, i, 0);
+              MTMezcla.setValueAt(toHTMLMezcla(model,0), i, 1);
+              jTable2.setRowHeight(i, model.getRowCount()*16);
+          }
+          /* Comprobamos que la evolucion no contiene medicamentos */
+          if(evoPosologias.isEmpty()){
+              List<HcuEvoPosologia> posologias =null;
+              HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
+              /* consulta de las evoluciones que pertenecen a la nota de ingreso */
+              List<HcuEvolucion> hes= hejc.FindHcuEvolucions(evol.getIdInfoHistoriac());
+              /*
+              * verifica si tiene evoluciones y toma la ultima listada.
+              * el orden de la fecha es ascendente
+              */
+              if(!hes.isEmpty()){
+                  posologias = hes.get(hes.size()-1).getHcuEvoPosologias();
+                 /* verificamos si la ultima evolucion tiene medicamentos. 
+                 *   --> si tiene medicamentos en la ultima evolucion hacemos la migracion
+                 *   --> a la evolucion que se esta creando
+                 */
+                  if(!posologias.isEmpty() && evol.getFechaEvo().compareTo(hes.get(hes.size()-1).getFechaEvo())>0 ){
+                      /* preguntamos si se desea hacer la migracion */
+                      this.migrarPosologiaToEvo(posologias, true);
+                  }
+              }else{
+                  /* Si no tiene evoluciones buscamos las medidas de la hcu */
+                  InfoPosologiaHcuJpaController iphjc = new InfoPosologiaHcuJpaController(factory);
+                  List<InfoPosologiaHcu> hcus = iphjc.ListFindInfoPosologia(evol.getIdInfoHistoriac());
+                  /* verificamos que la hcu tiene medicamentos */
+                  if(!hcus.isEmpty()){
+                      this.migrarPosologiaToEvo(hcus, false);
+                  }
+              }
+          }
+          /* Comprobamos que la evolucion no contiene mezclas-medicamentos */
+          if(mezclasMedicamentos.isEmpty()){
+              List<HcuEvoMezclasMedicamentos> mezclasMedicamentoses = null;
+              HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
+              /* consulta de las evoluciones que pertenecen a la nota de ingreso */
+              List<HcuEvolucion> hes= hejc.FindHcuEvolucions(evol.getIdInfoHistoriac());
+              /*
+              * verifica si tiene evoluciones y toma la ultima listada.
+              * el orden de la fecha es ascendente
+              */
+              if(!hes.isEmpty()){
+                  mezclasMedicamentoses = hes.get(hes.size()-1).getHcuEvoMezclasMedicamentoses();
+                  /* verificamos si la ultima evolucion tiene mezclas-medicamentos. 
+                 *   --> si tiene mezclas-medicamentos en la ultima evolucion hacemos la migracion
+                 *   --> a la evolucion que se esta creando
+                 */
+                  if(!mezclasMedicamentoses.isEmpty() && evol.getFechaEvo().compareTo(hes.get(hes.size()-1).getFechaEvo())>0 ){
+                      /* preguntamos si se desea hacer la migracion */
+                      this.migrarMezclasMedicToEvo(mezclasMedicamentoses, true);
+                  }
+              }else{
+                  /* Si no tiene evoluciones buscamos las mezclas-medicamentos de la hcu */
+                  HcuMezclasMedicamentosJpaController hmmjc = new HcuMezclasMedicamentosJpaController(factory);
+                  List<HcuMezclasMedicamentos> hmms = hmmjc.ListFindHcuMezclas(evol.getIdInfoHistoriac());
+                  /* verificamos que la hcu tiene medicamentos */
+                  if(!hmms.isEmpty()){
+                      /* preguntamos si se desea hacer la migracion */
+                      this.migrarMezclasMedicToEvo(hmms, false);
+                  }
+              }
+          }
+      }
+      
+      /**
+       * 
+       * @param posologias list de medicamentos 
+       * @param evo true si viene de evolucion; false si viene de hcu
+       */
+      private void migrarPosologiaToEvo(Object posologias, boolean evo){
+          String mensaje = "¿Quiere continuar con los medicamentos de la Nota de Ingreso? ";
+        if(evo){
+            mensaje = "¿Quiere continuar con los medicamentos de la Evolución anterior? ";
+        }
+        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Migración de medicamentos",JOptionPane.YES_NO_OPTION);
+        if(entrada==0){
+            if(evo){
+                List<HcuEvoPosologia> evoPosologias = (List<HcuEvoPosologia>) posologias;
+                ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("images/idea.png"));
+                for(int i=0;i<evoPosologias.size();i++){
+                    ModeloTabla.addRow(dato);
+                    ModeloTabla.setValueAt(evoPosologias.get(i).getIdSuministro(), i, 0);
+                    ModeloTabla.setValueAt(new JLabel(icon),i,1);
+                    ModeloTabla.setValueAt(evoPosologias.get(i).getDosisN(), i, 2);
+                    ModeloTabla.setValueAt(evoPosologias.get(i).getDosisU(), i, 3);
+                    ModeloTabla.setValueAt(evoPosologias.get(i).getVia(), i, 4);
+                    ModeloTabla.setValueAt(evoPosologias.get(i).getAdministracion(), i, 5);
+                    ModeloTabla.setValueAt(evoPosologias.get(i).getCantidadTexto(), i, 6);
+                    ModeloTabla.setValueAt(evoPosologias.get(i).getCantidad(), i, 7);
+                }
+            }else{
+                List<InfoPosologiaHcu> listPosologia = (List<InfoPosologiaHcu>) posologias;
+                ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("images/idea.png"));
+                for(int i=0;i<listPosologia.size();i++){
+                    ModeloTabla.addRow(dato);
+                    ModeloTabla.setValueAt(listPosologia.get(i).getIdSuministro(), i, 0);
+                    ModeloTabla.setValueAt(new JLabel(icon),i,1);
+                    ModeloTabla.setValueAt(listPosologia.get(i).getDosisN(), i, 2);
+                    ModeloTabla.setValueAt(listPosologia.get(i).getDosisU(), i, 3);
+                    ModeloTabla.setValueAt(listPosologia.get(i).getVia(), i, 4);
+                    ModeloTabla.setValueAt(listPosologia.get(i).getAdministracion(), i, 5);
+                    ModeloTabla.setValueAt(listPosologia.get(i).getCantidadTexto(), i, 6);
+                    ModeloTabla.setValueAt(listPosologia.get(i).getCantidad(), i, 7);
+                }
+            }
+        }
+      }
+      
+       /**
+       * 
+       * @param mezclas list de mezclas-medicamentos 
+       * @param evo true si viene de evolucion; false si viene de hcu
+       */
+      private void migrarMezclasMedicToEvo(Object mezclas, boolean evo){
+          String mensaje = "¿Quiere continuar con las mezclas de medicamentos de la Nota de Ingreso? ";
+          if(evo){
+            mensaje = "¿Quiere continuar con los mezclas de medicamentos de la Evolución anterior? ";
+          }
+          int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Migración de mezclas de medicamentos",JOptionPane.YES_NO_OPTION);
+          if(entrada==0){
+              if(evo){
+                  ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("images/idea.png"));
+                  List<HcuEvoMezclasMedicamentos> mezclasMedicamentos = (List<HcuEvoMezclasMedicamentos>) mezclas;
+                    for(int i=0;i<mezclasMedicamentos.size();i++){
+                        MTMezcla.addRow(dato);
+                        MTMezcla.setValueAt(new JLabel(icon),i,2);
+                        MTMezcla.setValueAt(mezclasMedicamentos.get(i).getVia(), i, 3);
+                        MTMezcla.setValueAt(mezclasMedicamentos.get(i).getAdministracion(), i, 4);
+                        medicCombinados = new addMedicCombinados(null, true);                
+                        DefaultTableModel model= medicCombinados.getModeloMezcla();
+                        medicCombinados.dispose();
+                        for(int a=0;a<mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().size();a++){
+                            model.addRow(dato);
+                            model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getIdSuministro(), a, 0);
+                            model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getDosisN(), a, 1);
+                            model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getDosisU(), a, 2);
+                            model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getSolDiluir(), a, 3);
+                        }
+                        MTMezcla.setValueAt(model, i, 0);
+                        MTMezcla.setValueAt(toHTMLMezcla(model,0), i, 1);
+                        jTable2.setRowHeight(i, model.getRowCount()*16);
+                    }
+              }else{
+                  ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("images/idea.png"));
+                  List<HcuMezclasMedicamentos> hcuMezclasList = (List<HcuMezclasMedicamentos>) mezclas;
+                    for(int i=0;i<hcuMezclasList.size();i++){
+                        MTMezcla.addRow(dato);
+                        MTMezcla.setValueAt(new JLabel(icon),i,2);
+                        MTMezcla.setValueAt(hcuMezclasList.get(i).getVia(), i, 3);
+                        MTMezcla.setValueAt(hcuMezclasList.get(i).getAdministracion(), i, 4);
+                        medicCombinados = new addMedicCombinados(null, true);                
+                        DefaultTableModel model= medicCombinados.getModeloMezcla();
+                        medicCombinados.dispose();
+                        for(int a=0;a<hcuMezclasList.get(i).getHcuMezclasMedicamentosDescList().size();a++){
+                            model.addRow(dato);
+                            model.setValueAt(hcuMezclasList.get(i).getHcuMezclasMedicamentosDescList().get(a).getIdSuministro(), a, 0);
+                            model.setValueAt(hcuMezclasList.get(i).getHcuMezclasMedicamentosDescList().get(a).getDosisN(), a, 1);
+                            model.setValueAt(hcuMezclasList.get(i).getHcuMezclasMedicamentosDescList().get(a).getDosisU(), a, 2);
+                            model.setValueAt(hcuMezclasList.get(i).getHcuMezclasMedicamentosDescList().get(a).getSolDiluir(), a, 3);
+                        }
+                        MTMezcla.setValueAt(model, i, 0);
+                        MTMezcla.setValueAt(toHTMLMezcla(model,0), i, 1);
+                        jTable2.setRowHeight(i, model.getRowCount()*16);
+                    }  
+              }
+          }
       }
      
     
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -567,6 +876,7 @@ public class pTratMedic extends javax.swing.JPanel {
 
     private void buttonSeven6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven6ActionPerformed
         medicamentos = new addMedicamentos(null, true);
+        medicamentos.onEvolucion=onEvolucion;
         medicamentos.setVisible(true);
         medicamentos.dispose();
     }//GEN-LAST:event_buttonSeven6ActionPerformed
@@ -636,8 +946,9 @@ public class pTratMedic extends javax.swing.JPanel {
 
     private void buttonSeven8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven8ActionPerformed
         medicCombinados = new addMedicCombinados(null, true);
+        medicCombinados.onEvolucion=onEvolucion;
         medicCombinados.setVisible(true);
-        medicCombinados.dispose();
+        medicCombinados.dispose();        
     }//GEN-LAST:event_buttonSeven8ActionPerformed
 
     private void buttonSeven9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven9ActionPerformed
