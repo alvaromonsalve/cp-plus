@@ -5,12 +5,18 @@
 package atencionurgencia.ListadoPacientes;
 
 import atencionurgencia.AtencionUrgencia;
+import atencionurgencia.evolucion.Evo;
 import entidades.InfoCamas;
+import entidades.InfoHistoriac;
 import entidades.StaticCie10;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.ImageIcon;
@@ -31,22 +37,28 @@ public class fPacientesCamas extends javax.swing.JFrame {
     private DefaultTableModel modeloC;
     private DefaultTableModel modeloS;
     private EntityManagerFactory factory;
+    private Timer timer;
+    private InfoHistoriac historiac =null;
     
     /**
      * Creates new form fPacientesCamas
      */
     public fPacientesCamas() {
         initComponents();
-        /*
-         * codigo para pruebas 
-         */       
-        jTextPane1.setCaretPosition(0);//hacer esto cuando se asigne un valor al textpanel
-        this.modelCamas();
-        jTextPane2.setText(jTextPane2.getText().toUpperCase());
-        jTextPane2.setCaretPosition(0);
-        jTextPane3.setCaretPosition(0);//hacer esto cuando se asigne un valor al textpanel
-        jTextPane4.setText(jTextPane4.getText().toUpperCase());
-        jTextPane4.setCaretPosition(0);
+        jLabel1.setVisible(false);        
+    }
+    
+    public void inicio(){        
+        TimerTask timerListar = new TimerTask() {
+        @Override
+        public void run() {
+                jLabel1.setVisible(true);
+                initComponents2();
+                jLabel1.setVisible(false);
+            }
+        };
+        timer = new Timer();
+        timer.schedule(timerListar, new Date());
     }
 
     @Override
@@ -111,100 +123,67 @@ public class fPacientesCamas extends javax.swing.JFrame {
                 modeloC.removeRow(0);
             }
             int siteRegInTable = 0;
+            int siteRegInTable2 = 0;
             for(int i=0;i<infocamasList.size();i++){
-                if(infocamasList.get(i).getIdConfigCamas().getServicio().getDescripcion().equals("URGENCIAS")){
+                if(infocamasList.get(i).getIdConfigCamas().getServicio().getDescripcion().equals("URGENCIAS") && 
+                        infocamasList.get(i).getIdConfigCamas().getId() != 1){
                     if(siteRegInTable==0){
                         Object dato[] = null;
                         modeloC.addRow(dato);
                         pacientesCamasOfTable(infocamasList.get(i),modeloC.getRowCount()-1,siteRegInTable);
-
                         siteRegInTable=1;
                     }else{
                         pacientesCamasOfTable(infocamasList.get(i),modeloC.getRowCount()-1,siteRegInTable);
                         siteRegInTable=0;
                     }
-                    
+                }else if(infocamasList.get(i).getIdConfigCamas().getServicio().getDescripcion().equals("URGENCIAS") &&
+                        infocamasList.get(i).getIdConfigCamas().getId() == 1){
+                    if(siteRegInTable2==0){
+                        Object dato[] = null;
+                        modeloS.addRow(dato);
+                        pacientesSillasOfTable(infocamasList.get(i),modeloS.getRowCount()-1,siteRegInTable2);
+                        siteRegInTable2=1;
+                    }else{
+                        pacientesSillasOfTable(infocamasList.get(i),modeloS.getRowCount()-1,siteRegInTable2);
+                        siteRegInTable2=0;
+                    }
                 }
-//                modeloC.addRow(dato);
-//                StaticCie10 cie10 = scjc.findStaticCie10( infocamasList.get(i).getIdInfoHistoriac().getDiagnostico());
-//                StaticCie10 cie102 = scjc.findStaticCie10( infocamasList.get(i).getIdInfoHistoriac().getDiagnostico2());
-//                StaticCie10 cie103 = scjc.findStaticCie10( infocamasList.get(i).getIdInfoHistoriac().getDiagnostico3());
-//                StaticCie10 cie104 = scjc.findStaticCie10( infocamasList.get(i).getIdInfoHistoriac().getDiagnostico4());
-//                StaticCie10 cie105 = scjc.findStaticCie10( infocamasList.get(i).getIdInfoHistoriac().getDiagnostico5());
-//                
-//                modeloC.setValueAt(getModImagen(infocamasList.get(i).getIdConfigCamas().getDescripcion()
-//                        , infocamasList.get(i).getIdInfoHistoriac().getIdInfoAdmision().getIdDatosPersonales().getNombre1()
-//                                +" "+infocamasList.get(i).getIdInfoHistoriac().getIdInfoAdmision().getIdDatosPersonales().getApellido1()
-//                        ,"["+cie10.getCodigo()+"]-["+cie102.getCodigo()+"]-["+cie103.getCodigo()+"]-["+cie104.getCodigo()+"]-["+
-//                                cie105.getCodigo()+"]"
-//                        , 0), 0, 0);
-//                i=1;
-//         
-//                cie10 = scjc.findStaticCie10( infocamasList.get(i).getIdInfoHistoriac().getDiagnostico());
-//                cie102 = scjc.findStaticCie10( infocamasList.get(i).getIdInfoHistoriac().getDiagnostico2());
-//                cie103 = scjc.findStaticCie10( infocamasList.get(i).getIdInfoHistoriac().getDiagnostico3());
-//                cie104 = scjc.findStaticCie10( infocamasList.get(i).getIdInfoHistoriac().getDiagnostico4());
-//                cie105 = scjc.findStaticCie10( infocamasList.get(i).getIdInfoHistoriac().getDiagnostico5());
-//                modeloC.setValueAt(getModImagen(infocamasList.get(i).getIdConfigCamas().getDescripcion()
-//                        , infocamasList.get(i).getIdInfoHistoriac().getIdInfoAdmision().getIdDatosPersonales().getNombre1()
-//                                +" "+infocamasList.get(i).getIdInfoHistoriac().getIdInfoAdmision().getIdDatosPersonales().getApellido1()
-//                        ,"["+cie10.getCodigo()+"]-["+cie102.getCodigo()+"]-["+cie103.getCodigo()+"]-["+cie104.getCodigo()+"]-["+
-//                                cie105.getCodigo()+"]"
-//                        , 0), 0, 1);                
             }
-            
-            
         }     
-//        modeloS.addRow(dato);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 0, 0);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 0, 1);
-//        modeloS.addRow(dato);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 1, 0);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 1, 1);
-//        modeloS.addRow(dato);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 2, 0);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 2, 1);
-//        modeloS.addRow(dato);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 3, 0);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 3, 1);
-//        modeloS.addRow(dato);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 4, 0);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 4, 1);
-//        modeloS.addRow(dato);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 5, 0);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 5, 1);
-//        modeloS.addRow(dato);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 6, 0);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 6, 1);
-//        modeloS.addRow(dato);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 7, 0);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 7, 1);
-//        modeloS.addRow(dato);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 8, 0);
-//        modeloS.setValueAt(getModImagen("nombre", "paciente", "diag",1), 8, 1);
+
     }
     
     private void pacientesCamasOfTable(InfoCamas ic, int rows,int siteTable){
-
         StaticCie10JpaController scjc = new StaticCie10JpaController(factory);
         StaticCie10 cie10 = scjc.findStaticCie10( ic.getIdInfoHistoriac().getDiagnostico());
         StaticCie10 cie102 = scjc.findStaticCie10( ic.getIdInfoHistoriac().getDiagnostico2());
         StaticCie10 cie103 = scjc.findStaticCie10( ic.getIdInfoHistoriac().getDiagnostico3());
         StaticCie10 cie104 = scjc.findStaticCie10( ic.getIdInfoHistoriac().getDiagnostico4());
         StaticCie10 cie105 = scjc.findStaticCie10( ic.getIdInfoHistoriac().getDiagnostico5());
-      
-        modeloC.setValueAt(getModImagen(ic.getIdConfigCamas().getDescripcion()
-                , ic.getIdInfoHistoriac().getIdInfoAdmision().getIdDatosPersonales().getNombre1()
-                +" "+ic.getIdInfoHistoriac().getIdInfoAdmision().getIdDatosPersonales().getApellido1()
-                ,"["+cie10.getCodigo()+"]-["+cie102.getCodigo()+"]-["+cie103.getCodigo()+"]-["+cie104.getCodigo()+"]-["+
-                cie105.getCodigo()+"]"
-                , 0), rows, siteTable);
+        modeloC.setValueAt(getModImagen(ic.getIdInfoHistoriac(),ic.getIdConfigCamas().getDescripcion()
+            , ic.getIdInfoHistoriac().getIdInfoAdmision().getIdDatosPersonales().getNombre1()
+            +" "+ic.getIdInfoHistoriac().getIdInfoAdmision().getIdDatosPersonales().getApellido1()
+            ,"["+cie10.getCodigo()+"]-["+cie102.getCodigo()+"]-["+cie103.getCodigo()+"]-["+cie104.getCodigo()+"]-["+
+            cie105.getCodigo()+"]"
+            , 0), rows, siteTable);
     }
     
-    
-    
-    //
-     private JTable getModImagen(String nombreC, String paciente, String Diag, int tipo){
+        private void pacientesSillasOfTable(InfoCamas ic, int rows,int siteTable){
+        StaticCie10JpaController scjc = new StaticCie10JpaController(factory);
+        StaticCie10 cie10 = scjc.findStaticCie10( ic.getIdInfoHistoriac().getDiagnostico());
+        StaticCie10 cie102 = scjc.findStaticCie10( ic.getIdInfoHistoriac().getDiagnostico2());
+        StaticCie10 cie103 = scjc.findStaticCie10( ic.getIdInfoHistoriac().getDiagnostico3());
+        StaticCie10 cie104 = scjc.findStaticCie10( ic.getIdInfoHistoriac().getDiagnostico4());
+        StaticCie10 cie105 = scjc.findStaticCie10( ic.getIdInfoHistoriac().getDiagnostico5());
+        modeloS.setValueAt(getModImagen(ic.getIdInfoHistoriac(),ic.getIdConfigCamas().getDescripcion()
+            , ic.getIdInfoHistoriac().getIdInfoAdmision().getIdDatosPersonales().getNombre1()
+            +" "+ic.getIdInfoHistoriac().getIdInfoAdmision().getIdDatosPersonales().getApellido1()
+            ,"["+cie10.getCodigo()+"]-["+cie102.getCodigo()+"]-["+cie103.getCodigo()+"]-["+cie104.getCodigo()+"]-["+
+            cie105.getCodigo()+"]"
+            , 1), rows, siteTable);
+    }
+
+     private JTable getModImagen(InfoHistoriac hc, String nombreC, String paciente, String Diag, int tipo){
          JTable tabla = new JTable();
          ImageIcon icon;
          if(0==tipo){
@@ -217,8 +196,9 @@ public class fPacientesCamas extends javax.swing.JFrame {
          Object dato[] = null;
          try {
                 modeloDesc = new DefaultTableModel(
-                null, new String [] {"image","Datos"}){
+                null, new String [] {"InfoHistoriac","image","Datos"}){
                 Class[] types = new Class [] {
+                    InfoHistoriac.class,
                      javax.swing.JLabel.class,
                      javax.swing.JTable.class
                 };
@@ -237,15 +217,17 @@ public class fPacientesCamas extends javax.swing.JFrame {
                 tabla.setModel(modeloDesc);
                 tabla.getTableHeader().setReorderingAllowed(false);
                 tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-                Funciones.setSizeColumnas(tabla, new int[]{0}, new int[]{75});
+                Funciones.setSizeColumnas(tabla, new int[]{1}, new int[]{75});
+                Funciones.setOcultarColumnas(tabla, new int[]{0});
                 tabla.setShowGrid(false);
                 tabla.getTableHeader().setVisible(false);
                 tabla.getTableHeader().setPreferredSize(new Dimension(-1,0));
                 tabla.setDefaultRenderer(Object.class, new tools.IconCellRenderer());
                 tabla.setRowHeight(75);
                 modeloDesc.addRow(dato);
-                modeloDesc.setValueAt(new JLabel(icon), 0, 0);    
-                modeloDesc.setValueAt(getModDescripcion(nombreC, paciente, Diag), 0, 1); 
+                modeloDesc.setValueAt(hc, 0, 0);  
+                modeloDesc.setValueAt(new JLabel(icon), 0, 1);    
+                modeloDesc.setValueAt(getModDescripcion(nombreC, paciente, Diag), 0, 2); 
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null,"getModImagen "+this.getName()+" - "+e.getMessage());
             }
@@ -294,6 +276,82 @@ public class fPacientesCamas extends javax.swing.JFrame {
             }
             return tabla;
         }
+    
+        private void initComponents2() {
+            jTextPane1.setCaretPosition(0);//hacer esto cuando se asigne un valor al textpanel
+            this.modelCamas();
+            jTextPane2.setText(jTextPane2.getText().toUpperCase());
+            jTextPane2.setCaretPosition(0);
+            jTextPane3.setCaretPosition(0);//hacer esto cuando se asigne un valor al textpanel
+            jTextPane4.setText(jTextPane4.getText().toUpperCase());
+            jTextPane4.setCaretPosition(0);
+            timer.cancel();
+        }
+        
+        private void selectTableCama(JTable table){
+            int row = table.getSelectedRow();
+            int colu = table.getSelectedColumn();
+            if(table.getValueAt(row, colu) !=null){
+                DefaultTableModel modeloC1 = (DefaultTableModel) table.getModel();
+                DefaultTableModel modelo2 = (DefaultTableModel) ((JTable) modeloC1.getValueAt(row, colu)).getModel();
+                InfoHistoriac ih =(InfoHistoriac) modelo2.getValueAt(0, 0);
+                jTextField1.setText(ih.getIdInfoAdmision().getIdDatosPersonales().getNumDoc());
+                jTextField3.setText(ih.getIdInfoAdmision().getEdad());
+                jTextField2.setText(ih.getIdInfoAdmision().getIdDatosPersonales().getNombre1()+" "+
+                        ih.getIdInfoAdmision().getIdDatosPersonales().getNombre2()+" "+
+                        ih.getIdInfoAdmision().getIdDatosPersonales().getApellido1()+" "+
+                        ih.getIdInfoAdmision().getIdDatosPersonales().getApellido2());
+                DefaultTableModel modeloDesc1 = (DefaultTableModel) ((JTable)modelo2.getValueAt(0, 2)).getModel();
+                jTextField4.setText(((JLabel)modeloDesc1.getValueAt(2, 0)).getText());
+                StaticCie10JpaController scjc = new StaticCie10JpaController(factory);
+                StaticCie10 cie10 = scjc.findStaticCie10( ih.getDiagnostico());
+                StaticCie10 cie102 = scjc.findStaticCie10( ih.getDiagnostico2());
+                StaticCie10 cie103 = scjc.findStaticCie10( ih.getDiagnostico3());
+                StaticCie10 cie104 = scjc.findStaticCie10( ih.getDiagnostico4());
+                StaticCie10 cie105 = scjc.findStaticCie10( ih.getDiagnostico5());
+                String cie = "["+cie10.getCodigo()+"] "+cie10.getDescripcion()+"\n";
+                cie = cie+"["+cie102.getCodigo()+"] "+cie102.getDescripcion()+"\n";
+                cie = cie+"["+cie103.getCodigo()+"] "+cie103.getDescripcion()+"\n";
+                cie = cie+"["+cie104.getCodigo()+"] "+cie104.getDescripcion()+"\n";
+                cie = cie+"["+cie105.getCodigo()+"] "+cie105.getDescripcion();
+                jTextPane1.setText(cie);
+                jTextPane2.setText(ih.getEnfermedadActual());
+                historiac = ih;
+            }
+        }
+        
+        private void selectTableSilla(JTable table){
+            int row = table.getSelectedRow();
+            int colu = table.getSelectedColumn();
+            if(table.getValueAt(row, colu) !=null){
+                DefaultTableModel modeloS1 = (DefaultTableModel) table.getModel();
+                DefaultTableModel modelo2 = (DefaultTableModel) ((JTable) modeloS1.getValueAt(row, colu)).getModel();
+                InfoHistoriac ih =(InfoHistoriac) modelo2.getValueAt(0, 0);
+                jTextField5.setText(ih.getIdInfoAdmision().getIdDatosPersonales().getNumDoc());
+                jTextField7.setText(ih.getIdInfoAdmision().getEdad());
+                jTextField8.setText(ih.getIdInfoAdmision().getIdDatosPersonales().getNombre1()+" "+
+                        ih.getIdInfoAdmision().getIdDatosPersonales().getNombre2()+" "+
+                        ih.getIdInfoAdmision().getIdDatosPersonales().getApellido1()+" "+
+                        ih.getIdInfoAdmision().getIdDatosPersonales().getApellido2());
+                DefaultTableModel modeloDesc1 = (DefaultTableModel) ((JTable)modelo2.getValueAt(0, 2)).getModel();
+                jTextField6.setText(((JLabel)modeloDesc1.getValueAt(2, 0)).getText());
+                StaticCie10JpaController scjc = new StaticCie10JpaController(factory);
+                StaticCie10 cie10 = scjc.findStaticCie10( ih.getDiagnostico());
+                StaticCie10 cie102 = scjc.findStaticCie10( ih.getDiagnostico2());
+                StaticCie10 cie103 = scjc.findStaticCie10( ih.getDiagnostico3());
+                StaticCie10 cie104 = scjc.findStaticCie10( ih.getDiagnostico4());
+                StaticCie10 cie105 = scjc.findStaticCie10( ih.getDiagnostico5());
+                String cie = "["+cie10.getCodigo()+"] "+cie10.getDescripcion()+"\n";
+                cie = cie+"["+cie102.getCodigo()+"] "+cie102.getDescripcion()+"\n";
+                cie = cie+"["+cie103.getCodigo()+"] "+cie103.getDescripcion()+"\n";
+                cie = cie+"["+cie104.getCodigo()+"] "+cie104.getDescripcion()+"\n";
+                cie = cie+"["+cie105.getCodigo()+"] "+cie105.getDescripcion();
+                jTextPane3.setText(cie);
+                jTextPane4.setText(ih.getEnfermedadActual());
+                historiac = ih;
+            }
+        }
+
         
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -336,6 +394,8 @@ public class fPacientesCamas extends javax.swing.JFrame {
         jTextPane4 = new javax.swing.JTextPane();
         jScrollPane6 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Listado de Camas");
@@ -367,7 +427,6 @@ public class fPacientesCamas extends javax.swing.JFrame {
         jTextField1.setEditable(false);
         jTextField1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextField1.setForeground(new java.awt.Color(0, 102, 255));
-        jTextField1.setText("1038109517");
         jTextField1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jTextField1.setOpaque(false);
 
@@ -389,35 +448,30 @@ public class fPacientesCamas extends javax.swing.JFrame {
         jTextField4.setEditable(false);
         jTextField4.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextField4.setForeground(new java.awt.Color(0, 102, 255));
-        jTextField4.setText("A000 - B000 - C000 - D000 - E000");
         jTextField4.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jTextField4.setOpaque(false);
 
         jTextField3.setEditable(false);
         jTextField3.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextField3.setForeground(new java.awt.Color(0, 102, 255));
-        jTextField3.setText("15 AÑOS");
         jTextField3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jTextField3.setOpaque(false);
 
         jTextField2.setEditable(false);
         jTextField2.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextField2.setForeground(new java.awt.Color(0, 102, 255));
-        jTextField2.setText("RUFINO DEL CRISTO GONZALES DE LOS ROSALES");
         jTextField2.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jTextField2.setOpaque(false);
 
         jTextPane1.setEditable(false);
         jTextPane1.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
         jTextPane1.setForeground(new java.awt.Color(0, 102, 255));
-        jTextPane1.setText("[Y518] EFECTOS ADVERSOS DE AGENTES BLOQUEADORES NEURO-ADRENERGICOS QUE ACTUAN CENTRALMENTE, NO CLASIFICADOS EN OTRA PARTE\n\n[Y518] EFECTOS ADVERSOS DE AGENTES BLOQUEADORES NEURO-ADRENERGICOS QUE ACTUAN CENTRALMENTE, NO CLASIFICADOS EN OTRA PARTE\n\n[Y518] EFECTOS ADVERSOS DE AGENTES BLOQUEADORES NEURO-ADRENERGICOS QUE ACTUAN CENTRALMENTE, NO CLASIFICADOS EN OTRA PARTE\n\n[Y518] EFECTOS ADVERSOS DE AGENTES BLOQUEADORES NEURO-ADRENERGICOS QUE ACTUAN CENTRALMENTE, NO CLASIFICADOS EN OTRA PARTE\n\n[Y518] EFECTOS ADVERSOS DE AGENTES BLOQUEADORES NEURO-ADRENERGICOS QUE ACTUAN CENTRALMENTE, NO CLASIFICADOS EN OTRA PARTE");
         jTextPane1.setFocusable(false);
         jScrollPane2.setViewportView(jTextPane1);
 
         jTextPane2.setEditable(false);
         jTextPane2.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
         jTextPane2.setForeground(new java.awt.Color(0, 102, 255));
-        jTextPane2.setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed quis tortor sit amet tellus tristique placerat. Vestibulum imperdiet lectus et magna blandit tincidunt. Proin erat felis, porta sed blandit sed, ultricies eget neque. Suspendisse porta eu risus vitae ultrices. Nulla pellentesque tincidunt libero ac vestibulum. Ut sollicitudin lacus vitae rhoncus auctor. Nunc sapien metus, suscipit a urna et, dictum placerat sem. Praesent nulla tortor, gravida id risus ut, blandit egestas lorem. Nulla scelerisque sapien sed orci cursus, nec auctor justo pulvinar. Aenean euismod lacinia congue. Suspendisse gravida libero quis commodo ultricies.");
         jTextPane2.setFocusable(false);
         jScrollPane3.setViewportView(jTextPane2);
 
@@ -490,7 +544,17 @@ public class fPacientesCamas extends javax.swing.JFrame {
 
             }
         ));
-        jTable1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jTable1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jTable1MouseReleased(evt);
+            }
+        });
+        jTable1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTable1KeyReleased(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -510,7 +574,7 @@ public class fPacientesCamas extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 411, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -525,7 +589,6 @@ public class fPacientesCamas extends javax.swing.JFrame {
         jTextField5.setEditable(false);
         jTextField5.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextField5.setForeground(new java.awt.Color(0, 102, 255));
-        jTextField5.setText("1038109517");
         jTextField5.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jTextField5.setOpaque(false);
 
@@ -547,35 +610,30 @@ public class fPacientesCamas extends javax.swing.JFrame {
         jTextField6.setEditable(false);
         jTextField6.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextField6.setForeground(new java.awt.Color(0, 102, 255));
-        jTextField6.setText("A000 - B000 - C000 - D000 - E000");
         jTextField6.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jTextField6.setOpaque(false);
 
         jTextField7.setEditable(false);
         jTextField7.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextField7.setForeground(new java.awt.Color(0, 102, 255));
-        jTextField7.setText("15 AÑOS");
         jTextField7.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jTextField7.setOpaque(false);
 
         jTextField8.setEditable(false);
         jTextField8.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextField8.setForeground(new java.awt.Color(0, 102, 255));
-        jTextField8.setText("RUFINO DEL CRISTO GONZALES DE LOS ROSALES");
         jTextField8.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jTextField8.setOpaque(false);
 
         jTextPane3.setEditable(false);
         jTextPane3.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
         jTextPane3.setForeground(new java.awt.Color(0, 102, 255));
-        jTextPane3.setText("[Y518] EFECTOS ADVERSOS DE AGENTES BLOQUEADORES NEURO-ADRENERGICOS QUE ACTUAN CENTRALMENTE, NO CLASIFICADOS EN OTRA PARTE\n\n[Y518] EFECTOS ADVERSOS DE AGENTES BLOQUEADORES NEURO-ADRENERGICOS QUE ACTUAN CENTRALMENTE, NO CLASIFICADOS EN OTRA PARTE\n\n[Y518] EFECTOS ADVERSOS DE AGENTES BLOQUEADORES NEURO-ADRENERGICOS QUE ACTUAN CENTRALMENTE, NO CLASIFICADOS EN OTRA PARTE\n\n[Y518] EFECTOS ADVERSOS DE AGENTES BLOQUEADORES NEURO-ADRENERGICOS QUE ACTUAN CENTRALMENTE, NO CLASIFICADOS EN OTRA PARTE\n\n[Y518] EFECTOS ADVERSOS DE AGENTES BLOQUEADORES NEURO-ADRENERGICOS QUE ACTUAN CENTRALMENTE, NO CLASIFICADOS EN OTRA PARTE");
         jTextPane3.setFocusable(false);
         jScrollPane4.setViewportView(jTextPane3);
 
         jTextPane4.setEditable(false);
         jTextPane4.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
         jTextPane4.setForeground(new java.awt.Color(0, 102, 255));
-        jTextPane4.setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed quis tortor sit amet tellus tristique placerat. Vestibulum imperdiet lectus et magna blandit tincidunt. Proin erat felis, porta sed blandit sed, ultricies eget neque. Suspendisse porta eu risus vitae ultrices. Nulla pellentesque tincidunt libero ac vestibulum. Ut sollicitudin lacus vitae rhoncus auctor. Nunc sapien metus, suscipit a urna et, dictum placerat sem. Praesent nulla tortor, gravida id risus ut, blandit egestas lorem. Nulla scelerisque sapien sed orci cursus, nec auctor justo pulvinar. Aenean euismod lacinia congue. Suspendisse gravida libero quis commodo ultricies.");
         jTextPane4.setFocusable(false);
         jScrollPane5.setViewportView(jTextPane4);
 
@@ -636,7 +694,7 @@ public class fPacientesCamas extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel18)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane5)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -648,7 +706,17 @@ public class fPacientesCamas extends javax.swing.JFrame {
 
             }
         ));
-        jTable2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jTable2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jTable2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jTable2MouseReleased(evt);
+            }
+        });
+        jTable2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTable2KeyReleased(evt);
+            }
+        });
         jScrollPane6.setViewportView(jTable2);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -668,11 +736,24 @@ public class fPacientesCamas extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 411, Short.MAX_VALUE))
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
         jTabbedPane1.addTab("Sillas", new javax.swing.ImageIcon(getClass().getResource("/images/front_row.png")), jPanel3); // NOI18N
+
+        jButton1.setText("Aceptar");
+        jButton1.setDoubleBuffered(true);
+        jButton1.setFocusPainted(false);
+        jButton1.setFocusable(false);
+        jButton1.setOpaque(false);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/ajax-loader.gif"))); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -681,7 +762,12 @@ public class fPacientesCamas extends javax.swing.JFrame {
             .addComponent(jLabel50, javax.swing.GroupLayout.DEFAULT_SIZE, 840, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -690,6 +776,10 @@ public class fPacientesCamas extends javax.swing.JFrame {
                 .addComponent(jLabel50)
                 .addGap(18, 18, 18)
                 .addComponent(jTabbedPane1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton1)
+                    .addComponent(jLabel1))
                 .addContainerGap())
         );
 
@@ -711,7 +801,44 @@ public class fPacientesCamas extends javax.swing.JFrame {
         this.closed();
     }//GEN-LAST:event_formWindowClosing
 
+    private void jTable1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseReleased
+        selectTableCama((JTable)evt.getSource());
+    }//GEN-LAST:event_jTable1MouseReleased
+
+    private void jTable1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTable1KeyReleased
+         if((evt.getKeyCode() == KeyEvent.VK_UP) || (evt.getKeyCode() == KeyEvent.VK_DOWN)){
+             selectTableCama((JTable)evt.getSource());
+         }
+    }//GEN-LAST:event_jTable1KeyReleased
+
+    private void jTable2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable2MouseReleased
+        selectTableSilla((JTable)evt.getSource());
+    }//GEN-LAST:event_jTable2MouseReleased
+
+    private void jTable2KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTable2KeyReleased
+        if((evt.getKeyCode() == KeyEvent.VK_UP) || (evt.getKeyCode() == KeyEvent.VK_DOWN)){
+             selectTableSilla((JTable)evt.getSource());
+         }
+    }//GEN-LAST:event_jTable2KeyReleased
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if(historiac!=null){
+            atencionurgencia.AtencionUrgencia.panelindex.jpContainer.removeAll();
+            atencionurgencia.AtencionUrgencia.panelindex.evo = new Evo();
+            atencionurgencia.AtencionUrgencia.panelindex.evo.setBounds(0, 0, 764, 514);
+            atencionurgencia.AtencionUrgencia.panelindex.jpContainer.add(atencionurgencia.AtencionUrgencia.panelindex.evo);
+                    atencionurgencia.AtencionUrgencia.panelindex.evo.setVisible(true);
+                    atencionurgencia.AtencionUrgencia.panelindex.jpContainer.validate();
+                    atencionurgencia.AtencionUrgencia.panelindex.jpContainer.repaint();
+                    atencionurgencia.AtencionUrgencia.panelindex.evo.viewClinicHistory(historiac);
+                    atencionurgencia.AtencionUrgencia.panelindex.evo.DatosAntPersonales();//mostrar antecedentes personales
+                    closed();
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -750,4 +877,5 @@ public class fPacientesCamas extends javax.swing.JFrame {
     private javax.swing.JTextPane jTextPane3;
     private javax.swing.JTextPane jTextPane4;
     // End of variables declaration//GEN-END:variables
+
 }
