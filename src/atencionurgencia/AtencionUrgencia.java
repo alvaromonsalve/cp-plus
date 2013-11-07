@@ -25,7 +25,8 @@ public class AtencionUrgencia {
 
     /**
      * 
-     * @param idUsuario
+     * @param idUsuario2
+     * @param props
      * @return panel principal de la clase setBounds(0, 0, 840, 540)
      */
     public static JPanel getPanelIndex(int idUsuario2, Properties props){

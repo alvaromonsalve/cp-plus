@@ -7,7 +7,7 @@ package atencionurgencia;
 import atencionurgencia.ListadoPacientes.enAtencion;
 import atencionurgencia.ListadoPacientes.fListPacientes;
 import atencionurgencia.ListadoPacientes.fPacientesCamas;
-import atencionurgencia.evolucion.panelEvolucion;
+import atencionurgencia.evolucion.Evo;
 import atencionurgencia.ingreso.HC;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -20,7 +20,7 @@ import tools.Funciones;
 public class panelIndex extends javax.swing.JPanel {
     private enAtencion enatencion=null;
     public HC hc;
-    public panelEvolucion evolucion;
+    public Evo evo;
 
     /**
      * Creates new form panelIndex
