@@ -16,6 +16,7 @@ import atencionurgencia.ingreso.pTratMedidaGeneral;
 import atencionurgencia.ingreso.pTratOtrasInterconsultas;
 import atencionurgencia.ingreso.pTratPConsultDiag;
 import atencionurgencia.ingreso.pTratQuirurgico;
+import entidades.HcuEvolucion;
 import entidades.InfoAdmision;
 import entidades.InfoAntPersonales;
 import entidades.InfoHcExpfisica;
@@ -25,6 +26,8 @@ import entidades.InfoPruebasComplement;
 import entidades.StaticCie10;
 import java.awt.Color;
 import java.awt.Event;
+import java.awt.FlowLayout;
+import java.awt.HeadlessException;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -32,27 +35,36 @@ import java.util.Calendar;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
-import javax.swing.JFileChooser;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import jpa.InfoAntPersonalesJpaController;
-import jpa.InfoHcExpfisicaJpaController;
-import jpa.InfoHistoriacJpaController;
-import jpa.InfoPruebasComplementJpaController;
 import jpa.StaticCie10JpaController;
-import jpa.exceptions.IllegalOrphanException;
-import jpa.exceptions.NonexistentEntityException;
 import other.*;
 import tools.Funciones;
 import tools.myStringsFunctions;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import jpa.HcuEvolucionJpaController;
+import tools.JTreeRendererArbolEvo;
+import tools.MyDate;
 
 /**
  *
@@ -61,7 +73,6 @@ import tools.myStringsFunctions;
 public class Evo extends javax.swing.JPanel {
 
     // <editor-fold desc="Declaracion">
-    private cie10 cie=null;
     FormPersonas personas=null;
     public InfoPaciente infopaciente = null;
     public InfoHistoriac infohistoriac=null;
@@ -69,21 +80,16 @@ public class Evo extends javax.swing.JPanel {
     private InfoHcExpfisica infoexploracion = null;
     private StaticCie10 staticCie10 = null;
     private StaticCie10JpaController staticcie=null;
-    private InfoPruebasComplement infoPruebasComplement = null;
     private EntityManagerFactory factory;
-    private InfoHistoriacJpaController infohistoriaJPA=null;
-    private InfoHcExpfisicaJpaController infohsfisicoJPA=null;
-    private InfoPruebasComplementJpaController infoPruebasComplementJPA = null;
     public int idDiag1 = 1,idDiag2= 1,idDiag3= 1,idDiag4= 1,idDiag5= 1;
     public DefaultTableModel modeloAyudDiag,modDestroyAyudDiag;
     public int finalizar = 0;
     private Boolean edite = false;
-    private Object dato[] = null;
-    private String tipoAyudaDiag[]={"LABORATORIO","IMAGEN","ENDOSCOPIA","ANATOMIA PATOLOGICA","ELECTROGRAMAS","ESTUDIOS ALERGOLÓGICOS"};
+    private final Object dato[] = null;
     private List<InfoPruebasComplement> listaPruebas = null;
-    private String s = System.getProperty("file.separator");
+    private final String s = System.getProperty("file.separator");
     private InfoAntPersonalesJpaController antPersonalesJPA=null;
-    private InfoAntPersonales antPersonales;
+    private InfoAntPersonales antPersonales;    
     public pTratMedic pMedic=null;
     public pTratPConsultDiag pConsultDiag=null;
     public pTratLaboratorio pLaboratorio=null;
@@ -96,6 +102,17 @@ public class Evo extends javax.swing.JPanel {
     public pTratMedidaGeneral pMedidaGeneral=null;
     public pAnexo3 pAnexo31=null;
     public Ftriaje ftriaje=null;
+    private newEvo evol = null;
+    private pSubjetivo subjetivo=null;
+    private pObjetivo objetivo=null;
+    private pAnalisis analisis=null;
+    public pPlan pplan=null;
+    private grafic_sVitales gSignos=null;
+    private List<HcuEvolucion> hcuEvolucionList=null;
+    private HcuEvolucionJpaController hcuEvolucionJpaController =null;
+    private DefaultTreeModel modeloTree;
+    private DefaultMutableTreeNode EvosHC;
+    
     // </editor-fold>
     
     /**
@@ -103,6 +120,7 @@ public class Evo extends javax.swing.JPanel {
      */
     public Evo() {
         initComponents();
+        factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
         TablaAyudDiag();
         inicio();
         InputMap map2 = jTextArea10.getInputMap(JTextArea.WHEN_FOCUSED);
@@ -117,6 +135,8 @@ public class Evo extends javax.swing.JPanel {
             jpCentro.validate();
             jpCentro.repaint();
             activeCheck(1);
+            EvosHC = new DefaultMutableTreeNode("EVOLUCIONES");
+            modeloTree = new DefaultTreeModel(EvosHC);
     }
     
     private void activeCheck(int val){
@@ -129,6 +149,7 @@ public class Evo extends javax.swing.JPanel {
                 jCheckBox4.setSelected(false);
                 jCheckBox13.setSelected(false);
                 jCheckBox5.setSelected(false);
+                jCheckBox14.setSelected(false);
                 break;
             case 2:
                 jCheckBox6.setSelected(false);
@@ -138,6 +159,7 @@ public class Evo extends javax.swing.JPanel {
                 jCheckBox4.setSelected(false);
                 jCheckBox13.setSelected(false);
                 jCheckBox5.setSelected(false);
+                jCheckBox14.setSelected(false);
                 break;
             case 3:
                 jCheckBox6.setSelected(false);
@@ -147,6 +169,7 @@ public class Evo extends javax.swing.JPanel {
                 jCheckBox4.setSelected(false);
                 jCheckBox13.setSelected(false);
                 jCheckBox5.setSelected(false);
+                jCheckBox14.setSelected(false);
                 break;
             case 4:
                 jCheckBox6.setSelected(false);
@@ -156,6 +179,7 @@ public class Evo extends javax.swing.JPanel {
                 jCheckBox4.setSelected(false);
                 jCheckBox13.setSelected(false);
                 jCheckBox5.setSelected(false);
+                jCheckBox14.setSelected(false);
                 break;
             case 5:
                 jCheckBox6.setSelected(false);
@@ -165,6 +189,7 @@ public class Evo extends javax.swing.JPanel {
                 jCheckBox4.setSelected(true);
                 jCheckBox13.setSelected(false);
                 jCheckBox5.setSelected(false);
+                jCheckBox14.setSelected(false);
                 break;
             case 6:
                 jCheckBox6.setSelected(false);
@@ -172,6 +197,7 @@ public class Evo extends javax.swing.JPanel {
                 jCheckBox11.setSelected(false);
                 jCheckBox12.setSelected(false);
                 jCheckBox4.setSelected(false);
+                jCheckBox14.setSelected(false);
                 jCheckBox13.setSelected(true);
                 jCheckBox5.setSelected(false);
                 break;
@@ -182,22 +208,21 @@ public class Evo extends javax.swing.JPanel {
                 jCheckBox12.setSelected(false);
                 jCheckBox4.setSelected(false);
                 jCheckBox13.setSelected(false);
+                jCheckBox14.setSelected(false);
                 jCheckBox5.setSelected(true);
+                break;
+            case 8:
+                jCheckBox6.setSelected(false);
+                jCheckBox10.setSelected(false);
+                jCheckBox11.setSelected(false);
+                jCheckBox12.setSelected(false);
+                jCheckBox4.setSelected(false);
+                jCheckBox13.setSelected(false);
+                jCheckBox5.setSelected(false);
+                jCheckBox14.setSelected(true);
                 break;
         }
     }
- 
-        private Integer getSelectionNivelTriage(){
-            if(jRadioButton1.isSelected()){
-                return 0;
-            }else if(jRadioButton2.isSelected()){
-                return 1;
-            }else if(jRadioButton3.isSelected()){
-                return 2;
-            }else{
-                return 3;
-            }
-         }
         
         public void setSelectionNivelTriage(int var){
             switch (var){
@@ -264,202 +289,78 @@ public class Evo extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, "10052:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
         }
     }
-        
-    public void CrearHistoriaC(){
-        factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
-        saveHistoryClinic();        
-        saveFisicExplorer();
-        saveHelpDiag();
-        infohistoriac = infohistoriaJPA.findInfoHistoriac(this.infohistoriac.getId());
-        if(pImagenologia!=null){
-            pImagenologia.saveChanges(factory, infohistoriac);
-        }
-        if(pLaboratorio!=null){
-            pLaboratorio.saveChanges(factory, infohistoriac);
-        }
-        if(pProcedimientos!=null){
-            pProcedimientos.saveChanges(factory, infohistoriac);
-        }
-        if(pConsultDiag!=null){
-            pConsultDiag.saveChanges(factory, infohistoriac);
-        }
-        if(pQuirurgico!=null){
-            pQuirurgico.saveChanges(factory, infohistoriac);
-        }
-        if(pInterconsulta0!=null){
-            pInterconsulta0.saveChanges(infohistoriac);
-        }
-        if(pInterconsulta1!=null){
-            pInterconsulta1.saveChanges(infohistoriac);
-        }
-        if(pInterconsulta2!=null){
-            pInterconsulta2.saveChanges(infohistoriac);
-        }
-        if(pInterconsulta3!=null){
-            pInterconsulta3.saveChanges(infohistoriac);
-        }
-        if(pInterconsulta4!=null){
-            pInterconsulta4.saveChanges(infohistoriac);
-        }
-        if(pOtrasInterconsultas!=null){
-            pOtrasInterconsultas.saveChanges(infohistoriac);
-        }
-        if(pMedidaGeneral!=null){
-            pMedidaGeneral.saveChanges(factory, infohistoriac);
-        }
-        if(pAnexo31!=null){
-            pAnexo31.saveChanges(infohistoriac);
-        }
-        if(pMedic!=null){
-            pMedic.saveChanges(factory, infohistoriac);
-        }
-      }
-    
-    public void saveHistoryClinic(){
-            if(infohistoriac==null){
-                infohistoriac = new InfoHistoriac();
-            }
-            infohistoriac.setIdInfoAdmision(infoadmision);
-            if(jComboBox1.getSelectedIndex()>-1)
-                infohistoriac.setCausaExterna(jComboBox1.getSelectedItem().toString());
-            else
-                infohistoriac.setCausaExterna("");
-            infohistoriac.setMotivoConsulta(jTextArea10.getText().toUpperCase());
-            infohistoriac.setNivelTriaje(getSelectionNivelTriage());
-            infohistoriac.setAlergias(jTextArea11.getText().toUpperCase());
-            infohistoriac.setIngresosPrevios(jTextArea12.getText().toUpperCase());
-            infohistoriac.setTraumatismos(jTextArea22.getText().toUpperCase());
-            infohistoriac.setTratamientos(jTextArea23.getText().toUpperCase());
-            infohistoriac.setSituacionBasal(jTextArea24.getText().toUpperCase());
-            infohistoriac.setHta(jCheckBox1.isSelected());
-            infohistoriac.setDm(jCheckBox2.isSelected());
-            infohistoriac.setDislipidemia(jCheckBox3.isSelected());
-            infohistoriac.setTabaco(jCheckBox7.isSelected());
-            infohistoriac.setAlcohol(jCheckBox8.isSelected());
-            infohistoriac.setDroga(jCheckBox9.isSelected());
-            infohistoriac.setOtrosHabitos(jTextArea7.getText().toUpperCase());
-            infohistoriac.setDescHdd(jTextArea5.getText().toUpperCase());
-            infohistoriac.setAntFamiliar(jTextArea25.getText().toUpperCase());
-            infohistoriac.setEnfermedadActual(jTextArea13.getText().toUpperCase());
-            infohistoriac.setDiagnostico(idDiag1);
-            infohistoriac.setDiagnostico2(idDiag2);
-            infohistoriac.setDiagnostico3(idDiag3);
-            infohistoriac.setDiagnostico4(idDiag4);
-            infohistoriac.setDiagnostico5(idDiag5);
-            infohistoriac.setHallazgo(jTextArea19.getText().toUpperCase());
-            infohistoriac.setTipoHc(0);//0 = urgencias; 
-            
-            infohistoriac.setEstado(finalizar);
-            infohistoriac.setIdConfigdecripcionlogin(AtencionUrgencia.configdecripcionlogin);
-                    
-            //Falta tiempo de consulta que se generara cuando finalize la consulta
-            //calculando desde fecha_dato
-            Boolean active = false;
-            if(infohistoriaJPA==null){
-                infohistoriaJPA = new InfoHistoriacJpaController(factory);
-                if(!edite){
-                      infohistoriaJPA.create(this.infohistoriac);
-                }else{
-                    active = true;
-                }
-            }else{
-                active = true;
-            }
-            if(active){
-                try {
-                    infohistoriaJPA.edit(this.infohistoriac);
-                } catch (IllegalOrphanException ex) {
-                    JOptionPane.showMessageDialog(null, "10053:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-                } catch (NonexistentEntityException ex) {
-                    JOptionPane.showMessageDialog(null, "10054:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "10055:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        }
-        
-        public void DatosAntPersonales(){
-            if(antPersonalesJPA==null){
-               antPersonalesJPA=new InfoAntPersonalesJpaController(factory);
-           }
-           antPersonales=antPersonalesJPA.findInfoAntPersonalesIDPac(infopaciente);
-           if(antPersonales==null){
-                antPersonales=new InfoAntPersonales();
-                antPersonales.setIdPaciente(infopaciente.getId());
-                antPersonales.setAlcohol(false);
-                antPersonales.setAlergias("NINGUNO");
-                antPersonales.setAntFamiliares("NINGUNO");
-                antPersonales.setDescHdd("");
-                antPersonales.setDislipidemia(false);
-                antPersonales.setDm(false);
-                antPersonales.setDroga(false);
-                antPersonales.setHta(false);
-                antPersonales.setIngresosPrevios("NINGUNO");
-                antPersonales.setOtrosHabitos("NINGUNO");
-                antPersonales.setSituacionBasal("NINGUNO");
-                antPersonales.setTabaco(false);
-                antPersonales.setTratamientos("NINGUNO");
-                antPersonales.setTraumatismos("NINGUNO");
-                antPersonalesJPA.create(antPersonales);
-            }else{
-                jTextArea11.setText(antPersonales.getAlergias());
-                jTextArea11.setCaretPosition(0);
-                jTextArea12.setText(antPersonales.getIngresosPrevios());
-                jTextArea12.setCaretPosition(0);
-                jTextArea22.setText(antPersonales.getTraumatismos());
-                jTextArea22.setCaretPosition(0);
-                jTextArea23.setText(antPersonales.getTratamientos());
-                jTextArea23.setCaretPosition(0);
-                jTextArea24.setText(antPersonales.getSituacionBasal());
-                jTextArea24.setCaretPosition(0);
-                jCheckBox1.setSelected(antPersonales.getHta());
-                jCheckBox2.setSelected(antPersonales.getDm());
-                jCheckBox3.setSelected(antPersonales.getDislipidemia());
-                jCheckBox7.setSelected(antPersonales.getTabaco());
-                jCheckBox8.setSelected(antPersonales.getAlcohol());
-                jCheckBox9.setSelected(antPersonales.getDroga());
-                jTextArea7.setText(antPersonales.getOtrosHabitos());
-                jTextArea7.setCaretPosition(0);
-                jTextArea5.setText(antPersonales.getDescHdd());
-                jTextArea5.setCaretPosition(0);
-                jTextArea25.setText(antPersonales.getAntFamiliares());
-                jTextArea25.setCaretPosition(0);
-                //muestra de la cajas de texto
-           }
-        }
-        
-        private void SaveAntPersonales(){
-            antPersonales=antPersonalesJPA.findInfoAntPersonalesIDPac(infopaciente);
-            antPersonales.setAlcohol(jCheckBox8.isSelected());
-            antPersonales.setAlergias(jTextArea11.getText().toUpperCase());
-            antPersonales.setAntFamiliares(jTextArea25.getText().toUpperCase());
-            antPersonales.setDescHdd(jTextArea5.getText().toUpperCase());
-            antPersonales.setDislipidemia(jCheckBox3.isSelected());
-            antPersonales.setDm(jCheckBox2.isSelected());
-            antPersonales.setDroga(jCheckBox9.isSelected());
-            antPersonales.setHta(jCheckBox1.isSelected());
-            antPersonales.setIngresosPrevios(jTextArea12.getText().toUpperCase());
-            antPersonales.setOtrosHabitos(jTextArea7.getText().toUpperCase());
-            antPersonales.setSituacionBasal(jTextArea24.getText().toUpperCase());
-            antPersonales.setTabaco(jCheckBox7.isSelected());
-            antPersonales.setTratamientos(jTextArea23.getText().toUpperCase());
-            antPersonales.setTraumatismos(jTextArea22.getText().toUpperCase());
-            try {            
-                antPersonalesJPA.edit(antPersonales);
-            } catch (NonexistentEntityException ex) {
-                JOptionPane.showMessageDialog(null, "10063:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "10064:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            } 
-        }
-       
+          
        public void viewClinicHistory(InfoHistoriac infoHistoriac){
            this.infohistoriac = infoHistoriac;
            edite = true;
            setHistoryC();
            setFisicExplorer();
            setHelpDiag();  
+           setJTreeEvo();
        }
+       
+       private void setJTreeEvo(){
+           if(hcuEvolucionJpaController==null){
+               hcuEvolucionJpaController=new HcuEvolucionJpaController(factory);
+           }
+           hcuEvolucionList=hcuEvolucionJpaController.FindHcuEvolucions(infohistoriac);
+           jTree1.setModel(modeloTree);
+           jTree1.setCellRenderer(new JTreeRendererArbolEvo());
+           for(HcuEvolucion hcuEvo:hcuEvolucionList){
+               TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
+               DefaultMutableTreeNode fechaEvo = null;
+               DefaultMutableTreeNode Evo = null;
+               boolean existeFechaEvo=false;
+               for(int i=0;i<raiz.getChildCount();i++){
+                   if(raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(hcuEvo.getFechaEvo()))){
+                       existeFechaEvo = true;
+                       fechaEvo=(DefaultMutableTreeNode) modeloTree.getChild(EvosHC, i);
+                       Evo=new DefaultMutableTreeNode(hcuEvo);
+                       fechaEvo.add(Evo);
+                       break;
+                   }
+               }
+               if(!existeFechaEvo){
+                   fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(hcuEvo.getFechaEvo()));                   
+                   modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
+                   Evo = new DefaultMutableTreeNode(hcuEvo);
+                   fechaEvo.add(Evo);                   
+               }         
+           }
+
+           jTree1.expandRow(0);
+//           TreeNode raiz = (TreeNode)jTree1.getModel().getRoot(); 
+//           System.out.println(raiz.getChildAt(0));
+       }
+       
+       public void DatosAntPersonales(){
+            if(antPersonalesJPA==null){
+                antPersonalesJPA=new InfoAntPersonalesJpaController(factory);
+            }
+            antPersonales=antPersonalesJPA.findInfoAntPersonalesIDPac(infopaciente);
+            jTextArea11.setText(antPersonales.getAlergias());
+            jTextArea11.setCaretPosition(0);
+            jTextArea12.setText(antPersonales.getIngresosPrevios());
+            jTextArea12.setCaretPosition(0);
+            jTextArea22.setText(antPersonales.getTraumatismos());
+            jTextArea22.setCaretPosition(0);
+            jTextArea23.setText(antPersonales.getTratamientos());
+            jTextArea23.setCaretPosition(0);
+            jTextArea24.setText(antPersonales.getSituacionBasal());
+            jTextArea24.setCaretPosition(0);
+            jCheckBox1.setSelected(antPersonales.getHta());
+            jCheckBox2.setSelected(antPersonales.getDm());
+            jCheckBox3.setSelected(antPersonales.getDislipidemia());
+            jCheckBox7.setSelected(antPersonales.getTabaco());
+            jCheckBox8.setSelected(antPersonales.getAlcohol());
+            jCheckBox9.setSelected(antPersonales.getDroga());
+            jTextArea7.setText(antPersonales.getOtrosHabitos());
+            jTextArea7.setCaretPosition(0);
+            jTextArea5.setText(antPersonales.getDescHdd());
+            jTextArea5.setCaretPosition(0);
+            jTextArea25.setText(antPersonales.getAntFamiliares());
+            jTextArea25.setCaretPosition(0);
+        }
        
        private void setHistoryC(){
            infoadmision = infohistoriac.getIdInfoAdmision();
@@ -578,55 +479,8 @@ public class Evo extends javax.swing.JPanel {
             jTextArea16.setCaretPosition(0);
             jTextArea17.setText(infoexploracion.getOsteo());
             jTextArea17.setCaretPosition(0);
-        }
-        
-        private void saveFisicExplorer(){
-            if(infoexploracion == null){
-                infoexploracion = new InfoHcExpfisica();
-            }
-            infoexploracion.setIdInfohistoriac(infohistoriac);
-            infoexploracion.setTa(jTextField1.getText().toUpperCase());
-            infoexploracion.setT(jTextField8.getText().toUpperCase());
-            infoexploracion.setTam(jTextField2.getText().toUpperCase());
-            infoexploracion.setSao2(jTextField7.getText().toUpperCase());
-            infoexploracion.setFc(jTextField3.getText().toUpperCase());
-            infoexploracion.setPvc(jTextField6.getText().toUpperCase());
-            infoexploracion.setFr(jTextField4.getText().toUpperCase());
-            infoexploracion.setPic(jTextField5.getText().toUpperCase());
-            infoexploracion.setPeso(jTextField9.getText().toUpperCase());
-            infoexploracion.setTalla(jTextField10.getText().toUpperCase());
-            infoexploracion.setOtros(jTextArea2.getText().toUpperCase());
-            infoexploracion.setAspectogeneral(jTextArea3.getText().toUpperCase());
-            infoexploracion.setCara(jTextArea4.getText().toUpperCase());
-            infoexploracion.setCardio(jTextArea6.getText().toUpperCase());
-            infoexploracion.setRespiratorio(jTextArea8.getText().toUpperCase());
-            infoexploracion.setGastro(jTextArea9.getText().toUpperCase());
-            infoexploracion.setRenal(jTextArea14.getText().toUpperCase());
-            infoexploracion.setHemato(jTextArea15.getText().toUpperCase());
-            infoexploracion.setEndo(jTextArea16.getText().toUpperCase());
-            infoexploracion.setOsteo(jTextArea17.getText().toUpperCase());
-            Boolean active = false;
-            if(infohsfisicoJPA==null){
-                infohsfisicoJPA = new InfoHcExpfisicaJpaController(factory);
-                if(!edite){
-                        infohsfisicoJPA.create(infoexploracion);
-                }else{
-                    active = true;
-                }
-            }else{
-                active= true;
-            }
-            if(active){
-               try {
-                    infohsfisicoJPA.edit(infoexploracion);
-                } catch (NonexistentEntityException ex) {
-                    JOptionPane.showMessageDialog(null, "10056:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "10057:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        }
-        
+        }        
+       
         private void setHelpDiag() {
             ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("images/Delete16x16.png"));
             ImageIcon icon2 = new ImageIcon(ClassLoader.getSystemResource("images/download.png"));
@@ -635,8 +489,6 @@ public class Evo extends javax.swing.JPanel {
                 file = File.createTempFile("temporal", null);
             } catch (IOException ex) {
                JOptionPane.showMessageDialog(null, "10065:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
-               JOptionPane.showMessageDialog(null, "10066:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
             }
             listaPruebas = infohistoriac.getInfoPruebasComplements();
             for(int i=0;i<listaPruebas.size();i++){
@@ -652,81 +504,11 @@ public class Evo extends javax.swing.JPanel {
         //descargar archivos
         }
         
-
-        
-        private void saveHelpDiag(){
-            if(infoPruebasComplementJPA == null){//verifico si no existe la instancia de la persistencia para crearla
-                infoPruebasComplementJPA = new InfoPruebasComplementJpaController(factory);
-            }
-            if(modDestroyAyudDiag.getRowCount()>0){
-             Boolean existe=false;
-             int id = 0;
-                for(int i=0;i<modDestroyAyudDiag.getRowCount();i++){
-                    if(((String)modDestroyAyudDiag.getValueAt(i, 6)).equals("1")){//comprobamos si es registro antiguo
-                        for(InfoPruebasComplement infopruebas:infohistoriac.getInfoPruebasComplements()){//recorremos los registros en la hc
-                            if((((String)modDestroyAyudDiag.getValueAt(i, 5)
-                                    + System.getProperty("file.separator")
-                                    +(String)modDestroyAyudDiag.getValueAt(i, 2))).equals(infopruebas.getRuta())){//verificamos coincidencias
-                                existe = true;
-                                id = infopruebas.getId();
-                                break;
-                            }else{
-                                existe = false;
-                            }
-                        }
-                        if(existe){
-                            try {
-                                infoPruebasComplementJPA.destroy(id);
-                                Funciones.fileDelete((String)modDestroyAyudDiag.getValueAt(i, 5)
-                                    + System.getProperty("file.separator")+(String)modDestroyAyudDiag.getValueAt(i, 2)
-                                    ,(String)modDestroyAyudDiag.getValueAt(i, 5)
-                                    , (String)modDestroyAyudDiag.getValueAt(i, 2));
-                            } catch (NonexistentEntityException ex) {
-                                JOptionPane.showMessageDialog(null, "10058:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-                            } catch (Exception ex) {
-                                JOptionPane.showMessageDialog(null, "10059:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-                            }
-                        }
-                    }
-                }
-            }else{
-                //no hay archivos por eliminar
-            }
-            for(int i =0;i<modDestroyAyudDiag.getRowCount();i++){
-                modDestroyAyudDiag.removeRow(i);
-            }
-            if(modeloAyudDiag.getRowCount()>0){//verificamos si existen archivos en el modelo de muestra
-                for(int i=0;i<modeloAyudDiag.getRowCount();i++){//recorremos el modelo de muestra
-                    if(((String)modeloAyudDiag.getValueAt(i, 6)).equals("0")){//comprobamos si esta recien añadido
-                        if(infoPruebasComplement == null){
-                            infoPruebasComplement = new InfoPruebasComplement();
-                        }
-                        infoPruebasComplement.setIdInfohistoriac(infohistoriac);
-                        infoPruebasComplement.setNombre((String)modeloAyudDiag.getValueAt(i, 2));
-                        infoPruebasComplement.setTipo((String)modeloAyudDiag.getValueAt(i, 4));
-                        infoPruebasComplement.setRuta((String)modeloAyudDiag.getValueAt(i, 5)
-                                + System.getProperty("file.separator")+(String)modeloAyudDiag.getValueAt(i, 2));
-                        infoPruebasComplementJPA.create(infoPruebasComplement);
-                        Funciones.fileUpload(((File)modeloAyudDiag.getValueAt(i, 3)).getAbsolutePath()
-                                ,(String)modeloAyudDiag.getValueAt(i, 5)
-                                , (String)modeloAyudDiag.getValueAt(i, 2));
-                        modeloAyudDiag.setValueAt("1",i, 6);
-                        infoPruebasComplement = null;
-                    }else{
-                        //como existe el registro no hacemos nada
-                    }
-                }
-            }
-        }
         
         public void cerrarPanel(){
-            Funciones.setLabelInfo("GUARDANDO...");
-            CrearHistoriaC();
-            SaveAntPersonales();
             atencionurgencia.AtencionUrgencia.panelindex.jpContainer.removeAll(); 
             atencionurgencia.AtencionUrgencia.panelindex.jpContainer.validate();
             atencionurgencia.AtencionUrgencia.panelindex.jpContainer.repaint();
-            Funciones.setLabelInfo("DATOS GUARDADOS");
         }
        
         /**
@@ -757,17 +539,106 @@ public class Evo extends javax.swing.JPanel {
                     }  
                 }                
                               
-            } catch (Exception e) {
+            } catch (HeadlessException e) {
                 JOptionPane.showMessageDialog(null, "10116:\n"+e.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
             }
             return f;
         }
+        
+        private static final Icon CLOSE_TAB_ICON = new ImageIcon(ClassLoader.getSystemResource("images/closeTabButton.png"));
+        private static final Icon  PAGE_ICON = new ImageIcon(ClassLoader.getSystemResource("images/chart_curve_edit_16x16.png"));
+        
+          /**
+            * Creado por Tad Harrison
+            * Adds a component to a JTabbedPane with a little "close tab" button on the
+            * right side of the tab.
+            *
+            * @param tabbedPane the JTabbedPane
+            * @param c any JComponent
+            * @param title the title for the tab
+            * @param icon the icon for the tab, if desired
+            */
+        private static void addClosableTab(final JTabbedPane tabbedPane,final JComponent c,final String title,final Icon icon) {
+                
+                 // Add the tab to the pane without any label
+                 tabbedPane.addTab(null, c);
+                 int pos = tabbedPane.indexOfComponent(c);
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
+                 // Create a FlowLayout that will space things 5px apart
+                 FlowLayout f = new FlowLayout(FlowLayout.CENTER, 5, 0);
+
+                 // Make a small JPanel with the layout and make it non-opaque
+                 JPanel pnlTab = new JPanel(f);
+                 pnlTab.setOpaque(false);
+
+                 // Add a JLabel with title and the left-side tab icon
+                 JLabel lblTitle = new JLabel(title);
+                 lblTitle.setIcon(icon);
+
+                 // Create a JButton for the close tab button
+                 JButton btnClose = new JButton();
+                 btnClose.setOpaque(false);
+
+                 // Configure icon and rollover icon for button
+                 btnClose.setRolloverIcon(CLOSE_TAB_ICON);
+                 btnClose.setRolloverEnabled(true);
+                 btnClose.setIcon(CLOSE_TAB_ICON);
+
+                 // Set border null so the button doesn't make the tab too big
+                 btnClose.setBorder(null);
+
+                 // Make sure the button can't get focus, otherwise it looks funny
+                 btnClose.setFocusable(false);
+
+                 // Put the panel together
+                 pnlTab.add(lblTitle);
+                 pnlTab.add(btnClose);
+
+                 // Add a thin border to keep the image below the top edge of the tab
+                 // when the tab is selected
+                 pnlTab.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
+
+                 // Now assign the component for the tab
+                 tabbedPane.setTabComponentAt(pos, pnlTab);
+
+                 // Add the listener that removes the tab
+                 ActionListener listener = new ActionListener() {
+                     @Override
+                     public void actionPerformed(ActionEvent e) {
+                     // The component parameter must be declared "final" so that it can be
+                     // referenced in the anonymous listener class like this.
+                     tabbedPane.remove(c);
+                   }
+                 };
+                 btnClose.addActionListener(listener);
+
+                 // Optionally bring the new tab to the front
+                 tabbedPane.setSelectedComponent(c);
+
+                 //-------------------------------------------------------------
+                 // Bonus: Adding a <Ctrl-W> keystroke binding to close the tab
+                 //-------------------------------------------------------------
+                 AbstractAction closeTabAction = new AbstractAction() {
+                   @Override
+                   public void actionPerformed(ActionEvent e) {
+                     tabbedPane.remove(c);
+                   }
+                 };
+
+                 // Create a keystroke
+                 KeyStroke controlW = KeyStroke.getKeyStroke("control W");
+
+                 // Get the appropriate input map using the JComponent constants.
+                 // This one works well when the component is a container. 
+                 InputMap inputMap = c.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+                 // Add the key binding for the keystroke to the action name
+                 inputMap.put(controlW, "closeTab");
+
+                 // Now add a single binding for the action name to the anonymous action
+                 c.getActionMap().put("closeTab", closeTabAction);
+               }
+        
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -902,23 +773,17 @@ public class Evo extends javax.swing.JPanel {
         jtbTratamiento4 = new javax.swing.JTable();
         jLabel34 = new javax.swing.JLabel();
         jTextField16 = new javax.swing.JTextField();
-        jButton8 = new javax.swing.JButton();
         jLabel42 = new javax.swing.JLabel();
         jpDiagMedico = new javax.swing.JPanel();
         jPanel28 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
         jLabel28 = new javax.swing.JLabel();
         jTextField11 = new javax.swing.JTextField();
         jTextField12 = new javax.swing.JTextField();
         jLabel29 = new javax.swing.JLabel();
         jTextField13 = new javax.swing.JTextField();
         jLabel30 = new javax.swing.JLabel();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
         jLabel31 = new javax.swing.JLabel();
         jTextField14 = new javax.swing.JTextField();
-        jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
         jTextField15 = new javax.swing.JTextField();
         jLabel32 = new javax.swing.JLabel();
         jLabel43 = new javax.swing.JLabel();
@@ -948,7 +813,6 @@ public class Evo extends javax.swing.JPanel {
         jXTaskPane5 = new org.jdesktop.swingx.JXTaskPane();
         jLabel58 = new javax.swing.JLabel();
         jLabel59 = new javax.swing.JLabel();
-        jFileChooser1 = new javax.swing.JFileChooser();
         jlbNombrePaciente = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
         jTabbedPane3 = new javax.swing.JTabbedPane();
@@ -969,6 +833,18 @@ public class Evo extends javax.swing.JPanel {
         jLabel25 = new javax.swing.JLabel();
         jLabel24 = new javax.swing.JLabel();
         jButton11 = new javax.swing.JButton();
+        jLabel44 = new javax.swing.JLabel();
+        jCheckBox14 = new javax.swing.JCheckBox();
+        jPanel33 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTree1 = new javax.swing.JTree();
+        jToolBar1 = new javax.swing.JToolBar();
+        jButton1 = new javax.swing.JButton();
+        jButton12 = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JToolBar.Separator();
+        jButton10 = new javax.swing.JButton();
+        jButton8 = new javax.swing.JButton();
+        jTabbedPane6 = new javax.swing.JTabbedPane();
         jButton9 = new javax.swing.JButton();
 
         jpMotivoC.setMaximumSize(new java.awt.Dimension(584, 445));
@@ -2309,17 +2185,6 @@ public class Evo extends javax.swing.JPanel {
         jTextField16.setForeground(new java.awt.Color(0, 102, 255));
         jTextField16.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
-        jButton8.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton8.setText("...");
-        jButton8.setEnabled(false);
-        jButton8.setFocusable(false);
-        jButton8.setOpaque(false);
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton8ActionPerformed(evt);
-            }
-        });
-
         jLabel42.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel42.setText("PRUEBAS COMPLEMENTARIAS");
 
@@ -2337,8 +2202,7 @@ public class Evo extends javax.swing.JPanel {
                         .addComponent(jLabel34, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTextField16, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(34, 34, 34))
                     .addComponent(jLabel42, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -2351,10 +2215,9 @@ public class Evo extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel27Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel34)
-                    .addComponent(jButton8))
+                    .addComponent(jLabel34))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane27, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
+                .addComponent(jScrollPane27, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -2378,17 +2241,6 @@ public class Evo extends javax.swing.JPanel {
         jPanel28.setMaximumSize(new java.awt.Dimension(584, 445));
         jPanel28.setMinimumSize(new java.awt.Dimension(584, 445));
         jPanel28.setPreferredSize(new java.awt.Dimension(584, 445));
-
-        jButton2.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton2.setText("...");
-        jButton2.setEnabled(false);
-        jButton2.setFocusable(false);
-        jButton2.setOpaque(false);
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
 
         jLabel28.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel28.setText("DIAGNOSTICO PRINCIPAL");
@@ -2426,28 +2278,6 @@ public class Evo extends javax.swing.JPanel {
         jLabel30.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel30.setText("DIAGNOSTICO RELACIONADO 2");
 
-        jButton4.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton4.setText("...");
-        jButton4.setEnabled(false);
-        jButton4.setFocusable(false);
-        jButton4.setOpaque(false);
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-
-        jButton5.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton5.setText("...");
-        jButton5.setEnabled(false);
-        jButton5.setFocusable(false);
-        jButton5.setOpaque(false);
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
-            }
-        });
-
         jLabel31.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel31.setText("DIAGNOSTICO RELACIONADO 3");
 
@@ -2457,28 +2287,6 @@ public class Evo extends javax.swing.JPanel {
         jTextField14.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextField14KeyReleased(evt);
-            }
-        });
-
-        jButton6.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton6.setText("...");
-        jButton6.setEnabled(false);
-        jButton6.setFocusable(false);
-        jButton6.setOpaque(false);
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
-            }
-        });
-
-        jButton7.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton7.setText("...");
-        jButton7.setEnabled(false);
-        jButton7.setFocusable(false);
-        jButton7.setOpaque(false);
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
             }
         });
 
@@ -2511,25 +2319,20 @@ public class Evo extends javax.swing.JPanel {
                     .addComponent(jLabel43, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel28Layout.createSequentialGroup()
                         .addComponent(jLabel28, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28))
                     .addGroup(jPanel28Layout.createSequentialGroup()
                         .addComponent(jLabel29, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28))
                     .addComponent(jTextField12)
                     .addGroup(jPanel28Layout.createSequentialGroup()
                         .addComponent(jLabel30, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28))
                     .addGroup(jPanel28Layout.createSequentialGroup()
                         .addComponent(jLabel31, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28))
                     .addGroup(jPanel28Layout.createSequentialGroup()
                         .addComponent(jLabel32, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(28, 28, 28)))
                 .addContainerGap())
         );
         jPanel28Layout.setVerticalGroup(
@@ -2537,36 +2340,26 @@ public class Evo extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel28Layout.createSequentialGroup()
                 .addComponent(jLabel43, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel28)
-                    .addComponent(jButton2))
+                .addComponent(jLabel28)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
-                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel29)
-                    .addComponent(jButton4))
+                .addGap(16, 16, 16)
+                .addComponent(jLabel29)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel30)
-                    .addComponent(jButton5))
+                .addComponent(jLabel30)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel31)
-                    .addComponent(jButton6))
+                .addComponent(jLabel31)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel32)
-                    .addComponent(jButton7))
+                .addComponent(jLabel32)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(111, Short.MAX_VALUE))
+                .addContainerGap(147, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jpDiagMedicoLayout = new javax.swing.GroupLayout(jpDiagMedico);
@@ -2623,7 +2416,7 @@ public class Evo extends javax.swing.JPanel {
             jPanel29Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel29Layout.createSequentialGroup()
                 .addComponent(jPanel35, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 30, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jPanel2.setOpaque(false);
@@ -2658,7 +2451,6 @@ public class Evo extends javax.swing.JPanel {
         });
         jXTaskPane1.getContentPane().add(jLabel46);
 
-        jXTaskPane2.setExpanded(false);
         jXTaskPane2.setTitle("PROCEDIMIENTOS");
         jXTaskPane2.setAnimated(false);
         jXTaskPane2.setFocusable(false);
@@ -3035,7 +2827,9 @@ public class Evo extends javax.swing.JPanel {
         );
         jpTratamientoLayout.setVerticalGroup(
             jpTratamientoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(jpTratamientoLayout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 3, Short.MAX_VALUE))
         );
 
         setBackground(new java.awt.Color(255, 255, 255));
@@ -3057,10 +2851,12 @@ public class Evo extends javax.swing.JPanel {
             }
         });
 
+        jTabbedPane3.setFocusable(false);
         jTabbedPane3.setMaximumSize(new java.awt.Dimension(764, 473));
         jTabbedPane3.setMinimumSize(new java.awt.Dimension(764, 473));
         jTabbedPane3.setPreferredSize(new java.awt.Dimension(764, 473));
 
+        jPanel30.setFocusable(false);
         jPanel30.setOpaque(false);
 
         jpCentro.setBackground(new java.awt.Color(204, 204, 255));
@@ -3084,7 +2880,7 @@ public class Evo extends javax.swing.JPanel {
 
         jLabel22.setBackground(new java.awt.Color(204, 204, 204));
         jLabel22.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel22.setForeground(new java.awt.Color(0, 51, 255));
+        jLabel22.setForeground(new java.awt.Color(255, 255, 255));
         jLabel22.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel22.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/boton1.png"))); // NOI18N
         jLabel22.setText("<html><p>Motivo de Consulta</p></html>");
@@ -3115,7 +2911,7 @@ public class Evo extends javax.swing.JPanel {
 
         jLabel23.setBackground(new java.awt.Color(204, 204, 204));
         jLabel23.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel23.setForeground(new java.awt.Color(0, 51, 255));
+        jLabel23.setForeground(new java.awt.Color(255, 255, 255));
         jLabel23.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel23.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/boton1.png"))); // NOI18N
         jLabel23.setText("<html><p align=\"center\">Antecedentes Personales</p></html>");
@@ -3165,7 +2961,7 @@ public class Evo extends javax.swing.JPanel {
 
         jLabel33.setBackground(new java.awt.Color(204, 204, 204));
         jLabel33.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel33.setForeground(new java.awt.Color(0, 51, 255));
+        jLabel33.setForeground(new java.awt.Color(255, 255, 255));
         jLabel33.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel33.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/boton1.png"))); // NOI18N
         jLabel33.setText("<html><p>Ordenes Medicas</p></html>");
@@ -3195,7 +2991,7 @@ public class Evo extends javax.swing.JPanel {
 
         jLabel26.setBackground(new java.awt.Color(204, 204, 204));
         jLabel26.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel26.setForeground(new java.awt.Color(0, 51, 255));
+        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
         jLabel26.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel26.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/boton1.png"))); // NOI18N
         jLabel26.setText("<html><p>Diagnostico Medico</p></html>");
@@ -3225,7 +3021,7 @@ public class Evo extends javax.swing.JPanel {
 
         jLabel27.setBackground(new java.awt.Color(204, 204, 204));
         jLabel27.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel27.setForeground(new java.awt.Color(0, 51, 255));
+        jLabel27.setForeground(new java.awt.Color(255, 255, 255));
         jLabel27.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel27.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/boton1.png"))); // NOI18N
         jLabel27.setText("<html><p align=\"center\">Pruebas Complementarias</p></html>");
@@ -3257,7 +3053,7 @@ public class Evo extends javax.swing.JPanel {
 
         jLabel25.setBackground(new java.awt.Color(204, 204, 204));
         jLabel25.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel25.setForeground(new java.awt.Color(0, 51, 255));
+        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
         jLabel25.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel25.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/boton1.png"))); // NOI18N
         jLabel25.setText("<html><p>Exploracion Fisica</p></html>");
@@ -3288,7 +3084,7 @@ public class Evo extends javax.swing.JPanel {
 
         jLabel24.setBackground(new java.awt.Color(204, 204, 204));
         jLabel24.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel24.setForeground(new java.awt.Color(0, 51, 255));
+        jLabel24.setForeground(new java.awt.Color(255, 255, 255));
         jLabel24.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel24.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/boton1.png"))); // NOI18N
         jLabel24.setText("<html><p>Enfermedad Actual</p></html>");
@@ -3341,6 +3137,40 @@ public class Evo extends javax.swing.JPanel {
             }
         });
 
+        jLabel44.setBackground(new java.awt.Color(204, 204, 204));
+        jLabel44.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel44.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel44.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel44.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/boton1.png"))); // NOI18N
+        jLabel44.setText("<html><p align=\"center\">Datos de Nota de Ingreso</p></html>");
+        jLabel44.setToolTipText("");
+        jLabel44.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jLabel44.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jLabel44.setMaximumSize(new java.awt.Dimension(145, 40));
+        jLabel44.setMinimumSize(new java.awt.Dimension(145, 40));
+        jLabel44.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel44MouseClicked(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel44MouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jLabel44MousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel44MouseReleased(evt);
+            }
+        });
+        jLabel44.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel44MouseMoved(evt);
+            }
+        });
+
+        jCheckBox14.setBackground(new java.awt.Color(255, 255, 255));
+        jCheckBox14.setEnabled(false);
+
         javax.swing.GroupLayout jPanel30Layout = new javax.swing.GroupLayout(jPanel30);
         jPanel30.setLayout(jPanel30Layout);
         jPanel30Layout.setHorizontalGroup(
@@ -3372,8 +3202,12 @@ public class Evo extends javax.swing.JPanel {
                             .addComponent(jCheckBox6, javax.swing.GroupLayout.Alignment.TRAILING)))
                     .addGroup(jPanel30Layout.createSequentialGroup()
                         .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel30Layout.createSequentialGroup()
+                        .addComponent(jLabel44, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox14)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jpCentro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(4, 4, 4))
         );
@@ -3408,13 +3242,150 @@ public class Evo extends javax.swing.JPanel {
                 .addGroup(jPanel30Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jCheckBox5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel33, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel30Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jCheckBox14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel44, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
                 .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addComponent(jpCentro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         jTabbedPane3.addTab("Nota de Ingreso", jPanel30);
+
+        jPanel33.setFocusable(false);
+        jPanel33.setOpaque(false);
+
+        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("root");
+        jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
+        jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jTree1MousePressed(evt);
+            }
+        });
+        jScrollPane3.setViewportView(jTree1);
+
+        jToolBar1.setFloatable(false);
+        jToolBar1.setRollover(true);
+        jToolBar1.setDoubleBuffered(true);
+        jToolBar1.setOpaque(false);
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/script_add.png"))); // NOI18N
+        jButton1.setToolTipText("NUEVA NOTA DE EVOLUCIÓN");
+        jButton1.setFocusable(false);
+        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton1.setOpaque(false);
+        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton1MouseExited(evt);
+            }
+        });
+        jButton1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton1MouseMoved(evt);
+            }
+        });
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton1);
+
+        jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/script_save.png"))); // NOI18N
+        jButton12.setToolTipText("GUARDAR NOTA DE EVOLUCIÓN");
+        jButton12.setEnabled(false);
+        jButton12.setFocusable(false);
+        jButton12.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton12.setOpaque(false);
+        jButton12.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton12ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton12);
+        jToolBar1.add(jSeparator1);
+
+        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/chart_curve_edit.png"))); // NOI18N
+        jButton10.setToolTipText("SIGNOS VITALES");
+        jButton10.setEnabled(false);
+        jButton10.setFocusable(false);
+        jButton10.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton10.setOpaque(false);
+        jButton10.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton10.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton10MouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jButton10MousePressed(evt);
+            }
+        });
+        jButton10.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton10MouseMoved(evt);
+            }
+        });
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton10);
+
+        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/page_green.png"))); // NOI18N
+        jButton8.setToolTipText("SUBJETIVO");
+        jButton8.setEnabled(false);
+        jButton8.setFocusable(false);
+        jButton8.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton8.setOpaque(false);
+        jButton8.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton8.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton8MouseExited(evt);
+            }
+        });
+        jButton8.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton8MouseMoved(evt);
+            }
+        });
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton8);
+
+        jTabbedPane6.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
+        jTabbedPane6.setMaximumSize(new java.awt.Dimension(608, 414));
+        jTabbedPane6.setMinimumSize(new java.awt.Dimension(608, 414));
+        jTabbedPane6.setPreferredSize(new java.awt.Dimension(608, 414));
+
+        javax.swing.GroupLayout jPanel33Layout = new javax.swing.GroupLayout(jPanel33);
+        jPanel33.setLayout(jPanel33Layout);
+        jPanel33Layout.setHorizontalGroup(
+            jPanel33Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(jPanel33Layout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTabbedPane6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel33Layout.setVerticalGroup(
+            jPanel33Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel33Layout.createSequentialGroup()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel33Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3)
+                    .addComponent(jTabbedPane6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        );
+
+        jTabbedPane3.addTab("Nota de Evolucion", jPanel33);
 
         jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/editdelete.png"))); // NOI18N
         jButton9.setBorderPainted(false);
@@ -3532,67 +3503,11 @@ public class Evo extends javax.swing.JPanel {
         if(personas==null){
             personas = new FormPersonas();
             personas.infopaciente = this.infopaciente;
-                //mostrar datos personas
         }else{
             personas.infopaciente = this.infopaciente;
         }
         personas.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-       if(cie==null){
-            cie = new cie10();
-            cie.setLocationRelativeTo(this);
-            cie.setVisible(true);
-        }else{
-            cie.setVisible(true);
-        }
-       cie.diag=1;
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        if(cie==null){
-            cie = new cie10();
-            cie.setLocationRelativeTo(this);
-            cie.setVisible(true);
-        }else{
-            cie.setVisible(true);
-        }
-        cie.diag=2;
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        if(cie==null){
-            cie = new cie10();
-            cie.setLocationRelativeTo(this);
-            cie.setVisible(true);
-        }else{
-            cie.setVisible(true);
-        }
-        cie.diag=3;
-    }//GEN-LAST:event_jButton5ActionPerformed
-
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        if(cie==null){
-            cie = new cie10();
-            cie.setLocationRelativeTo(this);
-            cie.setVisible(true);
-        }else{
-            cie.setVisible(true);
-        }
-        cie.diag=4;        
-    }//GEN-LAST:event_jButton6ActionPerformed
-
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        if(cie==null){
-            cie = new cie10();
-            cie.setLocationRelativeTo(this);
-            cie.setVisible(true);
-        }else{
-            cie.setVisible(true);
-        }
-        cie.diag=5;
-    }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jLabel33MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel33MouseClicked
         jpCentro.removeAll();
@@ -3604,66 +3519,9 @@ public class Evo extends javax.swing.JPanel {
         activeCheck(7);
     }//GEN-LAST:event_jLabel33MouseClicked
 
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        jFileChooser1 = new JFileChooser();
-         FileNameExtensionFilter filter= new FileNameExtensionFilter("JPG & PNG", "jpg", "png");
-         jFileChooser1.setMultiSelectionEnabled(false);
-         jFileChooser1.setFileFilter(filter);
-        int result = jFileChooser1.showOpenDialog(null);
-        File file = null;
-        if(result == JFileChooser.APPROVE_OPTION){
-            String seleccion = (String) JOptionPane.showInputDialog(this,"Tipo de Archivo Adjunto","Mensaje",
-                JOptionPane.QUESTION_MESSAGE,null,tipoAyudaDiag,"LABORATORIO");
-            file = jFileChooser1.getSelectedFile();
-            jTextField16.setText(file.getAbsolutePath());
-            ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/images/Delete16x16.png"));
-            ImageIcon icon2 = new javax.swing.ImageIcon(getClass().getResource("/images/download.png"));
-            int indexRow = jtbTratamiento4.getRowCount();
-            if(modeloAyudDiag.getRowCount()==0){
-                modeloAyudDiag.addRow(dato);
-                modeloAyudDiag.setValueAt(file.getName(), indexRow, 2);
-                modeloAyudDiag.setValueAt(new JLabel(icon), indexRow, 0);
-                modeloAyudDiag.setValueAt(new JLabel(icon2), indexRow, 1);
-                modeloAyudDiag.setValueAt(file, indexRow, 3);
-                modeloAyudDiag.setValueAt(seleccion, indexRow, 4);
-                modeloAyudDiag.setValueAt(ReturnPathdiagHelpSaveFile(seleccion), indexRow, 5);
-                modeloAyudDiag.setValueAt("0", indexRow, 6);//identifica que aun no ha sido guardado en la bd
-            }else{
-                Boolean exist=null;
-                for(int i =0;i<modeloAyudDiag.getRowCount();i++){
-                    if(((String)modeloAyudDiag.getValueAt(i, 2)).equals(file.getName())){
-                        exist = true;
-                        break;
-                    }else{
-                        exist = false;
-                    }
-                }
-                if(!exist){
-                    modeloAyudDiag.addRow(dato);
-                    modeloAyudDiag.setValueAt(file.getName(), indexRow, 2);
-                    modeloAyudDiag.setValueAt(new JLabel(icon), indexRow, 0);
-                    modeloAyudDiag.setValueAt(new JLabel(icon2), indexRow, 1);
-                    modeloAyudDiag.setValueAt(file, indexRow, 3);
-                    modeloAyudDiag.setValueAt(seleccion, indexRow, 4);
-                    modeloAyudDiag.setValueAt(ReturnPathdiagHelpSaveFile(seleccion), indexRow, 5); 
-                    modeloAyudDiag.setValueAt("0", indexRow, 6);//identifica que aun no ha sido guardado en la bd
-                }
-            }
-        }
-    }//GEN-LAST:event_jButton8ActionPerformed
-
     private void jtbTratamiento4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtbTratamiento4MouseClicked
         if(SwingUtilities.isLeftMouseButton(evt)){
             if(jtbTratamiento4.columnAtPoint(evt.getPoint())==0) {
-//               int confirmar = JOptionPane.showConfirmDialog(this, "¿Está seguro que desea eliminar este archivo de forma permanente?"
-//                       ,"Eliminar archivo",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
-//               if(confirmar==JOptionPane.YES_OPTION){
-//                    int row = jtbTratamiento4.rowAtPoint(evt.getPoint());
-//                    modDestroyAyudDiag.addRow(new Object[] {modeloAyudDiag.getValueAt(row, 0)
-//                            ,modeloAyudDiag.getValueAt(row, 1),modeloAyudDiag.getValueAt(row, 2),modeloAyudDiag.getValueAt(row, 3)
-//                            ,modeloAyudDiag.getValueAt(row, 4),modeloAyudDiag.getValueAt(row, 5),modeloAyudDiag.getValueAt(row, 6)});
-//                    modeloAyudDiag.removeRow(row);
-//               } 
             }else if(jtbTratamiento4.columnAtPoint(evt.getPoint())==1){
                 //verificar existencia del archivo en la bd o en la clase entidad
                     if(((String)jtbTratamiento4.getValueAt(jtbTratamiento4.rowAtPoint(evt.getPoint()), 6))
@@ -4075,8 +3933,8 @@ public class Evo extends javax.swing.JPanel {
         jPanel35.removeAll();
         pMedidaGeneral.setBounds(0,0,380,420);
         jPanel35.add(pMedidaGeneral);
-        pMedidaGeneral.buttonSeven6.setVisible(false);
-        pMedidaGeneral.buttonSeven7.setVisible(false);
+        pMedidaGeneral.jButton1.setVisible(false);
+        pMedidaGeneral.jButton2.setVisible(false);
         pMedidaGeneral.jTextArea26.setEditable(false);
         pMedidaGeneral.jTextArea27.setEditable(false);
         pMedidaGeneral.setVisible(true);
@@ -4674,18 +4532,181 @@ public class Evo extends javax.swing.JPanel {
         jLabel27.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/boton1-1.png")));
     }//GEN-LAST:event_jLabel27MouseReleased
 
+    private void jButton1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseMoved
+        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+    }//GEN-LAST:event_jButton1MouseMoved
+
+    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton12ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        JDdateEvo evo = new JDdateEvo(null,true);
+        evo.setLocationRelativeTo(null);
+        evo.setVisible(true);
+        if(evo.fecha_hora!=null){
+            HcuEvolucion evolucion = new HcuEvolucion();    
+            evolucion.setIdInfoHistoriac(infohistoriac);
+            evolucion.setFechaEvo(evo.fecha_hora);
+            TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
+            DefaultMutableTreeNode fechaEvo = null;
+            DefaultMutableTreeNode Evo = null;
+            boolean existeFechaEvo=false;
+            for(int i=0;i<raiz.getChildCount();i++){
+                if(raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()))){
+                    existeFechaEvo = true;
+                    break;
+                }
+            }
+            if(!existeFechaEvo){
+                fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()));
+                modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
+                Evo = new DefaultMutableTreeNode(evolucion);
+                fechaEvo.add(Evo); 
+                jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+            }
+            evol=new newEvo();
+            subjetivo = new pSubjetivo();
+            objetivo = new pObjetivo(evolucion.getIdInfoHistoriac(),factory);
+            analisis = new pAnalisis();
+            pplan = new pPlan(evolucion,factory);
+            Icon icon = PAGE_ICON;
+            jTabbedPane6.removeAll();
+            subjetivo.setBounds(0, 0, 386, 603);
+            addClosableTab(jTabbedPane6, subjetivo, "Nota Subjetiva", icon);
+            subjetivo.setVisible(true);
+            evol.setBounds(0, 0, 386, 603);
+            addClosableTab(jTabbedPane6, evol, "Signos Vitales", icon);
+            evol.setEvolucion(evolucion);
+            evol.setVisible(true);
+            objetivo.setBounds(0, 0, 386, 603);
+            addClosableTab(jTabbedPane6, objetivo, "Nota Objetiva", icon);
+            objetivo.setVisible(true);
+            analisis.setBounds(0, 0, 386, 603);
+            addClosableTab(jTabbedPane6, analisis, "Analisis", icon);
+            analisis.setVisible(true);
+            pplan.setBounds(0, 0, 386, 603);
+            addClosableTab(jTabbedPane6, pplan, "Plan", icon);
+            pplan.setVisible(true);
+            jButton10.setEnabled(true);
+            jTabbedPane6.setSelectedIndex(0);
+        }
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jLabel44MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel44MouseClicked
+        jpCentro.removeAll();
+//        jpTratamiento.setBounds(0, 0, 584, 445);
+//        jpCentro.add(jpTratamiento);
+//        jpTratamiento.setVisible(true);
+        jpCentro.validate();
+        jpCentro.repaint(); 
+        activeCheck(8);
+    }//GEN-LAST:event_jLabel44MouseClicked
+
+    private void jLabel44MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel44MouseExited
+        jLabel44.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/boton1.png")));
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jLabel44MouseExited
+
+    private void jLabel44MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel44MousePressed
+        jLabel44.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/boton1-2.png")));
+    }//GEN-LAST:event_jLabel44MousePressed
+
+    private void jLabel44MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel44MouseReleased
+        jLabel44.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/boton1-1.png")));
+    }//GEN-LAST:event_jLabel44MouseReleased
+
+    private void jLabel44MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel44MouseMoved
+        jLabel44.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/boton1-1.png")));
+        Funciones.setLabelInfo("DATOS DE NOTA DE INGRESO");
+    }//GEN-LAST:event_jLabel44MouseMoved
+
+    private void jButton1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseExited
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton1MouseExited
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jButton8MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseExited
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton8MouseExited
+
+    private void jButton8MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseMoved
+        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+    }//GEN-LAST:event_jButton8MouseMoved
+
+    private void jTree1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MousePressed
+        TreePath selPath = jTree1.getPathForLocation(evt.getX(), evt.getY());
+        if(selPath!=null){
+            Object nodo = selPath.getLastPathComponent();
+            if(((DefaultMutableTreeNode)nodo).getUserObject().getClass()==HcuEvolucion.class){
+                HcuEvolucion evolucion = (HcuEvolucion)((DefaultMutableTreeNode)nodo).getUserObject();
+                evol=new newEvo();
+                subjetivo = new pSubjetivo();
+                objetivo = new pObjetivo(evolucion.getIdInfoHistoriac(),factory);
+                analisis = new pAnalisis();
+                pplan = new pPlan(evolucion,factory);
+                Icon icon = PAGE_ICON;
+                jTabbedPane6.removeAll();
+                subjetivo.setBounds(0, 0, 386, 603);
+                addClosableTab(jTabbedPane6, subjetivo, "Nota Subjetiva", icon);
+                subjetivo.setVisible(true);
+                evol.setBounds(0, 0, 386, 603);
+                addClosableTab(jTabbedPane6, evol, "Signos Vitales", icon);
+                evol.setEvolucion(evolucion);
+                evol.setVisible(true);
+                objetivo.setBounds(0, 0, 386, 603);
+                addClosableTab(jTabbedPane6, objetivo, "Nota Objetiva", icon);
+                objetivo.setVisible(true);
+                analisis.setBounds(0, 0, 386, 603);
+                addClosableTab(jTabbedPane6, analisis, "Analisis", icon);
+                analisis.setVisible(true);
+                pplan.setBounds(0, 0, 386, 603);
+                addClosableTab(jTabbedPane6, pplan, "Plan", icon);
+                pplan.setVisible(true);
+                
+                jButton10.setEnabled(true);
+                jTabbedPane6.setSelectedIndex(0);
+//                jTabbedPane6.repaint();
+            }
+        }
+        
+    }//GEN-LAST:event_jTree1MousePressed
+
+    private void jButton10MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton10MouseExited
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton10MouseExited
+
+    private void jButton10MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton10MouseMoved
+        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+    }//GEN-LAST:event_jButton10MouseMoved
+
+    private void jButton10MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton10MousePressed
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton10MousePressed
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        gSignos = new grafic_sVitales();
+        Icon icon = PAGE_ICON;
+//        jTabbedPane6.removeAll();
+        gSignos.setBounds(0, 0, 386, 603);
+        addClosableTab(jTabbedPane6, gSignos, "Graficos", icon);
+        gSignos.setVisible(true);
+    }//GEN-LAST:event_jButton10ActionPerformed
+
     // </editor-fold>
     
     // <editor-fold desc="Variables declaration - do not modify"> 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JCheckBox jCheckBox1;
@@ -4693,6 +4714,7 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JCheckBox jCheckBox11;
     private javax.swing.JCheckBox jCheckBox12;
     private javax.swing.JCheckBox jCheckBox13;
+    private javax.swing.JCheckBox jCheckBox14;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;
     private javax.swing.JCheckBox jCheckBox4;
@@ -4702,7 +4724,6 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JCheckBox jCheckBox8;
     private javax.swing.JCheckBox jCheckBox9;
     private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -4741,6 +4762,7 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel41;
     private javax.swing.JLabel jLabel42;
     private javax.swing.JLabel jLabel43;
+    private javax.swing.JLabel jLabel44;
     private javax.swing.JLabel jLabel45;
     private javax.swing.JLabel jLabel46;
     private javax.swing.JLabel jLabel47;
@@ -4786,6 +4808,7 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel30;
     private javax.swing.JPanel jPanel31;
     private javax.swing.JPanel jPanel32;
+    private javax.swing.JPanel jPanel33;
     private javax.swing.JPanel jPanel35;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -4813,17 +4836,20 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane25;
     private javax.swing.JScrollPane jScrollPane26;
     private javax.swing.JScrollPane jScrollPane27;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
+    private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
     private javax.swing.JTabbedPane jTabbedPane4;
     private javax.swing.JTabbedPane jTabbedPane5;
+    private javax.swing.JTabbedPane jTabbedPane6;
     public javax.swing.JTextArea jTextArea10;
     private javax.swing.JTextArea jTextArea11;
     private javax.swing.JTextArea jTextArea12;
@@ -4861,6 +4887,8 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
+    private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JTree jTree1;
     private org.jdesktop.swingx.JXTaskPane jXTaskPane1;
     private org.jdesktop.swingx.JXTaskPane jXTaskPane2;
     private org.jdesktop.swingx.JXTaskPane jXTaskPane3;
