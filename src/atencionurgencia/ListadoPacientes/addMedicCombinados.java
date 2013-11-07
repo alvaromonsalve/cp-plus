@@ -31,6 +31,7 @@ public class addMedicCombinados extends javax.swing.JDialog {
     private EntityManagerFactory factory;
     private SumSuministro suminis=null;
     public int cerrado = 0;
+    public boolean onEvolucion;
     
     /**
      * Creates new form addMedicamentos
@@ -38,6 +39,7 @@ public class addMedicCombinados extends javax.swing.JDialog {
     public addMedicCombinados(java.awt.Frame parent, boolean modal) {
         super(parent,modal);
         initComponents();
+        onEvolucion=false;
         setCargaTabla();        
         setCargaTablaMezcla();
     }
@@ -625,7 +627,11 @@ public class addMedicCombinados extends javax.swing.JDialog {
     private void buttonSeven13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven13ActionPerformed
         if(validaListaMezcla()){
             if(validaMezcla()){ 
-                AtencionUrgencia.panelindex.hc.pMedic.addMezcla(MTMezcla,jComboBox5.getSelectedItem().toString(), jTextArea25.getText().toUpperCase());
+                if(onEvolucion){
+                    AtencionUrgencia.panelindex.evo.pplan.pMedic.addMezcla(MTMezcla,jComboBox5.getSelectedItem().toString(), jTextArea25.getText().toUpperCase());
+                }else{
+                    AtencionUrgencia.panelindex.hc.pMedic.addMezcla(MTMezcla,jComboBox5.getSelectedItem().toString(), jTextArea25.getText().toUpperCase());
+                }                
                 this.dispose();
             }
         }
