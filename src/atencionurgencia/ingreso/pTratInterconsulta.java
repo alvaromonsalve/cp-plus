@@ -5,14 +5,20 @@
 package atencionurgencia.ingreso;
 
 import atencionurgencia.AtencionUrgencia;
+import entidades.ConfigCups;
+import entidades.HcuEvoInterconsulta;
+import entidades.HcuEvolucion;
 import entidades.InfoHistoriac;
 import entidades.InfoInterconsultaHcu;
 import entidades.StaticEspecialidades;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import jpa.HcuEvoInterconsultaJpaController;
 import jpa.InfoInterconsultaHcuJpaController;
 import jpa.StaticEspecialidadesJpaController;
 import jpa.exceptions.NonexistentEntityException;
@@ -27,13 +33,15 @@ public class pTratInterconsulta extends javax.swing.JPanel {
     private List<StaticEspecialidades> listStaticEspecialidades;
     private StaticEspecialidadesJpaController staticEspecialidadesJPA=null;
     private InfoInterconsultaHcu interconsultaHcu=null;
+    private HcuEvoInterconsulta evoInterconsulta=null;
     private InfoInterconsultaHcuJpaController interconsultaHcuJPA=null;
+    private HcuEvoInterconsultaJpaController evoInterconsultaJpa=null;
     private boolean delete=false;
     private StaticEspecialidades especialidades;
-    private String s=System.getProperty("file.separator");
 
     /**
      * Creates new form pTratInterconsulta
+     * @param tipo
      */
     public pTratInterconsulta(int tipo) {
         initComponents();
@@ -143,6 +151,46 @@ public class pTratInterconsulta extends javax.swing.JPanel {
         }
     }
     
+    public void saveChanges(EntityManagerFactory factory, HcuEvolucion evol){
+        if(evoInterconsultaJpa==null){
+            evoInterconsultaJpa=new HcuEvoInterconsultaJpaController(factory);
+        }
+        if(evoInterconsulta==null){
+            if(!"".equals(jTextArea25.getText())){
+                evoInterconsulta=new HcuEvoInterconsulta();
+                evoInterconsulta.setIdStaticEspecialidades(especialidades);
+                evoInterconsulta.setIdHcuEvolucion(evol);
+                evoInterconsulta.setJustificacion(jTextArea25.getText().toUpperCase());
+                evoInterconsulta.setIdConfigCups(new ConfigCups(5129));
+                evoInterconsulta.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                evoInterconsulta.setEstado(1);//registro activo
+                evoInterconsultaJpa.create(evoInterconsulta);
+            }
+        }else{
+            if(delete){
+                try {
+                    evoInterconsulta.setEstado(0);
+                    evoInterconsultaJpa.edit(evoInterconsulta);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "10123:\n"+ex.getMessage(), pTratInterconsulta.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                }
+            }else{
+                if(!"".equals(jTextArea25.getText())){
+                    try {
+                        evoInterconsulta.setIdStaticEspecialidades(especialidades);
+                        evoInterconsulta.setJustificacion(jTextArea25.getText().toUpperCase());
+                        evoInterconsulta.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        evoInterconsultaJpa.edit(evoInterconsulta);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "10124:\n"+ex.getMessage(), pTratInterconsulta.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(this,"La justificacion no puede estar vacia");
+                }
+            }
+        }
+    }
+    
     public void showExistente(InfoHistoriac ihc){
         if(interconsultaHcuJPA==null){
             interconsultaHcuJPA = new InfoInterconsultaHcuJpaController(factory);
@@ -152,7 +200,16 @@ public class pTratInterconsulta extends javax.swing.JPanel {
             jTextArea25.setText(interconsultaHcu.getJustificacion());
             jLabel1.setText("SOLICITADO");
         }
-
+    }
+    
+    public void showExistente(EntityManagerFactory factory, HcuEvolucion evol){
+        if(evoInterconsultaJpa==null)
+            evoInterconsultaJpa = new HcuEvoInterconsultaJpaController(factory);
+        evoInterconsulta = evoInterconsultaJpa.findEvoInterconsulta_EVO(evol, especialidades);
+        if(evoInterconsulta != null){
+            jTextArea25.setText(evoInterconsulta.getJustificacion());
+            jLabel1.setText("SOLICITADO");
+        }        
     }
 
     /**
