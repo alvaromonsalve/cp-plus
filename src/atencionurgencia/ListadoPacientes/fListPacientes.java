@@ -673,7 +673,7 @@ public class fListPacientes extends javax.swing.JFrame {
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "10050:\n"+ex.getMessage(), fListPacientes.class.getName(), JOptionPane.INFORMATION_MESSAGE);
             }
-            AtencionUrgencia.panelindex.hc.jlbNombrePaciente.setText(jTextField2.getText()+" ["+jTextField1.getText()+"]");
+            AtencionUrgencia.panelindex.hc.jlbNombrePaciente.setText(jTextField2.getText()+" ["+jTextField1.getText()+"]    ["+jTextField5.getText()+"]");
             closed();
             this.dispose();
             }
