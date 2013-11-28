@@ -172,7 +172,7 @@ public class pTratPConsultDiag extends javax.swing.JPanel {
     }
     
     public void formularioOpen(){
-        dProcedimiento = new dSelectProcedimiento(null,true,16);
+        dProcedimiento = new dSelectProcedimiento(null,true,16,false);
         dProcedimiento.setVisible(true);
     }
 
