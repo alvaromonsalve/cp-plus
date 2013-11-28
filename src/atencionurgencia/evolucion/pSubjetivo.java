@@ -6,17 +6,41 @@
 
 package atencionurgencia.evolucion;
 
+import entidades.HcuEvolucion;
+import javax.persistence.EntityManagerFactory;
+import javax.swing.JOptionPane;
+import jpa.HcuEvolucionJpaController;
+
 /**
  *
  * @author Administrador
  */
 public class pSubjetivo extends javax.swing.JPanel {
+    private HcuEvolucionJpaController jpaController=null;
+    private HcuEvolucion evolucion;
 
     /**
      * Creates new form pSubjetivo
      */
     public pSubjetivo() {
         initComponents();
+    }
+    
+    public void setEvolucion(HcuEvolucion evolucion){
+        if(evolucion.getSubjetivo()!=null) jTextPane1.setText(evolucion.getSubjetivo());
+        this.evolucion=evolucion;
+    }
+    
+    public void saveChanged(EntityManagerFactory factory, HcuEvolucion evolucion){
+        if(jpaController==null) jpaController=new HcuEvolucionJpaController(factory);
+        if(!jTextPane1.getText().equals(evolucion.getSubjetivo())){
+            try {
+                evolucion.setSubjetivo(jTextPane1.getText().toUpperCase());
+                if(evolucion.getId()!=null)   jpaController.edit(evolucion);            
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "10129:\n"+ex.getMessage(), pSubjetivo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
     }
 
     /**
@@ -71,6 +95,6 @@ public class pSubjetivo extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextPane jTextPane1;
+    public javax.swing.JTextPane jTextPane1;
     // End of variables declaration//GEN-END:variables
 }
