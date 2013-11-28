@@ -81,6 +81,11 @@ public class JDdateEvo extends javax.swing.JDialog {
 
         jButton2.setText("Cancelar");
         jButton2.setOpaque(false);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jLabel24.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel24.setText("HORA DE EVOLUCIÓN:");
@@ -173,9 +178,12 @@ public class JDdateEvo extends javax.swing.JDialog {
             calendar.set(GregorianCalendar.MINUTE, min);
             fecha_hora = calendar.getTime();
             this.dispose();
-        }
-            
+        }            
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
