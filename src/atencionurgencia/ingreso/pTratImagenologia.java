@@ -169,7 +169,7 @@ public class pTratImagenologia extends javax.swing.JPanel {
     }
     
     public void formularioOpen(){
-        dProcedimiento = new dSelectProcedimiento(null,true,15);
+        dProcedimiento = new dSelectProcedimiento(null,true,15,false);
         dProcedimiento.setVisible(true);
     }
 
