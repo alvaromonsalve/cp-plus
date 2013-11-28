@@ -69,13 +69,13 @@ public class HC extends javax.swing.JPanel {
     private InfoPruebasComplementJpaController infoPruebasComplementJPA = null;
     public int idDiag1 = 1,idDiag2= 1,idDiag3= 1,idDiag4= 1,idDiag5= 1;
     public DefaultTableModel modeloAyudDiag,modDestroyAyudDiag;
-    private addMedicamentos trat=null;
+    private final addMedicamentos trat=null;
     public int finalizar = 0;
     private Boolean edite = false;
-    private Object dato[] = null;
-    private String tipoAyudaDiag[]={"LABORATORIO","IMAGEN","ENDOSCOPIA","ANATOMIA PATOLOGICA","ELECTROGRAMAS","ESTUDIOS ALERGOLÓGICOS"};
+    private final Object dato[] = null;
+    private final String tipoAyudaDiag[]={"LABORATORIO","IMAGEN","ENDOSCOPIA","ANATOMIA PATOLOGICA","ELECTROGRAMAS","ESTUDIOS ALERGOLÓGICOS"};
     private List<InfoPruebasComplement> listaPruebas = null;
-    private String s = System.getProperty("file.separator");
+    private final String s = System.getProperty("file.separator");
     private InfoAntPersonalesJpaController antPersonalesJPA=null;
     private InfoAntPersonales antPersonales;
     public pTratMedic pMedic=null;
@@ -3831,7 +3831,7 @@ public class HC extends javax.swing.JPanel {
 
     private void jLabel51MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel51MouseClicked
         if(pProcedimientos==null){
-            pProcedimientos = new pTratMasProcedimientos();
+            pProcedimientos = new pTratMasProcedimientos(false);
             pProcedimientos.showListExistentes(factory, infohistoriac);
         }
         jPanel35.removeAll();
@@ -3840,7 +3840,7 @@ public class HC extends javax.swing.JPanel {
         pProcedimientos.setVisible(true);
         jPanel35.validate();
         jPanel35.repaint();
-        pProcedimientos.formularioOpen();
+        pProcedimientos.formularioOpen(0);
     }//GEN-LAST:event_jLabel51MouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
