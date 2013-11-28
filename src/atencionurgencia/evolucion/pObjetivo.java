@@ -6,91 +6,41 @@
 
 package atencionurgencia.evolucion;
 
-import entidades.ConfigCups;
-import entidades.HcuMezclasMedicamentos;
-import entidades.InfoHistoriac;
-import entidades.InfoPosologiaHcu;
-import entidades.InfoProcedimientoHcu;
-import java.util.List;
+import entidades.HcuEvolucion;
 import javax.persistence.EntityManagerFactory;
-import javax.swing.DefaultListModel;
-import jpa.ConfigCupsJpaController;
-import jpa.HcuMezclasMedicamentosJpaController;
-import jpa.InfoPosologiaHcuJpaController;
-import jpa.InfoProcedimientoHcuJpaController;
+import javax.swing.JOptionPane;
+import jpa.HcuEvolucionJpaController;
 
 /**
  *
  * @author Administrador
  */
 public class pObjetivo extends javax.swing.JPanel {
-    InfoHistoriac historiac;
-    private final EntityManagerFactory factory;
+    private HcuEvolucionJpaController jpaController=null;
+    private HcuEvolucion evolucion;
     
 
     /**
      * Creates new form pObjetivo
-     * @param historiac
-     * @param factory
      */
-    public pObjetivo(InfoHistoriac historiac, EntityManagerFactory factory) {
-        this.historiac = historiac;
-        this.factory = factory;
+    public pObjetivo() {
         initComponents();
-        initComponent2();
     }
     
-    private void initComponent2(){
-        DefaultListModel listModel = new DefaultListModel();
-        jList1.setModel(listModel);
-        InfoPosologiaHcuJpaController hcuJPA = new InfoPosologiaHcuJpaController(factory);
-        List<InfoPosologiaHcu> infoPosologiaHcuList = hcuJPA.ListFindInfoPosologia(historiac);
-        for(InfoPosologiaHcu iph:infoPosologiaHcuList){
-            listModel.addElement(iph);
-        }
-        HcuMezclasMedicamentosJpaController hmmjc = new HcuMezclasMedicamentosJpaController(factory);
-        List<HcuMezclasMedicamentos> mezclasMedicamentoses = hmmjc.ListFindHcuMezclas(historiac);
-        for(HcuMezclasMedicamentos hmm:mezclasMedicamentoses){
-            listModel.addElement(hmm);
-        }
-        InfoProcedimientoHcuJpaController hcuJpaController = new InfoProcedimientoHcuJpaController(factory);
-        List<InfoProcedimientoHcu> infoProcedimientoHcus = hcuJpaController.ListFindInfoProcedimientoHcu(historiac);
-        for(InfoProcedimientoHcu hcu: infoProcedimientoHcus){
-            procedimientoOfList ofList = new procedimientoOfList();
-            ConfigCupsJpaController ccjc = new ConfigCupsJpaController(factory);
-            ConfigCups cc = ccjc.findConfigCups(hcu.getIdCups());
-            ofList.setNombreCups(cc.getDeSubcategoria());
-            ofList.setIph(hcu);
-            listModel.addElement(ofList);
-        }
+    public void setEvolucion(HcuEvolucion evolucion){
+        if(evolucion.getObjetivo()!=null) jTextPane1.setText(evolucion.getObjetivo());
+        this.evolucion=evolucion;
     }
     
-    public class procedimientoOfList{        
-        private String NombreCups;
-        private InfoProcedimientoHcu iph;
-        
-        public procedimientoOfList(){            
-        }
-
-        public String getNombreCups() {
-            return NombreCups;
-        }
-
-        public void setNombreCups(String NombreCups) {
-            this.NombreCups = NombreCups;
-        }
-
-        public InfoProcedimientoHcu getIph() {
-            return iph;                    
-        }
-
-        public void setIph(InfoProcedimientoHcu iph) {
-            this.iph = iph;
-        }
-
-        @Override
-        public String toString() {
-            return NombreCups;
+    public void saveChanged(EntityManagerFactory factory,HcuEvolucion evolucion){
+        if(jpaController==null) jpaController=new HcuEvolucionJpaController(factory);
+        if(!jTextPane1.getText().equals(evolucion.getObjetivo())){
+            try {
+                evolucion.setObjetivo(jTextPane1.getText().toUpperCase());
+                if(evolucion.getId()!=null) jpaController.edit(evolucion);            
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "10131:\n"+ex.getMessage(), pObjetivo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }
         }
     }
 
@@ -103,84 +53,49 @@ public class pObjetivo extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jEditorPane1 = new javax.swing.JEditorPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextPane1 = new javax.swing.JTextPane();
 
         setMaximumSize(new java.awt.Dimension(603, 386));
         setMinimumSize(new java.awt.Dimension(603, 386));
         setOpaque(false);
         setPreferredSize(new java.awt.Dimension(603, 386));
 
-        jList1.setForeground(new java.awt.Color(0, 0, 255));
-        jList1.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane1.setViewportView(jList1);
-
-        jScrollPane2.setHorizontalScrollBar(null);
-        jScrollPane2.setViewportView(jTextPane1);
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "NOTA", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.ABOVE_TOP));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "(O) OBJETIVO", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
+        jPanel1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jPanel1.setOpaque(false);
 
-        jScrollPane3.setHorizontalScrollBar(null);
-        jScrollPane3.setPreferredSize(new java.awt.Dimension(108, 591));
-
-        jEditorPane1.setText("TERMINAR LAS TABLAS DE PROCEDIMIENTOS, INTERCONSULTAS, MEDICAMENTOS EN EVOLUCIONES PARA VALIDAR CUALES SON ESTOS ULTIMOS PROCEDIMIENTOS ");
-        jEditorPane1.setMaximumSize(new java.awt.Dimension(591, 2147483647));
-        jEditorPane1.setMinimumSize(new java.awt.Dimension(591, 132));
-        jEditorPane1.setPreferredSize(new java.awt.Dimension(591, 132));
-        jScrollPane3.setViewportView(jEditorPane1);
+        jScrollPane1.setViewportView(jTextPane1);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE))
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2)))
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JEditorPane jEditorPane1;
-    private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextPane jTextPane1;
+    public javax.swing.JTextPane jTextPane1;
     // End of variables declaration//GEN-END:variables
 }
 
