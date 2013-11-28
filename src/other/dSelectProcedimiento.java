@@ -23,28 +23,35 @@ import tools.Funciones;
  * @author Alvaro Monsalve
  */
 public class dSelectProcedimiento extends javax.swing.JDialog {
-    private int tipo;
+    private final int tipo;
     private DefaultTableModel ModeloTabla;
     private EntityManagerFactory factory;
     private List<ConfigCups> listaCups;
     private List<StaticEstructuraCups> listaEstructuraCups;
     private StaticEstructuraCupsJpaController estructuraCupsJPA=null;
     private ConfigCupsJpaController configCupsJPA=null;
-    Object dato[] = null;
+    private final Object dato[] = null;
+    private boolean evo=false;
     
     
     /**
      * 
+     * @param parent
+     * @param modal
      * @param tipo tipo de procedimiento
      * 0 = sin seleccion
+     * @param evo
      */
-    public dSelectProcedimiento(java.awt.Frame parent, boolean modal,int tipo) {
+    public dSelectProcedimiento(java.awt.Frame parent, boolean modal,int tipo, boolean evo) {
         super(parent,modal);
         initComponents();
+        this.evo=evo;
         setCargaTabla();
         setCargaCombo(tipo);
         this.tipo=tipo;
+        
     }
+    
     
     private DefaultTableModel getModelo(){
         DefaultTableModel model = new DefaultTableModel(
@@ -95,34 +102,62 @@ public class dSelectProcedimiento extends javax.swing.JDialog {
         listaEstructuraCups = estructuraCupsJPA.findStaticEstructuraCupsEntities();
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
         jComboBox4.setModel(dcbm);
-        for(StaticEstructuraCups sec:listaEstructuraCups){
-            if(tipo==0){
-                if(sec.getId()>17 && sec.getId()<30){
-                    dcbm.addElement(sec);                    
-                }
-            }else if(tipo>0 && tipo <=14){
-                if(sec.getId()>0 && sec.getId()<=14){
-                    sec.setDesCapitulo(renombrarString(sec.getDesCapitulo()));
-                    dcbm.addElement(sec);
-                }
-            }else if(tipo==16){
-                if(sec.getId()==16){
-                    sec.setDesCapitulo("MONITORIZACION Y PROCEDIMIENTOS DIAGNOSTICOS");
-                    dcbm.addElement(sec);
-                    jComboBox4.setEnabled(false);
-                    setDatosTabla();
-                }
-            }else if(tipo==17){
-                if(sec.getId()==17){
-                    dcbm.addElement(sec);
-                    jComboBox4.setEnabled(false);
-                    setDatosTabla();
-                }
-            }else if(tipo==15){
-                if(sec.getId()==15){
-                    dcbm.addElement(sec);
-                    jComboBox4.setEnabled(false);
-                    setDatosTabla();
+        if(evo){//para evoluciones
+            for(StaticEstructuraCups sec:listaEstructuraCups){
+                if(tipo==15){
+                    if(sec.getId()==15){
+                        dcbm.addElement(sec);
+                        jComboBox4.setEnabled(false);
+                        setDatosTabla();
+                    }
+                }else if (tipo==17){
+                    if(sec.getId()==17){
+                            dcbm.addElement(sec);
+                            jComboBox4.setEnabled(false);
+                            setDatosTabla();
+                        }
+                }else if(tipo==0){
+                    if(sec.getId()==16){
+                        sec.setDesCapitulo("MONITORIZACION Y PROCEDIMIENTOS DIAGNOSTICOS");
+                        dcbm.addElement(sec);
+                        setDatosTabla();
+                    }else if(sec.getId()>0 && sec.getId()<=14){
+                        sec.setDesCapitulo(renombrarString(sec.getDesCapitulo()));
+                        dcbm.addElement(sec);
+                    }
+                    
+                }                
+            }
+        }else{
+            for(StaticEstructuraCups sec:listaEstructuraCups){
+                if(tipo==0){
+                    if(sec.getId()>17 && sec.getId()<30){
+                        dcbm.addElement(sec);
+                    }
+                }else if(tipo>0 && tipo <=14){
+                    if(sec.getId()>0 && sec.getId()<=14){
+                        sec.setDesCapitulo(renombrarString(sec.getDesCapitulo()));
+                        dcbm.addElement(sec);
+                    }
+                }else if(tipo==16){
+                    if(sec.getId()==16){
+                        sec.setDesCapitulo("MONITORIZACION Y PROCEDIMIENTOS DIAGNOSTICOS");
+                        dcbm.addElement(sec);
+                        jComboBox4.setEnabled(false);
+                        setDatosTabla();
+                    }
+                }else if(tipo==17){
+                    if(sec.getId()==17){
+                        dcbm.addElement(sec);
+                        jComboBox4.setEnabled(false);
+                        setDatosTabla();
+                    }
+                }else if(tipo==15){
+                    if(sec.getId()==15){
+                        dcbm.addElement(sec);
+                        jComboBox4.setEnabled(false);
+                        setDatosTabla();
+                    }
                 }
             }
         }
@@ -268,21 +303,26 @@ public class dSelectProcedimiento extends javax.swing.JDialog {
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         if(SwingUtilities.isLeftMouseButton(evt) && evt.getClickCount()==2){
-            if(tipo==16){
-                atencionurgencia.AtencionUrgencia.panelindex.hc.pConsultDiag.cargaDatoSeleccionado(
-                    (ConfigCups) jTable1.getValueAt(jTable1.getSelectedRow(), 0),"");
-            }else if(tipo==17){
-                atencionurgencia.AtencionUrgencia.panelindex.hc.pLaboratorio.cargaDatoSeleccionado(
-                    (ConfigCups) jTable1.getValueAt(jTable1.getSelectedRow(), 0),"");
-            }else if(tipo==15){
-                atencionurgencia.AtencionUrgencia.panelindex.hc.pImagenologia.cargaDatoSeleccionado(
-                    (ConfigCups) jTable1.getValueAt(jTable1.getSelectedRow(), 0),"");
-            }else if(tipo>0 && tipo <=14){
-                atencionurgencia.AtencionUrgencia.panelindex.hc.pQuirurgico.cargaDatoSeleccionado(
-                    (ConfigCups) jTable1.getValueAt(jTable1.getSelectedRow(), 0),"");
-            }else if(tipo==0){
-                atencionurgencia.AtencionUrgencia.panelindex.hc.pProcedimientos.cargaDatoSeleccionado(
-                    (ConfigCups) jTable1.getValueAt(jTable1.getSelectedRow(), 0),"");
+            if(evo){
+                    AtencionUrgencia.panelindex.evo.pplan.pProcedimientos.cargaDatoSeleccionado(
+                            (ConfigCups) jTable1.getValueAt(jTable1.getSelectedRow(), 0),"");
+            }else{
+                if(tipo==16){
+                    AtencionUrgencia.panelindex.hc.pConsultDiag.cargaDatoSeleccionado(
+                        (ConfigCups) jTable1.getValueAt(jTable1.getSelectedRow(), 0),"");
+                }else if(tipo==17){
+                    atencionurgencia.AtencionUrgencia.panelindex.hc.pLaboratorio.cargaDatoSeleccionado(
+                        (ConfigCups) jTable1.getValueAt(jTable1.getSelectedRow(), 0),"");
+                }else if(tipo==15){
+                    atencionurgencia.AtencionUrgencia.panelindex.hc.pImagenologia.cargaDatoSeleccionado(
+                        (ConfigCups) jTable1.getValueAt(jTable1.getSelectedRow(), 0),"");
+                }else if(tipo>0 && tipo <=14){
+                    atencionurgencia.AtencionUrgencia.panelindex.hc.pQuirurgico.cargaDatoSeleccionado(
+                        (ConfigCups) jTable1.getValueAt(jTable1.getSelectedRow(), 0),"");
+                }else if(tipo==0){
+                    atencionurgencia.AtencionUrgencia.panelindex.hc.pProcedimientos.cargaDatoSeleccionado(
+                        (ConfigCups) jTable1.getValueAt(jTable1.getSelectedRow(), 0),"");
+                }
             }
             dispose();
         }
