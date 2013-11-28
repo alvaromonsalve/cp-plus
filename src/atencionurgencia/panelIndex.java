@@ -91,7 +91,7 @@ public class panelIndex extends javax.swing.JPanel {
         });
 
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/History.png"))); // NOI18N
-        jButton2.setToolTipText("Notas sin Finalizar");
+        jButton2.setToolTipText("Ingreso sin Finalizar");
         jButton2.setContentAreaFilled(false);
         jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jButton2.setDoubleBuffered(true);
