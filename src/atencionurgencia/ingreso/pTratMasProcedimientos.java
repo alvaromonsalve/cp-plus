@@ -6,16 +6,25 @@ package atencionurgencia.ingreso;
 
 import atencionurgencia.AtencionUrgencia;
 import entidades.ConfigCups;
+import entidades.HcuEvoProcedimiento;
+import entidades.HcuEvolucion;
 import entidades.InfoHistoriac;
 import entidades.InfoProcedimientoHcu;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import jpa.ConfigCupsJpaController;
+import jpa.HcuEvoProcedimientoJpaController;
+import jpa.HcuEvolucionJpaController;
 import jpa.InfoProcedimientoHcuJpaController;
+import jpa.StaticEstructuraCupsJpaController;
 import jpa.exceptions.NonexistentEntityException;
 import other.dSelectProcedimiento;
 import tools.Funciones;
@@ -32,12 +41,19 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
     private ConfigCupsJpaController cupsJpaController=null;
     private DefaultTableModel ModeloTabla;
     Object dato[] = null;
+    private HcuEvoProcedimientoJpaController hcuEvoProcedimientoJpa=null;
+    private List<HcuEvoProcedimiento> listInfoProcedimientoEvo;
+    RowSorter<TableModel> sorter;
+    private boolean evo=false;
+    private StaticEstructuraCupsJpaController estructuraCupsJPA=null;
 
     /**
      * Creates new form pTratMasProcedimientos
+     * @param evo
      */
-    public pTratMasProcedimientos() {
+    public pTratMasProcedimientos(boolean evo) {
         initComponents();
+        this.evo=evo;
         setCargaTabla();
     }
     
@@ -68,11 +84,44 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
     
     private void setCargaTabla(){
         ModeloTabla = getModelo();
+        sorter=new TableRowSorter<TableModel>(ModeloTabla);
         jTable1.setModel(ModeloTabla);
+        jTable1.setRowSorter(sorter);
         jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         Funciones.setOcultarColumnas(jTable1,new int[]{0,3});
         Funciones.setSizeColumnas(jTable1, new int[]{1}, new int[]{80});
+    }
+    
+    public boolean findCUPS(String text,EntityManagerFactory factory){
+        if(estructuraCupsJPA==null){
+            estructuraCupsJPA = new StaticEstructuraCupsJpaController(factory);
+        }
+        ConfigCups cc = estructuraCupsJPA.FindCups(text);
+        int rowIndex = ModeloTabla.getRowCount();
+        boolean existe=false;
+        if(cc!=null){
+            for(int i=0;i<ModeloTabla.getRowCount();i++){
+                if(cc.getId() == ((ConfigCups)ModeloTabla.getValueAt(i, 0)).getId()){
+                    existe = true;
+                    break;
+                }
+            }
+            if(!existe){
+                ModeloTabla.addRow(dato);
+                ModeloTabla.setValueAt(cc, rowIndex, 0);
+                ModeloTabla.setValueAt(cc.getCodigo(), rowIndex, 1);
+                ModeloTabla.setValueAt(cc.getDeSubcategoria(), rowIndex, 2);
+                ModeloTabla.setValueAt("", rowIndex, 3);
+                jTable1.getRowSorter().toggleSortOrder(1);
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+        
     }
     
     public void cargaDatoSeleccionado(ConfigCups cc,String observ){
@@ -90,6 +139,7 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
             ModeloTabla.setValueAt(cc.getCodigo(), rowIndex, 1);
             ModeloTabla.setValueAt(cc.getDeSubcategoria(), rowIndex, 2);
             ModeloTabla.setValueAt(observ, rowIndex, 3);
+            jTable1.getRowSorter().toggleSortOrder(1);
         }
     }
     
@@ -122,7 +172,7 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
                     procedimientoHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
                     try {
                         infoProcedimientoHcuJPA.edit(procedimientoHcu);
-                    } catch (NonexistentEntityException ex) {
+                    } catch (NonexistentEntityException ex){
                         JOptionPane.showMessageDialog(null, "10091:\n"+ex.getMessage(), pTratMasProcedimientos.class.getName(), JOptionPane.INFORMATION_MESSAGE);
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, "10092:\n"+ex.getMessage(), pTratMasProcedimientos.class.getName(), JOptionPane.INFORMATION_MESSAGE);
@@ -154,6 +204,65 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
         }
     }
     
+    public void saveChanges(EntityManagerFactory factory,HcuEvolucion evo){
+        if(hcuEvoProcedimientoJpa==null)
+            hcuEvoProcedimientoJpa=new HcuEvoProcedimientoJpaController(factory);
+        listInfoProcedimientoEvo = hcuEvoProcedimientoJpa.ListFindInfoProcedimientoEvo(evo);
+        for(int i=0;i<ModeloTabla.getRowCount();i++){
+            HcuEvoProcedimiento hcuEvoProcedimiento=null;
+            boolean exist=false;
+            for(int a=0;a<listInfoProcedimientoEvo.size();a++){
+                if(((ConfigCups)ModeloTabla.getValueAt(i, 0))==listInfoProcedimientoEvo.get(a).getIdConfigCups()){
+                    exist=true;
+                    hcuEvoProcedimiento=listInfoProcedimientoEvo.get(a);
+                    break;
+                }
+            }
+            if(!exist){
+                hcuEvoProcedimiento=new HcuEvoProcedimiento();
+                hcuEvoProcedimiento.setIdConfigCups((ConfigCups)ModeloTabla.getValueAt(i, 0));
+                hcuEvoProcedimiento.setIdHcuEvolucion(evo);
+                hcuEvoProcedimiento.setObservacion(ModeloTabla.getValueAt(i, 3).toString());
+                hcuEvoProcedimiento.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                hcuEvoProcedimiento.setEstado(1);//estado activo
+                hcuEvoProcedimientoJpa.create(hcuEvoProcedimiento);
+            }else{
+                if(hcuEvoProcedimiento!=null){
+                    try {
+                        hcuEvoProcedimiento.setObservacion(ModeloTabla.getValueAt(i, 3).toString());
+                        hcuEvoProcedimiento.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        hcuEvoProcedimientoJpa.edit(hcuEvoProcedimiento);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "10127:\n"+ex.getMessage(), pTratMasProcedimientos.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+            }
+        }
+        for(int i=0;i<listInfoProcedimientoEvo.size();i++){
+            if(cupsJpaController==null)
+                cupsJpaController=new ConfigCupsJpaController(factory);
+            HcuEvoProcedimiento hcuEvoProcedimiento=null;            
+            boolean exist=false;
+            for(int a=0;a<ModeloTabla.getRowCount();a++){
+                System.out.println(listInfoProcedimientoEvo.get(i).getIdConfigCups() +" - "+((ConfigCups)ModeloTabla.getValueAt(a, 0)));
+                if(listInfoProcedimientoEvo.get(i).getIdConfigCups().getId()==((ConfigCups)ModeloTabla.getValueAt(a, 0)).getId()){
+                    
+                    exist=true;
+                    hcuEvoProcedimiento=listInfoProcedimientoEvo.get(i);
+                    break;                    
+                }
+            }
+            if(!exist){
+                try {
+                    hcuEvoProcedimiento.setEstado(0);//incativo
+                    hcuEvoProcedimientoJpa.edit(hcuEvoProcedimiento);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "10128:\n"+ex.getMessage(), pTratMasProcedimientos.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        }
+    }
+    
     public void showListExistentes(EntityManagerFactory factory,InfoHistoriac ihc){
         if(infoProcedimientoHcuJPA == null){
             infoProcedimientoHcuJPA =new InfoProcedimientoHcuJpaController(factory);
@@ -170,8 +279,82 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
         }
     }
     
-    public void formularioOpen(){
-        dProcedimiento = new dSelectProcedimiento(null,true,0);
+    public void showListExistentes(EntityManagerFactory factory,HcuEvolucion evol){
+        if(hcuEvoProcedimientoJpa==null)
+            hcuEvoProcedimientoJpa = new HcuEvoProcedimientoJpaController(factory);
+        if(cupsJpaController==null)
+            cupsJpaController=new ConfigCupsJpaController(factory);        
+        listInfoProcedimientoEvo = hcuEvoProcedimientoJpa.ListFindInfoProcedimientoEvo(evol);
+        for(int i=0;i<listInfoProcedimientoEvo.size();i++){
+            ConfigCups cups = cupsJpaController.findConfigCups(listInfoProcedimientoEvo.get(i).getIdConfigCups().getId());
+            this.cargaDatoSeleccionado(cups,listInfoProcedimientoEvo.get(i).getObservacion());
+        }
+        /* Comprobamos que la evolucion no contiene procedimientos */
+        if(listInfoProcedimientoEvo.isEmpty()){
+            List<HcuEvoProcedimiento> evoProcedimientos=null;
+            HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
+            /* consulta de las evoluciones que pertenecen a la nota de ingreso */
+            List<HcuEvolucion> hes= hejc.FindHcuEvolucions(evol.getIdInfoHistoriac());
+            /*
+             * verifica si tiene evoluciones y toma la ultima listada.
+             * el orden de la fecha es ascendente
+             */
+            if(!hes.isEmpty()){
+                evoProcedimientos = hes.get(hes.size()-1).getHcuEvoProcedimientos();
+                 /* verificamos si la ultima evolucion tiene procedimientos. 
+                 *   --> si tiene procedimientos en la ultima evolucion hacemos la migracion
+                 *   --> a la evolucion que se esta creando
+                 */
+                if(!evoProcedimientos.isEmpty() && evol.getFechaEvo().compareTo(hes.get(hes.size()-1).getFechaEvo())>0 ){
+                    /* preguntamos si se desea hacer la migracion */
+                    
+                }
+            }else{
+                HcuEvoProcedimientoJpaController hepjc = new HcuEvoProcedimientoJpaController(factory);
+                List<HcuEvoProcedimiento> heps = hepjc.ListFindInfoProcedimientoEvo(evol);
+                /* verificamos que la hcu tiene procedimientos */
+                if(!heps.isEmpty()){
+                    
+                }
+            }
+        }
+    }
+    
+    private void migrarProcedimToEvo(Object proceds, boolean evo, EntityManagerFactory factory){
+        String mensaje = "¿Quiere continuar con los procedimientos de la Nota de Ingreso? ";
+        if(evo)
+            mensaje = "¿Quiere continuar con los procedimientos de la Evolución anterior? ";
+        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Migración de procedimientos",JOptionPane.YES_NO_OPTION);
+        if(entrada==0){
+            if(evo){
+                List<HcuEvoProcedimiento> evoProceds = (List<HcuEvoProcedimiento>) proceds;
+                for(int i=0;i<evoProceds.size();i++){
+                    ModeloTabla.addRow(dato);
+                    ModeloTabla.setValueAt(evoProceds.get(i).getIdConfigCups(), i, 0);
+                    ModeloTabla.setValueAt(evoProceds.get(i).getIdConfigCups().getCodigo(), i, 1);
+                    ModeloTabla.setValueAt(evoProceds.get(i).getIdConfigCups().getDeSubcategoria(), i, 2);
+                    ModeloTabla.setValueAt(evoProceds.get(i).getObservacion(), i, 3);
+                    jTable1.getRowSorter().toggleSortOrder(1);
+                }
+            }else{
+                if(cupsJpaController==null)
+                    cupsJpaController=new ConfigCupsJpaController(factory);                
+                List<InfoProcedimientoHcu> infoProcedimientoHcus = (List<InfoProcedimientoHcu>) proceds;
+                for(int i=0;i<infoProcedimientoHcus.size();i++){
+                    ConfigCups cups = cupsJpaController.findConfigCups(infoProcedimientoHcus.get(i).getIdCups());
+                    ModeloTabla.addRow(dato);
+                    ModeloTabla.setValueAt(cups.getId(), i, 0);
+                    ModeloTabla.setValueAt(cups.getCodigo(), i, 1);
+                    ModeloTabla.setValueAt(cups.getDeSubcategoria(), i, 2);
+                    ModeloTabla.setValueAt(infoProcedimientoHcus.get(i).getObservacion(), i, 3);
+                    jTable1.getRowSorter().toggleSortOrder(1);
+                }
+            }
+        }
+    }
+    
+    public void formularioOpen(int tipo){
+        dProcedimiento = new dSelectProcedimiento(null,true,tipo,evo);//0
         dProcedimiento.setVisible(true);
     }
     /**
@@ -312,7 +495,7 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonSeven6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven6ActionPerformed
-        formularioOpen();
+        formularioOpen(0);
     }//GEN-LAST:event_buttonSeven6ActionPerformed
 
     private void buttonSeven7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven7ActionPerformed
