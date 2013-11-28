@@ -223,26 +223,46 @@ public class cie10 extends javax.swing.JDialog {
                 int rowIndex = jtCie10.rowAtPoint(evt.getPoint());
                 switch (diag){
                     case 1:
-                        atencionurgencia.AtencionUrgencia.panelindex.hc.jTextField11.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
-                        atencionurgencia.AtencionUrgencia.panelindex.hc.idDiag1 = (Integer) jtCie10.getValueAt(rowIndex, 0);
+                        AtencionUrgencia.panelindex.hc.jTextField11.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
+                        AtencionUrgencia.panelindex.hc.idDiag1 = (Integer) jtCie10.getValueAt(rowIndex, 0);
                         break;
                     case 2:
-                        atencionurgencia.AtencionUrgencia.panelindex.hc.jTextField12.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
-                        atencionurgencia.AtencionUrgencia.panelindex.hc.idDiag2 = (Integer) jtCie10.getValueAt(rowIndex, 0);
+                        AtencionUrgencia.panelindex.hc.jTextField12.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
+                        AtencionUrgencia.panelindex.hc.idDiag2 = (Integer) jtCie10.getValueAt(rowIndex, 0);
                         break;
                     case 3:
-                        atencionurgencia.AtencionUrgencia.panelindex.hc.jTextField13.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
-                        atencionurgencia.AtencionUrgencia.panelindex.hc.idDiag3 = (Integer) jtCie10.getValueAt(rowIndex, 0);
+                        AtencionUrgencia.panelindex.hc.jTextField13.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
+                        AtencionUrgencia.panelindex.hc.idDiag3 = (Integer) jtCie10.getValueAt(rowIndex, 0);
                         break;
                     case 4:
-                        atencionurgencia.AtencionUrgencia.panelindex.hc.jTextField14.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
-                        atencionurgencia.AtencionUrgencia.panelindex.hc.idDiag4 = (Integer) jtCie10.getValueAt(rowIndex, 0);
+                        AtencionUrgencia.panelindex.hc.jTextField14.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
+                        AtencionUrgencia.panelindex.hc.idDiag4 = (Integer) jtCie10.getValueAt(rowIndex, 0);
                         break;
                     case 5:
-                        atencionurgencia.AtencionUrgencia.panelindex.hc.jTextField15.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
-                        atencionurgencia.AtencionUrgencia.panelindex.hc.idDiag5 = (Integer) jtCie10.getValueAt(rowIndex, 0);
+                        AtencionUrgencia.panelindex.hc.jTextField15.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
+                        AtencionUrgencia.panelindex.hc.idDiag5 = (Integer) jtCie10.getValueAt(rowIndex, 0);
                         break;
-                }
+                    case 6:
+                        AtencionUrgencia.panelindex.evo.analisis.jTextField1.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
+                        AtencionUrgencia.panelindex.evo.analisis.dx = (Integer) jtCie10.getValueAt(rowIndex, 0);
+                        break;
+                    case 7:
+                        AtencionUrgencia.panelindex.evo.analisis.jTextField2.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
+                        AtencionUrgencia.panelindex.evo.analisis.dx1 = (Integer) jtCie10.getValueAt(rowIndex, 0);
+                        break;
+                    case 8:
+                        AtencionUrgencia.panelindex.evo.analisis.jTextField3.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
+                        AtencionUrgencia.panelindex.evo.analisis.dx2 = (Integer) jtCie10.getValueAt(rowIndex, 0);
+                        break;
+                    case 9:
+                        AtencionUrgencia.panelindex.evo.analisis.jTextField4.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
+                        AtencionUrgencia.panelindex.evo.analisis.dx3 = (Integer) jtCie10.getValueAt(rowIndex, 0);
+                        break;
+                    case 10:
+                        AtencionUrgencia.panelindex.evo.analisis.jTextField5.setText("["+jtCie10.getValueAt(rowIndex, 1)+"] " +jtCie10.getValueAt(rowIndex, 2));
+                        AtencionUrgencia.panelindex.evo.analisis.dx4 = (Integer) jtCie10.getValueAt(rowIndex, 0);
+                        break;
+                }   
                 this.dispose();
             }
         } catch (Exception ex) {
