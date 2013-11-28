@@ -169,7 +169,7 @@ public class pTratQuirurgico extends javax.swing.JPanel {
     }
     
     public void formularioOpen(){
-        dProcedimiento = new dSelectProcedimiento(null,true,1);
+        dProcedimiento = new dSelectProcedimiento(null,true,1,false);
         dProcedimiento.setVisible(true);
     }
 
