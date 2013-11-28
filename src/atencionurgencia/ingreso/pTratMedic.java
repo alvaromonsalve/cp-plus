@@ -323,9 +323,8 @@ public class pTratMedic extends javax.swing.JPanel {
       }
       
       public void saveChanges(EntityManagerFactory factory, HcuEvolucion evol){
-          if(hcuEvoPosologiaJpaController==null){
-              hcuEvoPosologiaJpaController=new HcuEvoPosologiaJpaController(factory);
-          }
+          if(hcuEvoPosologiaJpaController==null)
+              hcuEvoPosologiaJpaController=new HcuEvoPosologiaJpaController(factory);          
           List<HcuEvoPosologia> evoPosologias = hcuEvoPosologiaJpaController.ListFindInfoPosologia(evol);
           for(int i=0;i<ModeloTabla.getRowCount();i++){
               HcuEvoPosologia hep = null;
@@ -403,6 +402,7 @@ public class pTratMedic extends javax.swing.JPanel {
               hemm.setIdHcuEvolucion(evol);
               hemm.setVia(MTMezcla.getValueAt(i, 3).toString());
               hemm.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+              hemm.setEstado(1);
               hcuEvomedicamentosJpa.create(hemm);//entidad mezcla creada
               DefaultTableModel model = (DefaultTableModel)MTMezcla.getValueAt(i, 0);
               for(int a=0;a<model.getRowCount();a++){
@@ -413,7 +413,7 @@ public class pTratMedic extends javax.swing.JPanel {
                   desc.setDosisU(model.getValueAt(a, 2).toString());
                   desc.setSolDiluir((Boolean)model.getValueAt(a, 3));
                   desc.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
-                  desc.setEstado(0);
+                  desc.setEstado(1);
                   hcuEvomedicamentosDescJpa.create(desc);
               }
           }
