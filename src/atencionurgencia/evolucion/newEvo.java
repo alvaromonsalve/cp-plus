@@ -6,8 +6,11 @@ package atencionurgencia.evolucion;
 
 import entidades.HcuEvolucion;
 import java.text.DecimalFormat;
+import javax.persistence.EntityManagerFactory;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
+import jpa.HcuEvolucionJpaController;
 import tools.Funciones;
 
 /**
@@ -15,6 +18,8 @@ import tools.Funciones;
  * @author Alvaro Monsalve
  */
 public class newEvo extends javax.swing.JPanel {
+    private HcuEvolucionJpaController jpaController=null;
+    private HcuEvolucion evolucion;
     
     private Integer glasgow1=0,glasgow2=0,glasgow3=0;
     //Glasgow Lactante entre 0 y 2 años
@@ -80,13 +85,22 @@ public class newEvo extends javax.swing.JPanel {
         boolean retorno=true;
         if(glasgow1==0 && glasgow2==0 && glasgow2==0 && retorno==true){//glasgow
             JOptionPane.showMessageDialog(this, "El valor de la escala Glasgow es mas bajo que 3");
+            ((JTabbedPane)this.getParent()).setSelectedComponent(this);
+            this.jComboBox2.requestFocus();
             retorno = false;
+        }
+        if(jComboBox1.getSelectedIndex()<0 && retorno==true){
+            JOptionPane.showMessageDialog(this, "El estado de conciencia no es valido");
+            ((JTabbedPane)this.getParent()).setSelectedComponent(this);
+            jComboBox1.requestFocus();
         }
         if(!jTextField1.getText().equals("") && retorno==true){//SatO2
             try {   
                 Integer.parseInt(jTextField1.getText());
                 if(jTextField1.getText().length()>3 || (Integer.parseInt(jTextField1.getText())>100 || Integer.parseInt(jTextField1.getText())<=0)){
                     JOptionPane.showMessageDialog(this, "El valor de la saturacion de Oxigeno no es valido");
+                    ((JTabbedPane)this.getParent()).setSelectedComponent(this);
+                    jTextField1.requestFocus();
                     retorno = false;
                 }
             } catch (NumberFormatException e) {             
@@ -99,6 +113,8 @@ public class newEvo extends javax.swing.JPanel {
                 Integer.parseInt(jTextField3.getText());
                 if(jTextField3.getText().length()>3){
                     JOptionPane.showMessageDialog(this, "El valor de la frecuencia cardiaca no es valido");
+                    ((JTabbedPane)this.getParent()).setSelectedComponent(this);
+                    jTextField3.requestFocus();
                     retorno = false;
                 }
             } catch (NumberFormatException e) {//FC
@@ -111,6 +127,8 @@ public class newEvo extends javax.swing.JPanel {
                 Float val = Float.parseFloat(jTextField8.getText().replace(",","."));
                 if(jTextField8.getText().length()>6 || (val > 42f || val < 34f)){
                     JOptionPane.showMessageDialog(this, "El valor de la Temperatura no es valido");
+                    ((JTabbedPane)this.getParent()).setSelectedComponent(this);
+                    jTextField8.requestFocus();
                     retorno = false;
                 }
             } catch (NumberFormatException e) {
@@ -123,6 +141,8 @@ public class newEvo extends javax.swing.JPanel {
                 Integer.parseInt(jTextField7.getText());
                 if(jTextField7.getText().length()>3 || (Integer.parseInt(jTextField7.getText())>300 || Integer.parseInt(jTextField7.getText())<0)){
                     JOptionPane.showMessageDialog(this, "El valor de la tensión arterial sistólica no es valido");
+                    ((JTabbedPane)this.getParent()).setSelectedComponent(this);
+                    jTextField7.requestFocus();
                     retorno = false;
                 }
             } catch (NumberFormatException e) {
@@ -135,6 +155,8 @@ public class newEvo extends javax.swing.JPanel {
                 Integer.parseInt(jTextField6.getText());
                 if(jTextField6.getText().length()>3 || (Integer.parseInt(jTextField6.getText())>300 || Integer.parseInt(jTextField6.getText())<0)){
                     JOptionPane.showMessageDialog(this, "El valor de la tensión arterial diastólica no es valido");
+                    ((JTabbedPane)this.getParent()).setSelectedComponent(this);
+                    jTextField6.requestFocus();
                     retorno = false;
                 }
             } catch (NumberFormatException e) {
@@ -182,8 +204,6 @@ public class newEvo extends javax.swing.JPanel {
                 jLabel5.setText("VALORAR INTUBACIÓN Y VENTILACIÓN MECÁNICA");
             }
         }
-        
-        
     }
     
     private String scalaGlasgow(Integer val){
@@ -197,6 +217,7 @@ public class newEvo extends javax.swing.JPanel {
     }
     
     public void setEvolucion(HcuEvolucion evolucion){
+        this.evolucion=evolucion;
         String edad2[]=evolucion.getIdInfoHistoriac().getIdInfoAdmision().getEdad().split(" ");
         edad=Integer.parseInt(edad2[0].toString());
         initComponent2();
@@ -212,17 +233,46 @@ public class newEvo extends javax.swing.JPanel {
         if(evolucion.getTas()!=null) jTextField7.setText(evolucion.getTas().toString());
         if(evolucion.getTad()!=null) jTextField6.setText(evolucion.getTad().toString());
         if(evolucion.getOtrossignos()!=null) jTextArea2.setText(evolucion.getOtrossignos());
-        
-        
+    }
+
+    public void saveChanged(EntityManagerFactory factory){
+        if(jpaController==null) jpaController = new HcuEvolucionJpaController(factory);
+        HcuEvolucion editEvolucion = evolucion;
+        if(validAll() && editEvolucion.getEstado()!=2){
+            editEvolucion.setConciencia((short) jComboBox1.getSelectedIndex());
+            editEvolucion.setAperturaOcular((short)jComboBox2.getSelectedIndex());
+            editEvolucion.setRespuestaVerbal((short)jComboBox3.getSelectedIndex());
+            editEvolucion.setRespuestaMotora((short)jComboBox4.getSelectedIndex());
+            if(!jTextField1.getText().isEmpty()) editEvolucion.setSao2(Short.parseShort(jTextField1.getText().toString()));
+            if(!jTextField3.getText().isEmpty()) editEvolucion.setFc(Short.parseShort(jTextField3.getText().toString()));
+            if(!jTextField8.getText().isEmpty()) editEvolucion.setTemperatura(Float.parseFloat(jTextField8.getText().toString().replace(",", ".")));
+            if(!jTextField4.getText().isEmpty()) editEvolucion.setFr(Float.parseFloat(jTextField4.getText().toString().replace(",", ".")));
+            if(!jTextField7.getText().isEmpty()) editEvolucion.setTas(Short.parseShort(jTextField7.getText().toString()));
+            if(!jTextField6.getText().isEmpty()) editEvolucion.setTad(Short.parseShort(jTextField6.getText().toString()));
+            if(!jTextArea2.getText().isEmpty()) editEvolucion.setOtrossignos(jTextArea2.getText().toUpperCase());
+            editEvolucion.setEstado(1);
+            try {
+                if(editEvolucion.getId()==null){
+                    jpaController.create(editEvolucion);
+                }else{
+                    jpaController.edit(editEvolucion);
+                }            
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "10130:\n"+ex.getMessage(), newEvo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }
+         }else if(editEvolucion.getEstado()==2){
+            JOptionPane.showMessageDialog(this, "La Evolución fue finalizada y no puede ser modificada");
+        }
     }
     
-    
-    
-    
-    public void saveChanged(){
-        
+    public HcuEvolucion getHcuEvolucion(EntityManagerFactory factory){
+        if(jpaController==null) jpaController = new HcuEvolucionJpaController(factory);
+        try {
+            return jpaController.findHcuEvolucion(this.evolucion.getId());
+        } catch (Exception e) {
+            return null;
+        }        
     }
-    
     
     
     
