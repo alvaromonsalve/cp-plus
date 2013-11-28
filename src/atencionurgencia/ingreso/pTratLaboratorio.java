@@ -171,7 +171,7 @@ public class pTratLaboratorio extends javax.swing.JPanel {
     }
     
     public void formularioOpen(){
-        dProcedimiento = new dSelectProcedimiento(null,true,17);
+        dProcedimiento = new dSelectProcedimiento(null,true,17,false);
         dProcedimiento.setVisible(true);
     }
 
