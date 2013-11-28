@@ -81,6 +81,7 @@
       <SubComponents>
         <Container class="org.jdesktop.swingx.JXTaskPane" name="jXTaskPane2">
           <Properties>
+            <Property name="expanded" type="boolean" value="false"/>
             <Property name="title" type="java.lang.String" value="MEDICAMENTOS"/>
             <Property name="animated" type="boolean" value="false"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -201,6 +202,11 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="BUSCAR POR CUPS..."/>
               </Properties>
+              <Events>
+                <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTextField1MousePressed"/>
+                <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTextField1FocusLost"/>
+                <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTextField1KeyReleased"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel45">
               <Properties>
@@ -381,6 +387,7 @@
         </Container>
         <Container class="org.jdesktop.swingx.JXTaskPane" name="jXTaskPane3">
           <Properties>
+            <Property name="expanded" type="boolean" value="false"/>
             <Property name="title" type="java.lang.String" value="VALORACION ESPECIALISTA"/>
             <Property name="animated" type="boolean" value="false"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -657,7 +664,6 @@
         </Container>
         <Container class="org.jdesktop.swingx.JXTaskPane" name="jXTaskPane4">
           <Properties>
-            <Property name="expanded" type="boolean" value="false"/>
             <Property name="title" type="java.lang.String" value="MEDIDAS GENERALES"/>
             <Property name="animated" type="boolean" value="false"/>
             <Property name="focusable" type="boolean" value="false"/>

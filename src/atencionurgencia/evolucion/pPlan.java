@@ -7,10 +7,18 @@
 package atencionurgencia.evolucion;
 
 import atencionurgencia.ingreso.pTratInterconsulta;
+import atencionurgencia.ingreso.pTratMasProcedimientos;
 import atencionurgencia.ingreso.pTratMedic;
 import atencionurgencia.ingreso.pTratMedidaGeneral;
+import atencionurgencia.ingreso.pTratOtrasInterconsultas;
 import entidades.HcuEvolucion;
+import java.awt.Color;
+import java.awt.event.KeyEvent;
 import javax.persistence.EntityManagerFactory;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import jpa.HcuEvolucionJpaController;
+import tools.Funciones;
 
 /**
  *
@@ -21,7 +29,10 @@ public class pPlan extends javax.swing.JPanel {
     public pTratMedic pMedic=null;
     public pTratInterconsulta pInterconsulta0=null,pInterconsulta1=null,pInterconsulta2=null,pInterconsulta3=null,pInterconsulta4=null;
     private final EntityManagerFactory factory;
-    private final HcuEvolucion hcuEvolucion;
+    private HcuEvolucion hcuEvolucion;
+    private HcuEvolucionJpaController hejc = null;
+    private pTratOtrasInterconsultas pOtrasInterconsultas=null;
+    public pTratMasProcedimientos pProcedimientos;
     
 
     /**
@@ -33,6 +44,24 @@ public class pPlan extends javax.swing.JPanel {
         initComponents();
         this.hcuEvolucion = hcuEvolucion;
         this.factory = factory;
+    }
+    
+    public HcuEvolucion saveChanged(){
+        if(pMedidaGeneral!=null) pMedidaGeneral.saveChanges(factory, hcuEvolucion);
+        if(pMedic!=null) pMedic.saveChanges(factory, hcuEvolucion);
+        if(pInterconsulta0!=null) pInterconsulta0.saveChanges(factory, hcuEvolucion);
+        if(pInterconsulta1!=null) pInterconsulta1.saveChanges(factory, hcuEvolucion);
+        if(pInterconsulta2!=null) pInterconsulta2.saveChanges(factory, hcuEvolucion);
+        if(pInterconsulta3!=null) pInterconsulta3.saveChanges(factory, hcuEvolucion);
+        if(pInterconsulta4!=null) pInterconsulta4.saveChanges(factory, hcuEvolucion);
+        if(pOtrasInterconsultas!=null) pOtrasInterconsultas.saveChanges(factory, hcuEvolucion);
+        if(pProcedimientos!=null) pProcedimientos.saveChanges(factory, hcuEvolucion);
+        
+        
+        
+        if(hejc ==null) hejc = new HcuEvolucionJpaController(factory);
+        this.hcuEvolucion = hejc.findHcuEvolucion(hcuEvolucion.getId());
+        return this.hcuEvolucion;
     }
 
     /**
@@ -72,6 +101,7 @@ public class pPlan extends javax.swing.JPanel {
         jPanel16.setOpaque(false);
         jPanel16.setPreferredSize(new java.awt.Dimension(194, 386));
 
+        jXTaskPane2.setExpanded(false);
         jXTaskPane2.setTitle("MEDICAMENTOS");
         jXTaskPane2.setAnimated(false);
         jXTaskPane2.setFocusable(false);
@@ -114,6 +144,21 @@ public class pPlan extends javax.swing.JPanel {
 
         jTextField1.setForeground(new java.awt.Color(204, 204, 204));
         jTextField1.setText("BUSCAR POR CUPS...");
+        jTextField1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jTextField1MousePressed(evt);
+            }
+        });
+        jTextField1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextField1FocusLost(evt);
+            }
+        });
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField1KeyReleased(evt);
+            }
+        });
         jXTaskPane1.getContentPane().add(jTextField1);
 
         jLabel45.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
@@ -176,6 +221,7 @@ public class pPlan extends javax.swing.JPanel {
         });
         jXTaskPane1.getContentPane().add(jLabel51);
 
+        jXTaskPane3.setExpanded(false);
         jXTaskPane3.setTitle("VALORACION ESPECIALISTA");
         jXTaskPane3.setAnimated(false);
         jXTaskPane3.setFocusable(false);
@@ -300,7 +346,6 @@ public class pPlan extends javax.swing.JPanel {
         });
         jXTaskPane3.getContentPane().add(jLabel56);
 
-        jXTaskPane4.setExpanded(false);
         jXTaskPane4.setTitle("MEDIDAS GENERALES");
         jXTaskPane4.setAnimated(false);
         jXTaskPane4.setFocusable(false);
@@ -349,7 +394,7 @@ public class pPlan extends javax.swing.JPanel {
                 .addComponent(jXTaskPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jXTaskPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(213, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel1.setMaximumSize(new java.awt.Dimension(403, 386));
@@ -403,91 +448,94 @@ public class pPlan extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel46MouseClicked
 
     private void jLabel46MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel46MouseExited
-//        Funciones.setLabelInfo();
-//        jLabel46.setForeground(Color.black);
+        Funciones.setLabelInfo();
+        jLabel46.setForeground(Color.black);
     }//GEN-LAST:event_jLabel46MouseExited
 
     private void jLabel46MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel46MouseMoved
-//        Funciones.setLabelInfo("LISTADO DE MEDICAMENTOS");
-//        jLabel46.setForeground(Color.blue);
+        Funciones.setLabelInfo("LISTADO DE MEDICAMENTOS");
+        jLabel46.setForeground(Color.blue);
     }//GEN-LAST:event_jLabel46MouseMoved
 
     private void jLabel45MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel45MouseClicked
-//        if(pLaboratorio==null){
-//            pLaboratorio = new pTratLaboratorio();
-//            pLaboratorio.showListExistentes(factory, infohistoriac);
-//        }
-//        jPanel35.removeAll();
-//        pLaboratorio.setBounds(0,0,380,420);
-//        jPanel35.add(pLaboratorio);
-//        pLaboratorio.buttonSeven6.setVisible(false);
-//        pLaboratorio.buttonSeven7.setVisible(false);
-//        pLaboratorio.jTextArea25.setEditable(false);
-//        pLaboratorio.setVisible(true);
-//        jPanel35.validate();
-//        jPanel35.repaint();
+        if(pProcedimientos==null){
+            pProcedimientos = new pTratMasProcedimientos(true);
+            pProcedimientos.showListExistentes(factory, hcuEvolucion);
+        }
+        jPanel1.removeAll();
+        pProcedimientos.setBounds(0,0,403,386);
+        jPanel1.add(pProcedimientos);
+        pProcedimientos.buttonSeven6.setVisible(true);
+        pProcedimientos.buttonSeven7.setVisible(true);
+        pProcedimientos.jTextArea25.setEditable(true);
+        pProcedimientos.setVisible(true);
+        jPanel1.validate();
+        jPanel1.repaint();
+        pProcedimientos.formularioOpen(17);
     }//GEN-LAST:event_jLabel45MouseClicked
 
     private void jLabel45MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel45MouseExited
-//        Funciones.setLabelInfo();
-//        jLabel45.setForeground(Color.black);
+        Funciones.setLabelInfo();
+        jLabel45.setForeground(Color.black);
     }//GEN-LAST:event_jLabel45MouseExited
 
     private void jLabel45MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel45MouseMoved
-//        Funciones.setLabelInfo("LABORATORIO CLINICO");
-//        jLabel45.setForeground(Color.blue);
+        Funciones.setLabelInfo("LABORATORIO CLINICO");
+        jLabel45.setForeground(Color.blue);
     }//GEN-LAST:event_jLabel45MouseMoved
 
     private void jLabel49MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel49MouseClicked
-//        if(pImagenologia==null){
-//            pImagenologia = new pTratImagenologia();
-//            pImagenologia.showListExistentes(factory, infohistoriac);
-//        }
-//        jPanel35.removeAll();
-//        pImagenologia.setBounds(0,0,380,420);
-//        jPanel35.add(pImagenologia);
-//        pImagenologia.buttonSeven6.setVisible(false);
-//        pImagenologia.buttonSeven7.setVisible(false);
-//        pImagenologia.jTextArea25.setEditable(false);
-//        pImagenologia.setVisible(true);
-//        jPanel35.validate();
-//        jPanel35.repaint();
+        if(pProcedimientos==null){
+            pProcedimientos = new pTratMasProcedimientos(true);
+            pProcedimientos.showListExistentes(factory, hcuEvolucion);
+        }
+        jPanel1.removeAll();
+        pProcedimientos.setBounds(0,0,403,386);
+        jPanel1.add(pProcedimientos);
+        pProcedimientos.buttonSeven6.setVisible(true);
+        pProcedimientos.buttonSeven7.setVisible(true);
+        pProcedimientos.jTextArea25.setEditable(true);
+        pProcedimientos.setVisible(true);
+        jPanel1.validate();
+        jPanel1.repaint();
+        pProcedimientos.formularioOpen(15);
     }//GEN-LAST:event_jLabel49MouseClicked
 
     private void jLabel49MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel49MouseExited
-//        Funciones.setLabelInfo();
-//        jLabel49.setForeground(Color.black);
+        Funciones.setLabelInfo();
+        jLabel49.setForeground(Color.black);
     }//GEN-LAST:event_jLabel49MouseExited
 
     private void jLabel49MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel49MouseMoved
-//        Funciones.setLabelInfo("IMAGENOLOGIA");
-//        jLabel49.setForeground(Color.blue);
+        Funciones.setLabelInfo("IMAGENOLOGIA");
+        jLabel49.setForeground(Color.blue);
     }//GEN-LAST:event_jLabel49MouseMoved
 
     private void jLabel51MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel51MouseClicked
-//        if(pProcedimientos==null){
-//            pProcedimientos = new pTratMasProcedimientos();
-//            pProcedimientos.showListExistentes(factory, infohistoriac);
-//        }
-//        jPanel35.removeAll();
-//        pProcedimientos.setBounds(0,0,380,420);
-//        jPanel35.add(pProcedimientos);
-//        pProcedimientos.buttonSeven6.setVisible(false);
-//        pProcedimientos.buttonSeven7.setVisible(false);
-//        pProcedimientos.jTextArea25.setEditable(false);
-//        pProcedimientos.setVisible(true);
-//        jPanel35.validate();
-//        jPanel35.repaint();
+        if(pProcedimientos==null){
+            pProcedimientos = new pTratMasProcedimientos(true);
+            pProcedimientos.showListExistentes(factory, hcuEvolucion);
+        }
+        jPanel1.removeAll();
+        pProcedimientos.setBounds(0,0,403,386);
+        jPanel1.add(pProcedimientos);
+        pProcedimientos.buttonSeven6.setVisible(true);
+        pProcedimientos.buttonSeven7.setVisible(true);
+        pProcedimientos.jTextArea25.setEditable(true);
+        pProcedimientos.setVisible(true);
+        jPanel1.validate();
+        jPanel1.repaint();
+        pProcedimientos.formularioOpen(0);
     }//GEN-LAST:event_jLabel51MouseClicked
 
     private void jLabel51MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel51MouseExited
-//        Funciones.setLabelInfo();
-//        jLabel51.setForeground(Color.black);
+        Funciones.setLabelInfo();
+        jLabel51.setForeground(Color.black);
     }//GEN-LAST:event_jLabel51MouseExited
 
     private void jLabel51MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel51MouseMoved
-//        Funciones.setLabelInfo("TODOS LOS PROCEDIMIENTOS Y SERVICIOS");
-//        jLabel51.setForeground(Color.blue);
+        Funciones.setLabelInfo("TODOS LOS PROCEDIMIENTOS Y SERVICIOS");
+        jLabel51.setForeground(Color.blue);
     }//GEN-LAST:event_jLabel51MouseMoved
 
     private void jLabel48MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel48MouseClicked
@@ -507,19 +555,19 @@ public class pPlan extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel48MouseClicked
 
     private void jLabel48MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel48MouseExited
-//        Funciones.setLabelInfo();
-//        jLabel48.setForeground(Color.black);
+        Funciones.setLabelInfo();
+        jLabel48.setForeground(Color.black);
     }//GEN-LAST:event_jLabel48MouseExited
 
     private void jLabel48MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel48MouseMoved
-//        Funciones.setLabelInfo("CIRUGIA GENERAL");
-//        jLabel48.setForeground(Color.blue);
+        Funciones.setLabelInfo("CIRUGIA GENERAL");
+        jLabel48.setForeground(Color.blue);
     }//GEN-LAST:event_jLabel48MouseMoved
 
     private void jLabel52MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel52MouseClicked
         if(pInterconsulta1==null){
             pInterconsulta1 = new pTratInterconsulta(1);//Ginecologia
-            pInterconsulta0.showExistente(factory, hcuEvolucion);
+            pInterconsulta1.showExistente(factory, hcuEvolucion);
         }
         jPanel1.removeAll();
         pInterconsulta1.setBounds(0,0,403,386);
@@ -533,13 +581,13 @@ public class pPlan extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel52MouseClicked
 
     private void jLabel52MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel52MouseExited
-//        Funciones.setLabelInfo();
-//        jLabel52.setForeground(Color.black);
+        Funciones.setLabelInfo();
+        jLabel52.setForeground(Color.black);
     }//GEN-LAST:event_jLabel52MouseExited
 
     private void jLabel52MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel52MouseMoved
-//        Funciones.setLabelInfo("GINECOLOGIA");
-//        jLabel52.setForeground(Color.blue);
+        Funciones.setLabelInfo("GINECOLOGIA");
+        jLabel52.setForeground(Color.blue);
     }//GEN-LAST:event_jLabel52MouseMoved
 
     private void jLabel53MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel53MouseClicked
@@ -559,13 +607,13 @@ public class pPlan extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel53MouseClicked
 
     private void jLabel53MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel53MouseExited
-//        Funciones.setLabelInfo();
-//        jLabel53.setForeground(Color.black);
+        Funciones.setLabelInfo();
+        jLabel53.setForeground(Color.black);
     }//GEN-LAST:event_jLabel53MouseExited
 
     private void jLabel53MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel53MouseMoved
-//        Funciones.setLabelInfo("MEDICINA INTERNA");
-//        jLabel53.setForeground(Color.blue);
+        Funciones.setLabelInfo("MEDICINA INTERNA");
+        jLabel53.setForeground(Color.blue);
     }//GEN-LAST:event_jLabel53MouseMoved
 
     private void jLabel54MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel54MouseClicked
@@ -585,13 +633,13 @@ public class pPlan extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel54MouseClicked
 
     private void jLabel54MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel54MouseExited
-//        Funciones.setLabelInfo();
-//        jLabel54.setForeground(Color.black);
+        Funciones.setLabelInfo();
+        jLabel54.setForeground(Color.black);
     }//GEN-LAST:event_jLabel54MouseExited
 
     private void jLabel54MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel54MouseMoved
-//        Funciones.setLabelInfo("ORTOPEDIA");
-//        jLabel54.setForeground(Color.blue);
+        Funciones.setLabelInfo("ORTOPEDIA");
+        jLabel54.setForeground(Color.blue);
     }//GEN-LAST:event_jLabel54MouseMoved
 
     private void jLabel55MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel55MouseClicked
@@ -611,37 +659,37 @@ public class pPlan extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel55MouseClicked
 
     private void jLabel55MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel55MouseExited
-//        Funciones.setLabelInfo();
-//        jLabel55.setForeground(Color.black);
+        Funciones.setLabelInfo();
+        jLabel55.setForeground(Color.black);
     }//GEN-LAST:event_jLabel55MouseExited
 
     private void jLabel55MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel55MouseMoved
-//        Funciones.setLabelInfo("PEDIATRIA");
-//        jLabel55.setForeground(Color.blue);
+        Funciones.setLabelInfo("PEDIATRIA");
+        jLabel55.setForeground(Color.blue);
     }//GEN-LAST:event_jLabel55MouseMoved
 
     private void jLabel56MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel56MouseClicked
-//        if(pOtrasInterconsultas==null){
-//            pOtrasInterconsultas = new pTratOtrasInterconsultas();
-//            pOtrasInterconsultas.showLista(infohistoriac);
-//        }
-//        jPanel35.removeAll();
-//        pOtrasInterconsultas.setBounds(0,0,380,420);
-//        jPanel35.add(pOtrasInterconsultas);
-//        pOtrasInterconsultas.jTextArea25.setEditable(false);
-//        pOtrasInterconsultas.setVisible(true);
-//        jPanel35.validate();
-//        jPanel35.repaint();
+        if(pOtrasInterconsultas==null){
+            pOtrasInterconsultas = new pTratOtrasInterconsultas();
+            pOtrasInterconsultas.showLista(factory, hcuEvolucion);
+        }
+        jPanel1.removeAll();
+        pOtrasInterconsultas.setBounds(0,0,403,386);
+        jPanel1.add(pOtrasInterconsultas);
+        pOtrasInterconsultas.jTextArea25.setEditable(true);
+        pOtrasInterconsultas.setVisible(true);
+        jPanel1.validate();
+        jPanel1.repaint();
     }//GEN-LAST:event_jLabel56MouseClicked
 
     private void jLabel56MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel56MouseExited
-//        Funciones.setLabelInfo();
-//        jLabel56.setForeground(Color.black);
+        Funciones.setLabelInfo();
+        jLabel56.setForeground(Color.black);
     }//GEN-LAST:event_jLabel56MouseExited
 
     private void jLabel56MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel56MouseMoved
-//        Funciones.setLabelInfo("OTRAS ESPECIALIDADES");
-//        jLabel56.setForeground(Color.blue);
+        Funciones.setLabelInfo("OTRAS ESPECIALIDADES");
+        jLabel56.setForeground(Color.blue);
     }//GEN-LAST:event_jLabel56MouseMoved
 
     private void jLabel47MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel47MouseClicked
@@ -662,13 +710,13 @@ public class pPlan extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel47MouseClicked
 
     private void jLabel47MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel47MouseExited
-//        Funciones.setLabelInfo();
-//        jLabel47.setForeground(Color.black);
+        Funciones.setLabelInfo();
+        jLabel47.setForeground(Color.black);
     }//GEN-LAST:event_jLabel47MouseExited
 
     private void jLabel47MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel47MouseMoved
-//        Funciones.setLabelInfo("MEDIDAS GENERALES");
-//        jLabel47.setForeground(Color.blue);
+        Funciones.setLabelInfo("MEDIDAS GENERALES");
+        jLabel47.setForeground(Color.blue);
     }//GEN-LAST:event_jLabel47MouseMoved
 
     private void jXTaskPane4MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jXTaskPane4MouseReleased
@@ -694,6 +742,45 @@ public class pPlan extends javax.swing.JPanel {
         jXTaskPane2.setExpanded(false);
         jXTaskPane3.setExpanded(false);
     }//GEN-LAST:event_jXTaskPane1MouseReleased
+
+    private void jTextField1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MousePressed
+        if(jTextField1.getText().equals("BUSCAR POR CUPS...")){
+            jTextField1.setText("");
+            jTextField1.setForeground(Color.BLACK);
+        }
+    }//GEN-LAST:event_jTextField1MousePressed
+
+    private void jTextField1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField1FocusLost
+        jTextField1.setText("BUSCAR POR CUPS...");
+        jTextField1.setForeground(new java.awt.Color(204, 204, 204));
+    }//GEN-LAST:event_jTextField1FocusLost
+
+    private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
+        if(evt.getKeyCode()==KeyEvent.VK_ENTER){
+            JTextField field = (JTextField) evt.getComponent();
+            if(pProcedimientos==null){
+                pProcedimientos = new pTratMasProcedimientos(true);
+                pProcedimientos.showListExistentes(factory, hcuEvolucion);
+            }
+            if(pProcedimientos.findCUPS(field.getText(), factory)){
+                jPanel1.removeAll();
+                pProcedimientos.setBounds(0,0,403,386);
+                jPanel1.add(pProcedimientos);
+                pProcedimientos.buttonSeven6.setVisible(true);
+                pProcedimientos.buttonSeven7.setVisible(true);
+                pProcedimientos.jTextArea25.setEditable(true);
+                pProcedimientos.setVisible(true);
+                jPanel1.validate();
+                jPanel1.repaint();
+            }else{
+                JOptionPane.showMessageDialog(null, "El Codigo ["+field.getText()+"] no es valido");
+            }
+            jTextField1.setText("BUSCAR POR CUPS...");
+            jTextField1.setForeground(new java.awt.Color(204, 204, 204));
+            jLabel45.requestFocus();
+        }
+        
+    }//GEN-LAST:event_jTextField1KeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
