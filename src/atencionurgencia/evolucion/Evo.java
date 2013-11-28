@@ -72,7 +72,7 @@ import tools.MyDate;
  */
 public class Evo extends javax.swing.JPanel {
 
-    // <editor-fold desc="Declaracion">
+    // <editor-fold defaultstate="collapsed" desc="Declaracion de variables">
     FormPersonas personas=null;
     public InfoPaciente infopaciente = null;
     public InfoHistoriac infohistoriac=null;
@@ -105,13 +105,16 @@ public class Evo extends javax.swing.JPanel {
     private newEvo evol = null;
     private pSubjetivo subjetivo=null;
     private pObjetivo objetivo=null;
-    private pAnalisis analisis=null;
+    public pAnalisis analisis=null;
     public pPlan pplan=null;
     private grafic_sVitales gSignos=null;
     private List<HcuEvolucion> hcuEvolucionList=null;
     private HcuEvolucionJpaController hcuEvolucionJpaController =null;
     private DefaultTreeModel modeloTree;
     private DefaultMutableTreeNode EvosHC;
+    private HcuEvolucion evoDelete=null;
+    private datosHCU cU;
+    
     
     // </editor-fold>
     
@@ -125,7 +128,7 @@ public class Evo extends javax.swing.JPanel {
         inicio();
         InputMap map2 = jTextArea10.getInputMap(JTextArea.WHEN_FOCUSED);
         map2.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK), "null");
-    }    
+    }
     
     private void inicio(){
             jpCentro.removeAll();
@@ -134,11 +137,10 @@ public class Evo extends javax.swing.JPanel {
             jpMotivoC.setVisible(true);
             jpCentro.validate();
             jpCentro.repaint();
-            activeCheck(1);
-            EvosHC = new DefaultMutableTreeNode("EVOLUCIONES");
-            modeloTree = new DefaultTreeModel(EvosHC);
+            activeCheck(1);            
     }
     
+    // <editor-fold defaultstate="collapsed" desc="private void activeCheck(int val){">
     private void activeCheck(int val){
         switch(val){
             case 1:
@@ -223,6 +225,7 @@ public class Evo extends javax.swing.JPanel {
                 break;
         }
     }
+    // </editor-fold>
         
         public void setSelectionNivelTriage(int var){
             switch (var){
@@ -241,6 +244,7 @@ public class Evo extends javax.swing.JPanel {
             }
         }
         
+        // <editor-fold defaultstate="collapsed" desc="private DefaultTableModel getModAyudaDiag(){">
         private DefaultTableModel getModAyudaDiag(){
             try {
                 return (new DefaultTableModel(
@@ -272,7 +276,7 @@ public class Evo extends javax.swing.JPanel {
                 return null;
             }
         }
-        
+        // </editor-fold>
         
     private void TablaAyudDiag(){
         try {
@@ -295,7 +299,7 @@ public class Evo extends javax.swing.JPanel {
            edite = true;
            setHistoryC();
            setFisicExplorer();
-           setHelpDiag();  
+           setHelpDiag();
            setJTreeEvo();
        }
        
@@ -303,6 +307,8 @@ public class Evo extends javax.swing.JPanel {
            if(hcuEvolucionJpaController==null){
                hcuEvolucionJpaController=new HcuEvolucionJpaController(factory);
            }
+           EvosHC = new DefaultMutableTreeNode("EVOLUCIONES");
+           modeloTree = new DefaultTreeModel(EvosHC);
            hcuEvolucionList=hcuEvolucionJpaController.FindHcuEvolucions(infohistoriac);
            jTree1.setModel(modeloTree);
            jTree1.setCellRenderer(new JTreeRendererArbolEvo());
@@ -321,18 +327,16 @@ public class Evo extends javax.swing.JPanel {
                    }
                }
                if(!existeFechaEvo){
-                   fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(hcuEvo.getFechaEvo()));                   
+                   fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(hcuEvo.getFechaEvo()));
                    modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
                    Evo = new DefaultMutableTreeNode(hcuEvo);
-                   fechaEvo.add(Evo);                   
-               }         
+                   fechaEvo.add(Evo);
+               }
            }
-
            jTree1.expandRow(0);
-//           TreeNode raiz = (TreeNode)jTree1.getModel().getRoot(); 
-//           System.out.println(raiz.getChildAt(0));
        }
        
+       // <editor-fold defaultstate="collapsed" desc="Mostrar datos de Nota de Ingreso">
        public void DatosAntPersonales(){
             if(antPersonalesJPA==null){
                 antPersonalesJPA=new InfoAntPersonalesJpaController(factory);
@@ -433,8 +437,15 @@ public class Evo extends javax.swing.JPanel {
                jTextArea15.setToolTipText(myStringsFunctions.stringToDIVstring(jTextArea15.getText()));
                idDiag5 = infohistoriac.getDiagnostico5();
            }
-
            jTextArea19.setText(infohistoriac.getHallazgo());
+           jpCentro.removeAll();
+            cU = new datosHCU(infohistoriac);
+            cU.setBounds(0, 0, 584, 445);
+            jpCentro.add(cU);
+            cU.setVisible(true);
+            jpCentro.validate();
+            jpCentro.repaint(); 
+            activeCheck(8);
        }
        
         private void setFisicExplorer(){
@@ -503,12 +514,12 @@ public class Evo extends javax.swing.JPanel {
             }
         //descargar archivos
         }
-        
+        // </editor-fold>
         
         public void cerrarPanel(){
-            atencionurgencia.AtencionUrgencia.panelindex.jpContainer.removeAll(); 
-            atencionurgencia.AtencionUrgencia.panelindex.jpContainer.validate();
-            atencionurgencia.AtencionUrgencia.panelindex.jpContainer.repaint();
+            AtencionUrgencia.panelindex.jpContainer.removeAll(); 
+            AtencionUrgencia.panelindex.jpContainer.validate();
+            AtencionUrgencia.panelindex.jpContainer.repaint();
         }
        
         /**
@@ -537,18 +548,25 @@ public class Evo extends javax.swing.JPanel {
                     }else{
                         JOptionPane.showMessageDialog(this, "Errores leyendo archivo de firma del usuario.");
                     }  
-                }                
-                              
+                }                                              
             } catch (HeadlessException e) {
                 JOptionPane.showMessageDialog(null, "10116:\n"+e.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
             }
             return f;
         }
         
+        // <editor-fold defaultstate="collapsed" desc="private static void addClosableTab(final JTabbedPane tabbedPane,final JComponent c,final String title,final Icon icon) {">
         private static final Icon CLOSE_TAB_ICON = new ImageIcon(ClassLoader.getSystemResource("images/closeTabButton.png"));
         private static final Icon  PAGE_ICON = new ImageIcon(ClassLoader.getSystemResource("images/chart_curve_edit_16x16.png"));
+        private static final Icon  PAGE_SUBJETIVO = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_orange.png"));
+        private static final Icon  PAGE_SIGNOS = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_red_signes.png"));
+        private static final Icon  PAGE_OBJETIVOS = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_blue.png"));
+        private static final Icon  PAGE_PLAN = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_green.png"));
+        private static final Icon  PAGE_ANALISIS = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_analisis.png"));
         
-          /**
+        
+        
+        /**
             * Creado por Tad Harrison
             * Adds a component to a JTabbedPane with a little "close tab" button on the
             * right side of the tab.
@@ -638,6 +656,120 @@ public class Evo extends javax.swing.JPanel {
                  // Now add a single binding for the action name to the anonymous action
                  c.getActionMap().put("closeTab", closeTabAction);
                }
+        // </editor-fold>
+        
+        private void newEvolucion(){
+            StaticCie10JpaController scjc = new StaticCie10JpaController(factory);
+            HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
+            JDdateEvo evo = new JDdateEvo(null,true);
+            evo.setLocationRelativeTo(null);
+            evo.setVisible(true);
+            if(evo.fecha_hora!=null){
+                HcuEvolucion evolucion = new HcuEvolucion();
+                evolucion.setIdInfoHistoriac(infohistoriac);
+                evolucion.setFechaEvo(evo.fecha_hora);
+                List<HcuEvolucion> hes= hejc.FindHcuEvolucions(infohistoriac); 
+                if(hes.isEmpty()){
+                    evolucion.setDx(scjc.findStaticCie10(infohistoriac.getDiagnostico()));
+                    evolucion.setDx1(scjc.findStaticCie10(infohistoriac.getDiagnostico2()));
+                    evolucion.setDx2(scjc.findStaticCie10(infohistoriac.getDiagnostico3()));
+                    evolucion.setDx3(scjc.findStaticCie10(infohistoriac.getDiagnostico4()));
+                    evolucion.setDx4(scjc.findStaticCie10(infohistoriac.getDiagnostico5()));
+                }else{
+                    evolucion.setDx(hes.get(hes.size()-1).getDx());
+                    evolucion.setDx1(hes.get(hes.size()-1).getDx1());
+                    evolucion.setDx2(hes.get(hes.size()-1).getDx2());
+                    evolucion.setDx3(hes.get(hes.size()-1).getDx3());
+                    evolucion.setDx4(hes.get(hes.size()-1).getDx4());
+                }                
+                evolucion.setEstado(0);
+                TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
+                DefaultMutableTreeNode fechaEvo = null;
+                DefaultMutableTreeNode Evo = null;
+                boolean existeFechaEvo=false;
+                boolean existeEvo=false;
+                for(int i=0;i<raiz.getChildCount();i++){
+                    if(raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()))){
+                        existeFechaEvo = true;
+                        for(int a=0;a<raiz.getChildAt(i).getChildCount();a++){
+                            if(raiz.getChildAt(i).getChildAt(a).toString().equals(evolucion.toString())){
+                                existeEvo = true;   
+                                break;
+                            }
+                        }
+                        if(!existeEvo){
+                            fechaEvo = (DefaultMutableTreeNode) raiz.getChildAt(i);
+                            Evo = new DefaultMutableTreeNode(evolucion);
+                            fechaEvo.add(Evo); 
+                            modeloTree.nodeStructureChanged(raiz);
+                            jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+                        }
+                        break;
+                    }
+                }
+                if(!existeFechaEvo){
+                    fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()));
+                    modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
+                    Evo = new DefaultMutableTreeNode(evolucion);
+                    fechaEvo.add(Evo); 
+                    jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+                }else{
+                    if(!existeEvo){
+//                        modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
+//                        Evo = new DefaultMutableTreeNode(evolucion);
+//                        fechaEvo.add(Evo); 
+//                        jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+                    }
+                }
+                this.activarComponentes(evolucion);
+            }
+        }
+        
+        private void activarComponentes(HcuEvolucion he){
+            
+            evol=new newEvo();
+            subjetivo = new pSubjetivo();
+            objetivo = new pObjetivo();
+            analisis = new pAnalisis();
+            pplan = new pPlan(he,factory);
+            jTabbedPane6.removeAll();
+            subjetivo.setBounds(0, 0, 386, 603);
+            addClosableTab(jTabbedPane6, subjetivo, "Nota Subjetiva", PAGE_SUBJETIVO);
+            subjetivo.setEvolucion(he);
+            evol.setBounds(0, 0, 386, 603);
+            addClosableTab(jTabbedPane6, evol, "Signos Vitales", PAGE_SIGNOS);
+            evol.setEvolucion(he);
+            objetivo.setBounds(0, 0, 386, 603);
+            addClosableTab(jTabbedPane6, objetivo, "Nota Objetiva", PAGE_OBJETIVOS);
+            objetivo.setEvolucion(he);
+            analisis.setBounds(0, 0, 386, 603);
+            addClosableTab(jTabbedPane6, analisis, "Analisis", PAGE_ANALISIS);
+            analisis.setEvolucion(he);
+            pplan.setBounds(0, 0, 386, 603);
+            addClosableTab(jTabbedPane6, pplan, "Plan", PAGE_PLAN);
+            jTabbedPane6.setSelectedIndex(0);
+            jButton8.setEnabled(true);
+            jButton10.setEnabled(true);
+            jButton2.setEnabled(true);
+            jButton6.setEnabled(true);
+            jButton4.setEnabled(true);
+            jButton12.setEnabled(true);
+            jButton13.setEnabled(true);
+            jButton5.setEnabled(true);
+        }
+        
+        private void saveEvolucion(){
+            evol.saveChanged(factory);
+            HcuEvolucion he = evol.getHcuEvolucion(factory);
+            if(he!=null && he.getEstado()!=2){
+                subjetivo.saveChanged(factory,he);
+                objetivo.saveChanged(factory,he);          
+                analisis.saveChanged(factory,he);
+                activarComponentes(pplan.saveChanged());  
+                setJTreeEvo();
+            }
+        }
+
         
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -813,6 +945,8 @@ public class Evo extends javax.swing.JPanel {
         jXTaskPane5 = new org.jdesktop.swingx.JXTaskPane();
         jLabel58 = new javax.swing.JLabel();
         jLabel59 = new javax.swing.JLabel();
+        jPopupMenu1 = new javax.swing.JPopupMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jlbNombrePaciente = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
         jTabbedPane3 = new javax.swing.JTabbedPane();
@@ -841,10 +975,18 @@ public class Evo extends javax.swing.JPanel {
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
         jButton12 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        jButton13 = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
-        jButton10 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
+        jButton10 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
+        jButton7 = new javax.swing.JButton();
         jTabbedPane6 = new javax.swing.JTabbedPane();
+        jPanel34 = new javax.swing.JPanel();
         jButton9 = new javax.swing.JButton();
 
         jpMotivoC.setMaximumSize(new java.awt.Dimension(584, 445));
@@ -2451,6 +2593,7 @@ public class Evo extends javax.swing.JPanel {
         });
         jXTaskPane1.getContentPane().add(jLabel46);
 
+        jXTaskPane2.setExpanded(false);
         jXTaskPane2.setTitle("PROCEDIMIENTOS");
         jXTaskPane2.setAnimated(false);
         jXTaskPane2.setFocusable(false);
@@ -2831,6 +2974,15 @@ public class Evo extends javax.swing.JPanel {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 3, Short.MAX_VALUE))
         );
+
+        jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/closeTabButton.png"))); // NOI18N
+        jMenuItem1.setText("Eliminar");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jPopupMenu1.add(jMenuItem1);
 
         setBackground(new java.awt.Color(255, 255, 255));
         setMaximumSize(new java.awt.Dimension(764, 514));
@@ -3263,6 +3415,9 @@ public class Evo extends javax.swing.JPanel {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 jTree1MousePressed(evt);
             }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jTree1MouseReleased(evt);
+            }
         });
         jScrollPane3.setViewportView(jTree1);
 
@@ -3271,10 +3426,10 @@ public class Evo extends javax.swing.JPanel {
         jToolBar1.setDoubleBuffered(true);
         jToolBar1.setOpaque(false);
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/script_add.png"))); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file_document_paper_orange_add.png"))); // NOI18N
+        jButton1.setText("Nueva");
         jButton1.setToolTipText("NUEVA NOTA DE EVOLUCIÓN");
         jButton1.setFocusable(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton1.setOpaque(false);
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -3294,26 +3449,108 @@ public class Evo extends javax.swing.JPanel {
         });
         jToolBar1.add(jButton1);
 
-        jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/script_save.png"))); // NOI18N
+        jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file_document_paper_save.png"))); // NOI18N
+        jButton12.setText("Guardar");
         jButton12.setToolTipText("GUARDAR NOTA DE EVOLUCIÓN");
         jButton12.setEnabled(false);
         jButton12.setFocusable(false);
-        jButton12.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton12.setOpaque(false);
         jButton12.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton12.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton12MouseExited(evt);
+            }
+        });
+        jButton12.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton12MouseMoved(evt);
+            }
+        });
         jButton12.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton12ActionPerformed(evt);
             }
         });
         jToolBar1.add(jButton12);
+
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file_document_paper_imp.png"))); // NOI18N
+        jButton5.setText("Imprimir");
+        jButton5.setToolTipText("IMPRIMIR NOTA DE EVOLUCION");
+        jButton5.setEnabled(false);
+        jButton5.setFocusable(false);
+        jButton5.setOpaque(false);
+        jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton5MouseExited(evt);
+            }
+        });
+        jButton5.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton5MouseMoved(evt);
+            }
+        });
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton5);
+
+        jButton13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/13.png"))); // NOI18N
+        jButton13.setText("Finalizar");
+        jButton13.setToolTipText("FINALIZAR NOTA DE EVOLUCION");
+        jButton13.setEnabled(false);
+        jButton13.setFocusable(false);
+        jButton13.setOpaque(false);
+        jButton13.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton13.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton13MouseExited(evt);
+            }
+        });
+        jButton13.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton13MouseMoved(evt);
+            }
+        });
+        jButton13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton13ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton13);
         jToolBar1.add(jSeparator1);
 
-        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/chart_curve_edit.png"))); // NOI18N
+        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file_document_paper_orange.png"))); // NOI18N
+        jButton8.setText("Subjetivo");
+        jButton8.setToolTipText("SUBJETIVO");
+        jButton8.setEnabled(false);
+        jButton8.setFocusable(false);
+        jButton8.setOpaque(false);
+        jButton8.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton8.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton8MouseExited(evt);
+            }
+        });
+        jButton8.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton8MouseMoved(evt);
+            }
+        });
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton8);
+
+        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file_document_paper_red_signes.png"))); // NOI18N
+        jButton10.setText("S. Vitales");
         jButton10.setToolTipText("SIGNOS VITALES");
         jButton10.setEnabled(false);
         jButton10.setFocusable(false);
-        jButton10.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton10.setOpaque(false);
         jButton10.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton10.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -3336,29 +3573,101 @@ public class Evo extends javax.swing.JPanel {
         });
         jToolBar1.add(jButton10);
 
-        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/page_green.png"))); // NOI18N
-        jButton8.setToolTipText("SUBJETIVO");
-        jButton8.setEnabled(false);
-        jButton8.setFocusable(false);
-        jButton8.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton8.setOpaque(false);
-        jButton8.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton8.addMouseListener(new java.awt.event.MouseAdapter() {
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file_document_paper_blue.png"))); // NOI18N
+        jButton2.setText("Objetivo");
+        jButton2.setToolTipText("OBJETIVO");
+        jButton2.setEnabled(false);
+        jButton2.setFocusable(false);
+        jButton2.setOpaque(false);
+        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton8MouseExited(evt);
+                jButton2MouseExited(evt);
             }
         });
-        jButton8.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        jButton2.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jButton8MouseMoved(evt);
+                jButton2MouseMoved(evt);
             }
         });
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton8ActionPerformed(evt);
+                jButton2ActionPerformed(evt);
             }
         });
-        jToolBar1.add(jButton8);
+        jToolBar1.add(jButton2);
+
+        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file_document_paper_analisis.png"))); // NOI18N
+        jButton6.setText("Analisis");
+        jButton6.setToolTipText("ANALISIS");
+        jButton6.setEnabled(false);
+        jButton6.setFocusable(false);
+        jButton6.setOpaque(false);
+        jButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton6MouseExited(evt);
+            }
+        });
+        jButton6.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton6MouseMoved(evt);
+            }
+        });
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton6);
+
+        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file_document_paper_green.png"))); // NOI18N
+        jButton4.setText("Plan");
+        jButton4.setToolTipText("PLAN DE MAJEJO");
+        jButton4.setEnabled(false);
+        jButton4.setFocusable(false);
+        jButton4.setOpaque(false);
+        jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton4MouseExited(evt);
+            }
+        });
+        jButton4.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton4MouseMoved(evt);
+            }
+        });
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton4);
+        jToolBar1.add(jSeparator2);
+
+        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/33.png"))); // NOI18N
+        jButton7.setText("Graficos");
+        jButton7.setEnabled(false);
+        jButton7.setFocusable(false);
+        jButton7.setOpaque(false);
+        jButton7.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton7.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton7MouseExited(evt);
+            }
+        });
+        jButton7.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton7MouseMoved(evt);
+            }
+        });
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton7);
 
         jTabbedPane6.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
         jTabbedPane6.setMaximumSize(new java.awt.Dimension(608, 414));
@@ -3386,6 +3695,19 @@ public class Evo extends javax.swing.JPanel {
         );
 
         jTabbedPane3.addTab("Nota de Evolucion", jPanel33);
+
+        javax.swing.GroupLayout jPanel34Layout = new javax.swing.GroupLayout(jPanel34);
+        jPanel34.setLayout(jPanel34Layout);
+        jPanel34Layout.setHorizontalGroup(
+            jPanel34Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 759, Short.MAX_VALUE)
+        );
+        jPanel34Layout.setVerticalGroup(
+            jPanel34Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 445, Short.MAX_VALUE)
+        );
+
+        jTabbedPane3.addTab("Nota de Egreso", jPanel34);
 
         jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/editdelete.png"))); // NOI18N
         jButton9.setBorderPainted(false);
@@ -3438,7 +3760,6 @@ public class Evo extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     // <editor-fold desc="eventos de componentes">
-    
     private void jLabel22MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel22MouseClicked
         jpCentro.removeAll();
         jpMotivoC.setBounds(0, 0, 584, 445);
@@ -3811,7 +4132,7 @@ public class Evo extends javax.swing.JPanel {
 
     private void jLabel51MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel51MouseClicked
         if(pProcedimientos==null){
-            pProcedimientos = new pTratMasProcedimientos();
+            pProcedimientos = new pTratMasProcedimientos(false);
             pProcedimientos.showListExistentes(factory, infohistoriac);
         }
         jPanel35.removeAll();
@@ -4537,68 +4858,20 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton1MouseMoved
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-        // TODO add your handling code here:
+        saveEvolucion();
     }//GEN-LAST:event_jButton12ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        JDdateEvo evo = new JDdateEvo(null,true);
-        evo.setLocationRelativeTo(null);
-        evo.setVisible(true);
-        if(evo.fecha_hora!=null){
-            HcuEvolucion evolucion = new HcuEvolucion();    
-            evolucion.setIdInfoHistoriac(infohistoriac);
-            evolucion.setFechaEvo(evo.fecha_hora);
-            TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
-            DefaultMutableTreeNode fechaEvo = null;
-            DefaultMutableTreeNode Evo = null;
-            boolean existeFechaEvo=false;
-            for(int i=0;i<raiz.getChildCount();i++){
-                if(raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()))){
-                    existeFechaEvo = true;
-                    break;
-                }
-            }
-            if(!existeFechaEvo){
-                fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()));
-                modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
-                Evo = new DefaultMutableTreeNode(evolucion);
-                fechaEvo.add(Evo); 
-                jTree1.setSelectionPath(new TreePath(Evo.getPath()));
-            }
-            evol=new newEvo();
-            subjetivo = new pSubjetivo();
-            objetivo = new pObjetivo(evolucion.getIdInfoHistoriac(),factory);
-            analisis = new pAnalisis();
-            pplan = new pPlan(evolucion,factory);
-            Icon icon = PAGE_ICON;
-            jTabbedPane6.removeAll();
-            subjetivo.setBounds(0, 0, 386, 603);
-            addClosableTab(jTabbedPane6, subjetivo, "Nota Subjetiva", icon);
-            subjetivo.setVisible(true);
-            evol.setBounds(0, 0, 386, 603);
-            addClosableTab(jTabbedPane6, evol, "Signos Vitales", icon);
-            evol.setEvolucion(evolucion);
-            evol.setVisible(true);
-            objetivo.setBounds(0, 0, 386, 603);
-            addClosableTab(jTabbedPane6, objetivo, "Nota Objetiva", icon);
-            objetivo.setVisible(true);
-            analisis.setBounds(0, 0, 386, 603);
-            addClosableTab(jTabbedPane6, analisis, "Analisis", icon);
-            analisis.setVisible(true);
-            pplan.setBounds(0, 0, 386, 603);
-            addClosableTab(jTabbedPane6, pplan, "Plan", icon);
-            pplan.setVisible(true);
-            jButton10.setEnabled(true);
-            jTabbedPane6.setSelectedIndex(0);
-        }
+        newEvolucion();
         Funciones.setLabelInfo();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jLabel44MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel44MouseClicked
         jpCentro.removeAll();
-//        jpTratamiento.setBounds(0, 0, 584, 445);
-//        jpCentro.add(jpTratamiento);
-//        jpTratamiento.setVisible(true);
+//        cU = new datosHCU(infohistoriac);
+        cU.setBounds(0, 0, 584, 445);
+        jpCentro.add(cU);
+        cU.setVisible(true);
         jpCentro.validate();
         jpCentro.repaint(); 
         activeCheck(8);
@@ -4627,7 +4900,8 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton1MouseExited
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        Funciones.setLabelInfo();
+        if(!subjetivo.isValid())
+            addClosableTab(jTabbedPane6, subjetivo, "Nota Subjetiva", PAGE_SUBJETIVO);
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton8MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseExited
@@ -4639,40 +4913,7 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton8MouseMoved
 
     private void jTree1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MousePressed
-        TreePath selPath = jTree1.getPathForLocation(evt.getX(), evt.getY());
-        if(selPath!=null){
-            Object nodo = selPath.getLastPathComponent();
-            if(((DefaultMutableTreeNode)nodo).getUserObject().getClass()==HcuEvolucion.class){
-                HcuEvolucion evolucion = (HcuEvolucion)((DefaultMutableTreeNode)nodo).getUserObject();
-                evol=new newEvo();
-                subjetivo = new pSubjetivo();
-                objetivo = new pObjetivo(evolucion.getIdInfoHistoriac(),factory);
-                analisis = new pAnalisis();
-                pplan = new pPlan(evolucion,factory);
-                Icon icon = PAGE_ICON;
-                jTabbedPane6.removeAll();
-                subjetivo.setBounds(0, 0, 386, 603);
-                addClosableTab(jTabbedPane6, subjetivo, "Nota Subjetiva", icon);
-                subjetivo.setVisible(true);
-                evol.setBounds(0, 0, 386, 603);
-                addClosableTab(jTabbedPane6, evol, "Signos Vitales", icon);
-                evol.setEvolucion(evolucion);
-                evol.setVisible(true);
-                objetivo.setBounds(0, 0, 386, 603);
-                addClosableTab(jTabbedPane6, objetivo, "Nota Objetiva", icon);
-                objetivo.setVisible(true);
-                analisis.setBounds(0, 0, 386, 603);
-                addClosableTab(jTabbedPane6, analisis, "Analisis", icon);
-                analisis.setVisible(true);
-                pplan.setBounds(0, 0, 386, 603);
-                addClosableTab(jTabbedPane6, pplan, "Plan", icon);
-                pplan.setVisible(true);
-                
-                jButton10.setEnabled(true);
-                jTabbedPane6.setSelectedIndex(0);
-//                jTabbedPane6.repaint();
-            }
-        }
+
         
     }//GEN-LAST:event_jTree1MousePressed
 
@@ -4689,13 +4930,164 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton10MousePressed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        if(!evol.isValid())
+            addClosableTab(jTabbedPane6, evol, "Signos Vitales", PAGE_SIGNOS);
+        
+    }//GEN-LAST:event_jButton10ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton12MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton12MouseExited
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton12MouseExited
+
+    private void jButton12MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton12MouseMoved
+        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+    }//GEN-LAST:event_jButton12MouseMoved
+
+    private void jButton13MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton13MouseMoved
+        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+    }//GEN-LAST:event_jButton13MouseMoved
+
+    private void jButton2MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseMoved
+        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+    }//GEN-LAST:event_jButton2MouseMoved
+
+    private void jButton6MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseMoved
+        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+    }//GEN-LAST:event_jButton6MouseMoved
+
+    private void jButton4MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseMoved
+        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+    }//GEN-LAST:event_jButton4MouseMoved
+
+    private void jButton7MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseMoved
+        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+    }//GEN-LAST:event_jButton7MouseMoved
+
+    private void jButton5MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseExited
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton5MouseExited
+
+    private void jButton5MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseMoved
+        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+    }//GEN-LAST:event_jButton5MouseMoved
+
+    private void jButton13MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton13MouseExited
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton13MouseExited
+
+    private void jButton2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseExited
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton2MouseExited
+
+    private void jButton6MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseExited
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton6MouseExited
+
+    private void jButton4MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseExited
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton4MouseExited
+
+    private void jButton7MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseExited
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton7MouseExited
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         gSignos = new grafic_sVitales();
         Icon icon = PAGE_ICON;
 //        jTabbedPane6.removeAll();
         gSignos.setBounds(0, 0, 386, 603);
         addClosableTab(jTabbedPane6, gSignos, "Graficos", icon);
-        gSignos.setVisible(true);
-    }//GEN-LAST:event_jButton10ActionPerformed
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        if(!objetivo.isValid())
+            addClosableTab(jTabbedPane6, objetivo, "Nota Objetiva", PAGE_OBJETIVOS);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        if(!analisis.isValid())
+            addClosableTab(jTabbedPane6, analisis, "Analisis", PAGE_ANALISIS);
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        if(!pplan.isValid())
+            addClosableTab(jTabbedPane6, pplan, "Plan", PAGE_PLAN);
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+        if(hcuEvolucionJpaController==null) hcuEvolucionJpaController=new HcuEvolucionJpaController(factory);
+        HcuEvolucion he = null;
+        try {
+            he = evol.getHcuEvolucion(factory);
+            if(he.getEstado()==1){
+                String mensaje = "¿Si finaliza la nota de Evolución no podra modificarla posteriormente? ";
+                int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Confirmar finalizacion",JOptionPane.YES_NO_OPTION);
+                if(entrada==0){
+                    he.setEstado(2);
+                    hcuEvolucionJpaController.edit(he);
+                }
+             }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "No puede finalizar la nota de Evolución sin haber guardado");
+        }
+    }//GEN-LAST:event_jButton13ActionPerformed
+
+    private void jTree1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseReleased
+        TreePath selPath = jTree1. getPathForLocation(evt.getX(), evt.getY());
+        if(selPath!=null && evt.getButton()==1){
+            Object nodo = selPath.getLastPathComponent();
+            if(((DefaultMutableTreeNode)nodo).  getUserObject().getClass()==HcuEvolucion.class){
+                HcuEvolucion evolucion = (HcuEvolucion)((DefaultMutableTreeNode)nodo).getUserObject();
+                this.activarComponentes(evolucion);            
+            }
+        }
+        if(evt.isPopupTrigger()){
+            if(selPath!=null){
+                Object nodo = selPath. getLastPathComponent();
+                if(((DefaultMutableTreeNode)nodo).  getUserObject()   .getClass()==HcuEvolucion.class ){
+                    HcuEvolucion evolucion = (HcuEvolucion)((DefaultMutableTreeNode)nodo).getUserObject();
+                    if (evolucion.getEstado()!= 2){
+                        jPopupMenu1.show(evt.getComponent(),evt.getX(),evt.getY() ); 
+                        evoDelete = evolucion;
+                    }                    
+                }                
+            }
+        }
+        
+    }//GEN-LAST:event_jTree1MouseReleased
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+            if(evoDelete!=null){
+                HcuEvolucion evolucion = evoDelete;
+                String mensaje = "Desea anular la Evolución "+MyDate.yyyyMMddHHmm.format(evolucion.getFechaEvo());
+                int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Anular Evolución",JOptionPane.YES_NO_OPTION);
+                if(entrada==0){
+                    evolucion.setEstado(0);
+                    if(hcuEvolucionJpaController==null) hcuEvolucionJpaController=new HcuEvolucionJpaController(factory);
+                    try {
+                        hcuEvolucionJpaController.edit(evolucion);
+                        setJTreeEvo();
+                        if(evol.getHcuEvolucion(factory).getFechaEvo()==evolucion.getFechaEvo()){
+                            jTabbedPane6.removeAll();
+                            jButton8.setEnabled(false);
+                            jButton10.setEnabled(false);
+                            jButton2.setEnabled(false);
+                            jButton6.setEnabled(false);
+                            jButton4.setEnabled(false);
+                            jButton12.setEnabled(false);
+                            jButton13.setEnabled(false);
+                            jButton5.setEnabled(false);
+                        }
+                    }catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "10131:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }                
+            }
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     // </editor-fold>
     
@@ -4706,7 +5098,13 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
+    private javax.swing.JButton jButton13;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JCheckBox jCheckBox1;
@@ -4782,6 +5180,7 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -4809,6 +5208,7 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel31;
     private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel33;
+    private javax.swing.JPanel jPanel34;
     private javax.swing.JPanel jPanel35;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -4816,6 +5216,7 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JRadioButton jRadioButton3;
@@ -4844,6 +5245,7 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JToolBar.Separator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
