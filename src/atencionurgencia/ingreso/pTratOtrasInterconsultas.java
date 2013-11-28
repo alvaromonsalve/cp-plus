@@ -5,10 +5,15 @@
 package atencionurgencia.ingreso;
 
 import atencionurgencia.AtencionUrgencia;
+import entidades.ConfigCups;
+import entidades.HcuEvoInterconsulta;
+import entidades.HcuEvolucion;
 import entidades.InfoHistoriac;
 import entidades.InfoInterconsultaHcu;
 import entidades.StaticEspecialidades;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.JCheckBox;
@@ -16,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import jpa.HcuEvoInterconsultaJpaController;
 import jpa.InfoInterconsultaHcuJpaController;
 import jpa.StaticEspecialidadesJpaController;
 import jpa.exceptions.NonexistentEntityException;
@@ -35,6 +41,8 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
     private InfoInterconsultaHcuJpaController interconsultaHcuJPA=null;
     private List<StaticEspecialidades> listStaticEspecialidades;
     private StaticEspecialidadesJpaController staticEspecialidadesJPA=null;
+    private HcuEvoInterconsultaJpaController evoInterconsultaJpa=null;
+    private List<HcuEvoInterconsulta> listInterconsultaEvo=null;
 
     /**
      * Creates new form pTratOtrasInterconsultas
@@ -118,6 +126,38 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
         }
     }
     
+    public void showLista(EntityManagerFactory factory, HcuEvolucion evol){
+        if(evoInterconsultaJpa==null)
+            evoInterconsultaJpa=new HcuEvoInterconsultaJpaController(factory);
+        if(staticEspecialidadesJPA==null)
+            staticEspecialidadesJPA=new StaticEspecialidadesJpaController(factory);
+        listStaticEspecialidades=staticEspecialidadesJPA.findStaticEspecialidadesEntities();
+        listInterconsultaEvo = evoInterconsultaJpa.listInterconsultaOtrasEvo(evol);
+        for(StaticEspecialidades se:listStaticEspecialidades){
+            if(se.getId()!=5 && se.getId() !=16 && se.getId() !=23 && se.getId() !=36 ){
+                if(se.getEstado()==1){                    
+                    int row=ModeloTabla.getRowCount();
+                    ModeloTabla.addRow(dato);
+                    ModeloTabla.setValueAt(se, row, 0);
+                    boolean exist = false;
+                    for(HcuEvoInterconsulta hei:listInterconsultaEvo){  
+                        if(se.getEspecialidad().equals(hei.getIdStaticEspecialidades().getEspecialidad())){
+                            exist=true;
+                            ModeloTabla.setValueAt(hei.getJustificacion(), row, 3);
+                            break;               
+                        }else{
+                            ModeloTabla.setValueAt("", row, 3);
+                        }
+                    }
+                    JCheckBox jcb = new JCheckBox();
+                    jcb.setSelected(exist);
+                    ModeloTabla.setValueAt(jcb, row, 1);
+                    ModeloTabla.setValueAt(se.getEspecialidad(), row, 2);
+                }
+            }
+        }
+    }
+    
     public void saveChanges(InfoHistoriac ih){
         if(interconsultaHcuJPA ==null){
             interconsultaHcuJPA = new InfoInterconsultaHcuJpaController(factory);
@@ -170,7 +210,60 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
                 }
             }
         }
-        
+    }
+    
+    public void saveChanges(EntityManagerFactory factory, HcuEvolucion evol){
+        if(evoInterconsultaJpa==null)
+            evoInterconsultaJpa=new HcuEvoInterconsultaJpaController(factory);
+        listInterconsultaEvo = evoInterconsultaJpa.listInterconsultaOtrasEvo(evol);
+        HcuEvoInterconsulta evoInter = null;
+        for(int i=0;i<ModeloTabla.getRowCount();i++){
+            if(((JCheckBox)ModeloTabla.getValueAt(i, 1)).isSelected()){
+                boolean exist=false;
+                for(HcuEvoInterconsulta hei: listInterconsultaEvo){
+                    if(((StaticEspecialidades)ModeloTabla.getValueAt(i, 0))==hei.getIdStaticEspecialidades()){
+                        exist=true;
+                        evoInter = hei;
+                        break;
+                    }
+                }
+                if(exist){
+                    try {
+                        evoInter.setJustificacion((String)ModeloTabla.getValueAt(i, 3));
+                        evoInter.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        evoInterconsultaJpa.edit(evoInter);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "10125:\n"+ex.getMessage(), pTratOtrasInterconsultas.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }else{
+                    evoInter=new HcuEvoInterconsulta();
+                    evoInter.setIdStaticEspecialidades(((StaticEspecialidades)ModeloTabla.getValueAt(i, 0)));
+                    evoInter.setIdHcuEvolucion(evol);
+                    evoInter.setJustificacion((String)ModeloTabla.getValueAt(i, 3));
+                    evoInter.setIdConfigCups(new ConfigCups(5129));
+                    evoInter.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                    evoInter.setEstado(1);
+                    evoInterconsultaJpa.create(evoInter);                    
+                }
+            }else{
+                boolean exist=false;
+                for(HcuEvoInterconsulta hei: listInterconsultaEvo){
+                    if(hei.getIdStaticEspecialidades() == ((StaticEspecialidades)ModeloTabla.getValueAt(i, 0))){
+                        exist=true;
+                        evoInter = hei;
+                        break;
+                    }
+                }
+                if(exist){
+                    try {
+                        evoInter.setEstado(0);//activo
+                        evoInterconsultaJpa.edit(evoInter);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "10126:\n"+ex.getMessage(), pTratOtrasInterconsultas.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+            }
+        }
     }
 
     /**
