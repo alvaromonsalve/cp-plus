@@ -6,16 +6,21 @@ package atencionurgencia;
 
 import entidades.AccessConfigUser;
 import entidades.AccessRoles;
+import entidades.CmProfesionales;
 import entidades.Configdecripcionlogin;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.List;
 import java.util.Properties;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import jpa.AccessConfigUserJpaController;
+import jpa.CmProfesionalesJpaController;
 import jpa.ConfigdecripcionloginJpaController;
 
 
@@ -28,7 +33,9 @@ public class AtencionUrgencia {
     public static int idUsuario;//id config_descripcion_login
     public static Configdecripcionlogin configdecripcionlogin;
     public static Properties props;
-    
+    public static List<AccessRoles> roles;
+    public static AccessConfigUser configUser=null;
+    public static CmProfesionales cep=null;
 
     /**
      * 
@@ -37,21 +44,40 @@ public class AtencionUrgencia {
      * @return panel principal de la clase setBounds(0, 0, 840, 540)
      */
     public static JPanel getPanelIndex(int idUsuario2, Properties props){
-        JPanel jPanel = new Panel("/images/permiso.png");
+        JPanel jPanel = new Panel("images/permiso.png");
+        JLabel label = new JLabel("CODIGO DE PERMISO: 10000");
+        label.setForeground(Color.white);
+        label.setFont(new Font("Tahoma", Font.BOLD, 11));
+        jPanel.add(label);
         EntityManagerFactory factory=Persistence.createEntityManagerFactory("ClipaEJBPU",props);
         ConfigdecripcionloginJpaController configdecripcionloginJpaController = new ConfigdecripcionloginJpaController(factory);
         configdecripcionlogin = configdecripcionloginJpaController.findConfigdecripcionlogin(idUsuario2);
         AccessConfigUserJpaController acujc = new AccessConfigUserJpaController(factory);
+        CmProfesionalesJpaController cpjc = new CmProfesionalesJpaController(factory);
+        cep = cpjc.pprofesional(configdecripcionlogin);
+        /**
+         * el usuario debe el tipo de cuenta de usuario ACU por el cual desea acceder
+         */
         List<AccessConfigUser> ACU = acujc.FindConfigUsers(configdecripcionlogin);
-        for(AccessConfigUser accessConfigUser:ACU){
-            List<AccessRoles> roles = accessConfigUser.getIdPerfiles().getAccessRolesList();
+        if(ACU.size()>1){
+            DseleccionarACU aCU = new DseleccionarACU(null,true);
+            aCU.setACU(ACU);
+            aCU.setLocationRelativeTo(null);
+            aCU.setVisible(true);
+            configUser = aCU.configUser;
+        }else if(ACU.size()==1){
+            configUser = ACU.get(0);
+        }    
+        if(configUser!=null){
+            roles = configUser.getIdPerfiles().getAccessRolesList();
             for(AccessRoles ar:roles){
                 if(ar.getRuta()==10000){
                     panelindex = new panelIndex();
+                    if(configUser.getIdPerfiles().getId()!=3) panelindex.jButton4.setVisible(false);//3 es el id del perfil de especialista de urgencia
                     AtencionUrgencia.props =props;       
                     jPanel = panelindex;
                 }
-            }
+            }            
         }
         return jPanel;
     }
@@ -67,11 +93,13 @@ public class AtencionUrgencia {
         @Override
         public void paint(Graphics g){
             Dimension tamanio = getSize();
-            imagen=new ImageIcon(getClass().getResource(nombre));
+            imagen=new ImageIcon(ClassLoader.getSystemResource(nombre));
             g.drawImage(imagen.getImage(), 0, 0, tamanio.width,tamanio.height,null);
             setOpaque(false);
             super.paint(g);
         }
+        
+        
         
     }
 }
