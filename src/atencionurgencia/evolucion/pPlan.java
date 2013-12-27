@@ -33,6 +33,7 @@ public class pPlan extends javax.swing.JPanel {
     private HcuEvolucionJpaController hejc = null;
     private pTratOtrasInterconsultas pOtrasInterconsultas=null;
     public pTratMasProcedimientos pProcedimientos;
+    private evoDestino destino=null;
     
 
     /**
@@ -56,10 +57,8 @@ public class pPlan extends javax.swing.JPanel {
         if(pInterconsulta4!=null) pInterconsulta4.saveChanges(factory, hcuEvolucion);
         if(pOtrasInterconsultas!=null) pOtrasInterconsultas.saveChanges(factory, hcuEvolucion);
         if(pProcedimientos!=null) pProcedimientos.saveChanges(factory, hcuEvolucion);
-        
-        
-        
-        if(hejc ==null) hejc = new HcuEvolucionJpaController(factory);
+        if(destino!=null) destino.saveChanges(factory, hcuEvolucion);
+        if(hejc ==null) hejc = new HcuEvolucionJpaController(factory);        
         this.hcuEvolucion = hejc.findHcuEvolucion(hcuEvolucion.getId());
         return this.hcuEvolucion;
     }
@@ -90,6 +89,8 @@ public class pPlan extends javax.swing.JPanel {
         jLabel56 = new javax.swing.JLabel();
         jXTaskPane4 = new org.jdesktop.swingx.JXTaskPane();
         jLabel47 = new javax.swing.JLabel();
+        jXTaskPane5 = new org.jdesktop.swingx.JXTaskPane();
+        jLabel50 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
 
         setMaximumSize(new java.awt.Dimension(603, 386));
@@ -375,6 +376,35 @@ public class pPlan extends javax.swing.JPanel {
         });
         jXTaskPane4.getContentPane().add(jLabel47);
 
+        jXTaskPane5.setVisible(false);
+        jXTaskPane5.setExpanded(false);
+        jXTaskPane5.setTitle("DESTINO");
+        jXTaskPane5.setAnimated(false);
+        jXTaskPane5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jXTaskPane5MouseReleased(evt);
+            }
+        });
+
+        jLabel50.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel50.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Edit.png"))); // NOI18N
+        jLabel50.setText("Destino y Recomendaciones");
+        jLabel50.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel50.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel50MouseClicked(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel50MouseExited(evt);
+            }
+        });
+        jLabel50.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel50MouseMoved(evt);
+            }
+        });
+        jXTaskPane5.getContentPane().add(jLabel50);
+
         javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(jPanel16);
         jPanel16.setLayout(jPanel16Layout);
         jPanel16Layout.setHorizontalGroup(
@@ -383,6 +413,7 @@ public class pPlan extends javax.swing.JPanel {
             .addComponent(jXTaskPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jXTaskPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
             .addComponent(jXTaskPane4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jXTaskPane5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel16Layout.setVerticalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -394,7 +425,9 @@ public class pPlan extends javax.swing.JPanel {
                 .addComponent(jXTaskPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jXTaskPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jXTaskPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(182, Short.MAX_VALUE))
         );
 
         jPanel1.setMaximumSize(new java.awt.Dimension(403, 386));
@@ -723,24 +756,28 @@ public class pPlan extends javax.swing.JPanel {
         jXTaskPane1.setExpanded(false);
         jXTaskPane2.setExpanded(false);
         jXTaskPane3.setExpanded(false);
+        jXTaskPane5.setExpanded(false);
     }//GEN-LAST:event_jXTaskPane4MouseReleased
 
     private void jXTaskPane2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jXTaskPane2MouseReleased
         jXTaskPane1.setExpanded(false);
         jXTaskPane4.setExpanded(false);
         jXTaskPane3.setExpanded(false);
+        jXTaskPane5.setExpanded(false);
     }//GEN-LAST:event_jXTaskPane2MouseReleased
 
     private void jXTaskPane3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jXTaskPane3MouseReleased
         jXTaskPane1.setExpanded(false);
         jXTaskPane2.setExpanded(false);
         jXTaskPane4.setExpanded(false);
+        jXTaskPane5.setExpanded(false);
     }//GEN-LAST:event_jXTaskPane3MouseReleased
 
     private void jXTaskPane1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jXTaskPane1MouseReleased
         jXTaskPane4.setExpanded(false);
         jXTaskPane2.setExpanded(false);
         jXTaskPane3.setExpanded(false);
+        jXTaskPane5.setExpanded(false);
     }//GEN-LAST:event_jXTaskPane1MouseReleased
 
     private void jTextField1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MousePressed
@@ -782,6 +819,35 @@ public class pPlan extends javax.swing.JPanel {
         
     }//GEN-LAST:event_jTextField1KeyReleased
 
+    private void jXTaskPane5MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jXTaskPane5MouseReleased
+        jXTaskPane4.setExpanded(false);
+        jXTaskPane2.setExpanded(false);
+        jXTaskPane3.setExpanded(false);
+        jXTaskPane1.setExpanded(false);
+    }//GEN-LAST:event_jXTaskPane5MouseReleased
+
+    private void jLabel50MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel50MouseClicked
+        if(destino==null){
+            destino = new evoDestino();
+        }
+        destino.showExistente(hcuEvolucion);
+        jPanel1.removeAll();
+        destino.setBounds(0,0,403,386);//[403, 386]
+        jPanel1.add(destino);
+        jPanel1.setVisible(true);
+        jPanel1.validate();
+    }//GEN-LAST:event_jLabel50MouseClicked
+
+    private void jLabel50MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel50MouseExited
+        Funciones.setLabelInfo();
+        jLabel50.setForeground(Color.black);
+    }//GEN-LAST:event_jLabel50MouseExited
+
+    private void jLabel50MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel50MouseMoved
+        Funciones.setLabelInfo(jLabel50.getText().toUpperCase());
+        jLabel47.setForeground(Color.blue);
+    }//GEN-LAST:event_jLabel50MouseMoved
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel45;
@@ -789,6 +855,7 @@ public class pPlan extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel47;
     private javax.swing.JLabel jLabel48;
     private javax.swing.JLabel jLabel49;
+    private javax.swing.JLabel jLabel50;
     private javax.swing.JLabel jLabel51;
     private javax.swing.JLabel jLabel52;
     private javax.swing.JLabel jLabel53;
@@ -800,7 +867,8 @@ public class pPlan extends javax.swing.JPanel {
     private javax.swing.JTextField jTextField1;
     private org.jdesktop.swingx.JXTaskPane jXTaskPane1;
     private org.jdesktop.swingx.JXTaskPane jXTaskPane2;
-    private org.jdesktop.swingx.JXTaskPane jXTaskPane3;
-    private org.jdesktop.swingx.JXTaskPane jXTaskPane4;
+    public org.jdesktop.swingx.JXTaskPane jXTaskPane3;
+    public org.jdesktop.swingx.JXTaskPane jXTaskPane4;
+    public org.jdesktop.swingx.JXTaskPane jXTaskPane5;
     // End of variables declaration//GEN-END:variables
 }

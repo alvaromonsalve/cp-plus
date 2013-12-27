@@ -4,6 +4,7 @@
  */
 package atencionurgencia.evolucion;
 
+import atencionurgencia.AtencionUrgencia;
 import entidades.HcuEvolucion;
 import java.text.DecimalFormat;
 import javax.persistence.EntityManagerFactory;
@@ -20,6 +21,7 @@ import tools.Funciones;
 public class newEvo extends javax.swing.JPanel {
     private HcuEvolucionJpaController jpaController=null;
     private HcuEvolucion evolucion;
+    public String titleOther = "OTROS";
     
     private Integer glasgow1=0,glasgow2=0,glasgow3=0;
     //Glasgow Lactante entre 0 y 2 años
@@ -83,17 +85,17 @@ public class newEvo extends javax.swing.JPanel {
     
     private boolean validAll(){
         boolean retorno=true;
-        if(glasgow1==0 && glasgow2==0 && glasgow2==0 && retorno==true){//glasgow
-            JOptionPane.showMessageDialog(this, "El valor de la escala Glasgow es mas bajo que 3");
-            ((JTabbedPane)this.getParent()).setSelectedComponent(this);
-            this.jComboBox2.requestFocus();
-            retorno = false;
-        }
-        if(jComboBox1.getSelectedIndex()<0 && retorno==true){
-            JOptionPane.showMessageDialog(this, "El estado de conciencia no es valido");
-            ((JTabbedPane)this.getParent()).setSelectedComponent(this);
-            jComboBox1.requestFocus();
-        }
+//        if(glasgow1==0 && glasgow2==0 && glasgow2==0 && retorno==true){//glasgow
+//            JOptionPane.showMessageDialog(this, "El valor de la escala Glasgow es mas bajo que 3");
+//            ((JTabbedPane)this.getParent()).setSelectedComponent(this);
+//            this.jComboBox2.requestFocus();
+//            retorno = false;
+//        }
+//        if(jComboBox1.getSelectedIndex()<0 && retorno==true){
+//            JOptionPane.showMessageDialog(this, "El estado de conciencia no es valido");
+//            ((JTabbedPane)this.getParent()).setSelectedComponent(this);
+//            jComboBox1.requestFocus();
+//        }
         if(!jTextField1.getText().equals("") && retorno==true){//SatO2
             try {   
                 Integer.parseInt(jTextField1.getText());
@@ -235,14 +237,15 @@ public class newEvo extends javax.swing.JPanel {
         if(evolucion.getOtrossignos()!=null) jTextArea2.setText(evolucion.getOtrossignos());
     }
 
-    public void saveChanged(EntityManagerFactory factory){
+    public boolean saveChanged(EntityManagerFactory factory, HcuEvolucion hcuEvolucion){
+        boolean sigue=false;
         if(jpaController==null) jpaController = new HcuEvolucionJpaController(factory);
-        HcuEvolucion editEvolucion = evolucion;
-        if(validAll() && editEvolucion.getEstado()!=2){
-            editEvolucion.setConciencia((short) jComboBox1.getSelectedIndex());
-            editEvolucion.setAperturaOcular((short)jComboBox2.getSelectedIndex());
-            editEvolucion.setRespuestaVerbal((short)jComboBox3.getSelectedIndex());
-            editEvolucion.setRespuestaMotora((short)jComboBox4.getSelectedIndex());
+        HcuEvolucion editEvolucion = hcuEvolucion;
+        if(validAll() && editEvolucion.getEstado()!=2){            
+            if(jComboBox1.getSelectedIndex()>-1) editEvolucion.setConciencia((short) jComboBox1.getSelectedIndex());
+            if(jComboBox2.getSelectedIndex()>-1) editEvolucion.setAperturaOcular((short)jComboBox2.getSelectedIndex());
+            if(jComboBox3.getSelectedIndex()>-1) editEvolucion.setRespuestaVerbal((short)jComboBox3.getSelectedIndex());
+            if(jComboBox4.getSelectedIndex()>-1) editEvolucion.setRespuestaMotora((short)jComboBox4.getSelectedIndex());
             if(!jTextField1.getText().isEmpty()) editEvolucion.setSao2(Short.parseShort(jTextField1.getText().toString()));
             if(!jTextField3.getText().isEmpty()) editEvolucion.setFc(Short.parseShort(jTextField3.getText().toString()));
             if(!jTextField8.getText().isEmpty()) editEvolucion.setTemperatura(Float.parseFloat(jTextField8.getText().toString().replace(",", ".")));
@@ -250,12 +253,14 @@ public class newEvo extends javax.swing.JPanel {
             if(!jTextField7.getText().isEmpty()) editEvolucion.setTas(Short.parseShort(jTextField7.getText().toString()));
             if(!jTextField6.getText().isEmpty()) editEvolucion.setTad(Short.parseShort(jTextField6.getText().toString()));
             if(!jTextArea2.getText().isEmpty()) editEvolucion.setOtrossignos(jTextArea2.getText().toUpperCase());
-            editEvolucion.setEstado(1);
+            editEvolucion.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
             try {
                 if(editEvolucion.getId()==null){
                     jpaController.create(editEvolucion);
+                    sigue =true;
                 }else{
                     jpaController.edit(editEvolucion);
+                    sigue = true;
                 }            
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "10130:\n"+ex.getMessage(), newEvo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
@@ -263,15 +268,7 @@ public class newEvo extends javax.swing.JPanel {
          }else if(editEvolucion.getEstado()==2){
             JOptionPane.showMessageDialog(this, "La Evolución fue finalizada y no puede ser modificada");
         }
-    }
-    
-    public HcuEvolucion getHcuEvolucion(EntityManagerFactory factory){
-        if(jpaController==null) jpaController = new HcuEvolucionJpaController(factory);
-        try {
-            return jpaController.findHcuEvolucion(this.evolucion.getId());
-        } catch (Exception e) {
-            return null;
-        }        
+        return sigue;
     }
     
     
@@ -457,7 +454,7 @@ public class newEvo extends javax.swing.JPanel {
             }
         });
 
-        jPanel25.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "OTROS", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 0, 10))); // NOI18N
+        jPanel25.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "OBSERVACIONES GENERALES", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 0, 10))); // NOI18N
         jPanel25.setOpaque(false);
 
         jTextArea2.setColumns(20);

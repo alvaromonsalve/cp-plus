@@ -29,6 +29,15 @@ public class JDdateEvo extends javax.swing.JDialog {
         jSpinField2.setValue(jDateChooser1.getDate().getMinutes());
     }
     
+    public JDdateEvo(java.awt.Frame parent, boolean modal, String text) {
+        super(parent, modal);
+        initComponents();
+        this.setTitle(text);
+        jDateChooser1.setDate(new Date());
+        jSpinField1.setValue(jDateChooser1.getDate().getHours());
+        jSpinField2.setValue(jDateChooser1.getDate().getMinutes());
+    }
+    
     private boolean validar(){
         try {
             Date date = jDateChooser1.getDate();
@@ -88,7 +97,7 @@ public class JDdateEvo extends javax.swing.JDialog {
         });
 
         jLabel24.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel24.setText("HORA DE EVOLUCIÓN:");
+        jLabel24.setText("HORA:");
 
         jSpinField1.setToolTipText("Hora (24 horas)");
         jSpinField1.setMaximum(23);
@@ -102,7 +111,7 @@ public class JDdateEvo extends javax.swing.JDialog {
         jDateChooser1.setMinSelectableDate(new java.util.Date(-2208967344000L));
 
         jLabel23.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel23.setText("FECHA DE EVOLUCIÓN:");
+        jLabel23.setText("FECHA:");
 
         jLabel25.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel25.setForeground(new java.awt.Color(255, 0, 0));

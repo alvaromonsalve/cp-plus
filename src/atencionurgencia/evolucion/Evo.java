@@ -4,6 +4,7 @@
  */
 package atencionurgencia.evolucion;
 
+import Documentos.ImprimirEvolucion;
 import atencionurgencia.AtencionUrgencia;
 import atencionurgencia.ListadoPacientes.Ftriaje;
 import atencionurgencia.ingreso.pAnexo3;
@@ -24,6 +25,7 @@ import entidades.InfoHistoriac;
 import entidades.InfoPaciente;
 import entidades.InfoPruebasComplement;
 import entidades.StaticCie10;
+import entidades.StaticEspecialidades;
 import java.awt.Color;
 import java.awt.Event;
 import java.awt.FlowLayout;
@@ -63,6 +65,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import jpa.HcuEvolucionJpaController;
+import net.sf.jasperreports.engine.JRException;
+import oldConnection.Database;
 import tools.JTreeRendererArbolEvo;
 import tools.MyDate;
 
@@ -112,8 +116,10 @@ public class Evo extends javax.swing.JPanel {
     private HcuEvolucionJpaController hcuEvolucionJpaController =null;
     private DefaultTreeModel modeloTree;
     private DefaultMutableTreeNode EvosHC;
-    private HcuEvolucion evoDelete=null;
+    private HcuEvolucion evoSeleccion=null;
     private datosHCU cU;
+    public int tipoEvo;
+    public StaticEspecialidades staticEspecialidades =null;
     
     
     // </editor-fold>
@@ -137,7 +143,8 @@ public class Evo extends javax.swing.JPanel {
             jpMotivoC.setVisible(true);
             jpCentro.validate();
             jpCentro.repaint();
-            activeCheck(1);            
+            activeCheck(1);   
+            jButton7.setVisible(false);
     }
     
     // <editor-fold defaultstate="collapsed" desc="private void activeCheck(int val){">
@@ -316,6 +323,13 @@ public class Evo extends javax.swing.JPanel {
                TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
                DefaultMutableTreeNode fechaEvo = null;
                DefaultMutableTreeNode Evo = null;
+               if(hcuEvo.getEstado()==3){
+                   jButton1.setVisible(false);
+                   jButton14.setVisible(false);
+               }else{
+                   jButton1.setVisible(true);
+                   jButton14.setVisible(true);
+               }
                boolean existeFechaEvo=false;
                for(int i=0;i<raiz.getChildCount();i++){
                    if(raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(hcuEvo.getFechaEvo()))){
@@ -668,6 +682,8 @@ public class Evo extends javax.swing.JPanel {
                 HcuEvolucion evolucion = new HcuEvolucion();
                 evolucion.setIdInfoHistoriac(infohistoriac);
                 evolucion.setFechaEvo(evo.fecha_hora);
+                evolucion.setTipo(tipoEvo);
+                evolucion.setIdStaticEspecialidades(staticEspecialidades);
                 List<HcuEvolucion> hes= hejc.FindHcuEvolucions(infohistoriac); 
                 if(hes.isEmpty()){
                     evolucion.setDx(scjc.findStaticCie10(infohistoriac.getDiagnostico()));
@@ -683,6 +699,7 @@ public class Evo extends javax.swing.JPanel {
                     evolucion.setDx4(hes.get(hes.size()-1).getDx4());
                 }                
                 evolucion.setEstado(0);
+                evoSeleccion = evolucion;
                 TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
                 DefaultMutableTreeNode fechaEvo = null;
                 DefaultMutableTreeNode Evo = null;
@@ -725,8 +742,70 @@ public class Evo extends javax.swing.JPanel {
             }
         }
         
-        private void activarComponentes(HcuEvolucion he){
-            
+        private void notaEgreso(){
+            StaticCie10JpaController scjc = new StaticCie10JpaController(factory);
+            HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
+            JDdateEvo evo = new JDdateEvo(null,true,"Fecha de Egreso");
+            evo.setLocationRelativeTo(null);
+            evo.setVisible(true);
+            if(evo.fecha_hora!=null){
+                HcuEvolucion evolucion = new HcuEvolucion();
+                evolucion.setIdInfoHistoriac(infohistoriac);
+                evolucion.setFechaEvo(evo.fecha_hora);
+                evolucion.setTipo(tipoEvo);
+                evolucion.setIdStaticEspecialidades(staticEspecialidades);
+                List<HcuEvolucion> hes= hejc.FindHcuEvolucions(infohistoriac); 
+                if(hes.isEmpty()){
+                    evolucion.setDx(scjc.findStaticCie10(infohistoriac.getDiagnostico()));
+                    evolucion.setDx1(scjc.findStaticCie10(infohistoriac.getDiagnostico2()));
+                    evolucion.setDx2(scjc.findStaticCie10(infohistoriac.getDiagnostico3()));
+                    evolucion.setDx3(scjc.findStaticCie10(infohistoriac.getDiagnostico4()));
+                    evolucion.setDx4(scjc.findStaticCie10(infohistoriac.getDiagnostico5()));
+                }else{
+                    evolucion.setDx(hes.get(hes.size()-1).getDx());
+                    evolucion.setDx1(hes.get(hes.size()-1).getDx1());
+                    evolucion.setDx2(hes.get(hes.size()-1).getDx2());
+                    evolucion.setDx3(hes.get(hes.size()-1).getDx3());
+                    evolucion.setDx4(hes.get(hes.size()-1).getDx4());
+                }                
+                evolucion.setEstado(3);
+                evoSeleccion = evolucion;
+                TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
+                DefaultMutableTreeNode fechaEvo = null;
+                DefaultMutableTreeNode Evo = null;
+                boolean existeFechaEvo=false;
+                boolean existeEvo=false;
+                for(int i=0;i<raiz.getChildCount();i++){
+                    if(raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()))){
+                        existeFechaEvo = true;
+                        for(int a=0;a<raiz.getChildAt(i).getChildCount();a++){
+                            if(raiz.getChildAt(i).getChildAt(a).toString().equals(evolucion.toString())){
+                                existeEvo = true;
+                                break;
+                            }
+                        }
+                        if(!existeEvo){
+                            fechaEvo = (DefaultMutableTreeNode) raiz.getChildAt(i);
+                            Evo = new DefaultMutableTreeNode(evolucion);
+                            fechaEvo.add(Evo);
+                            modeloTree.nodeStructureChanged(raiz);
+                            jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+                        }
+                        break;
+                    }
+                }
+                if(!existeFechaEvo){
+                    fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()));
+                    modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
+                    Evo = new DefaultMutableTreeNode(evolucion);
+                    fechaEvo.add(Evo);
+                    jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+                }
+                this.activarComponentesEgreso(evolucion);
+            }
+        }
+        
+        private void activarComponentes(HcuEvolucion he){            
             evol=new newEvo();
             subjetivo = new pSubjetivo();
             objetivo = new pObjetivo();
@@ -747,26 +826,87 @@ public class Evo extends javax.swing.JPanel {
             analisis.setEvolucion(he);
             pplan.setBounds(0, 0, 386, 603);
             addClosableTab(jTabbedPane6, pplan, "Plan", PAGE_PLAN);
+            jLabel65.setText(MyDate.yyyyMMddHHmm2.format(he.getFechaEvo()));
             jTabbedPane6.setSelectedIndex(0);
+            jButton8.setVisible(true);
             jButton8.setEnabled(true);
             jButton10.setEnabled(true);
+            jButton10.setText("S. Vitales");
+            jButton10.setToolTipText("SIGNOS VITALES");
             jButton2.setEnabled(true);
+            jButton2.setText("Objetivo");
+            jButton2.setToolTipText("NOTAS OBJETIVAS");
             jButton6.setEnabled(true);
+            jButton6.setText("Analisis");
+            jButton6.setToolTipText("NOTAS DE ANALISIS");
             jButton4.setEnabled(true);
+            jButton4.setText("Plan");
+            jButton4.setToolTipText("PLAN DE MANEJO");
+            jButton12.setEnabled(true);
+            jButton13.setEnabled(true);
+            jButton5.setEnabled(true);
+            jButton14.setEnabled(true);
+        }
+        
+        private void activarComponentesEgreso(HcuEvolucion he){            
+            evol=new newEvo();
+            evol.titleOther ="OBSERVACIONES ADICIONALES";
+//            subjetivo = new pSubjetivo();
+            objetivo = new pObjetivo();
+            objetivo.jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "SÍNTESIS", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 1, 11)));
+            analisis = new pAnalisis();
+            analisis.jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "CONSIDERACIONES ADICIONALES", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 1, 11)));
+            pplan = new pPlan(he,factory);
+            pplan.jXTaskPane3.setVisible(false);
+            pplan.jXTaskPane5.setVisible(true);
+            pplan.jXTaskPane4.setVisible(false);
+            jTabbedPane6.removeAll();
+//            subjetivo.setBounds(0, 0, 386, 603);
+//            addClosableTab(jTabbedPane6, subjetivo, "Nota Subjetiva", PAGE_SUBJETIVO);
+//            subjetivo.setEvolucion(he);
+            evol.setBounds(0, 0, 386, 603);
+            addClosableTab(jTabbedPane6, evol, "Estado General", PAGE_SIGNOS);
+            evol.setEvolucion(he);
+            objetivo.setBounds(0, 0, 386, 603);
+            addClosableTab(jTabbedPane6, objetivo, "Síntesis", PAGE_OBJETIVOS);
+            objetivo.setEvolucion(he);
+            analisis.setBounds(0, 0, 386, 603);
+            addClosableTab(jTabbedPane6, analisis, "DX Egreso", PAGE_ANALISIS);
+            analisis.setEvolucion(he);
+            pplan.setBounds(0, 0, 386, 603);
+            addClosableTab(jTabbedPane6, pplan, "Conducta", PAGE_PLAN);
+            jLabel65.setText(MyDate.yyyyMMddHHmm2.format(he.getFechaEvo()));
+            jTabbedPane6.setSelectedIndex(0);
+            jButton8.setVisible(false);
+            jButton10.setEnabled(true);
+            jButton10.setText("Estado General");
+            jButton10.setToolTipText("ESTADO GEENRAL DEL PACIENTE");
+            jButton2.setEnabled(true);
+            jButton2.setText("Síntesis");
+            jButton2.setToolTipText("RESUMEN DE NOTAS DE EVOLUCIÓN");
+            jButton6.setEnabled(true);
+            jButton6.setText("DX Egreso");
+            jButton6.setToolTipText("DIAGNOSTICOS DE EGRESO");
+            jButton4.setEnabled(true);
+            jButton4.setText("Conducta");
+            jButton4.setToolTipText("CONDUCTA Y DESTINO");
             jButton12.setEnabled(true);
             jButton13.setEnabled(true);
             jButton5.setEnabled(true);
         }
         
         private void saveEvolucion(){
-            evol.saveChanged(factory);
-            HcuEvolucion he = evol.getHcuEvolucion(factory);
-            if(he!=null && he.getEstado()!=2){
-                subjetivo.saveChanged(factory,he);
-                objetivo.saveChanged(factory,he);          
-                analisis.saveChanged(factory,he);
-                activarComponentes(pplan.saveChanged());  
-                setJTreeEvo();
+            if(evoSeleccion.getEstado()==0) evoSeleccion.setEstado(1);
+            boolean sigue = evol.saveChanged(factory,evoSeleccion);
+            if(evoSeleccion!=null && evoSeleccion.getEstado()!=2 && sigue){
+                if(evoSeleccion.getEstado()!=3){
+                    subjetivo.saveChanged(factory,evoSeleccion);
+                }                
+                objetivo.saveChanged(factory,evoSeleccion);          
+                analisis.saveChanged(factory,evoSeleccion);
+                pplan.saveChanged();
+                jTree1.repaint();
+//                setJTreeEvo();
             }
         }
 
@@ -946,6 +1086,8 @@ public class Evo extends javax.swing.JPanel {
         jLabel58 = new javax.swing.JLabel();
         jLabel59 = new javax.swing.JLabel();
         jPopupMenu1 = new javax.swing.JPopupMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
         jMenuItem1 = new javax.swing.JMenuItem();
         jlbNombrePaciente = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
@@ -974,6 +1116,7 @@ public class Evo extends javax.swing.JPanel {
         jTree1 = new javax.swing.JTree();
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
+        jButton14 = new javax.swing.JButton();
         jButton12 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton13 = new javax.swing.JButton();
@@ -986,7 +1129,13 @@ public class Evo extends javax.swing.JPanel {
         jSeparator2 = new javax.swing.JToolBar.Separator();
         jButton7 = new javax.swing.JButton();
         jTabbedPane6 = new javax.swing.JTabbedPane();
-        jPanel34 = new javax.swing.JPanel();
+        jLabel57 = new javax.swing.JLabel();
+        jLabel60 = new javax.swing.JLabel();
+        jLabel61 = new javax.swing.JLabel();
+        jLabel62 = new javax.swing.JLabel();
+        jLabel63 = new javax.swing.JLabel();
+        jLabel64 = new javax.swing.JLabel();
+        jLabel65 = new javax.swing.JLabel();
         jButton9 = new javax.swing.JButton();
 
         jpMotivoC.setMaximumSize(new java.awt.Dimension(584, 445));
@@ -2975,7 +3124,17 @@ public class Evo extends javax.swing.JPanel {
                 .addGap(0, 3, Short.MAX_VALUE))
         );
 
-        jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/closeTabButton.png"))); // NOI18N
+        jMenuItem2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/foward.png"))); // NOI18N
+        jMenuItem2.setText("Seleccionar");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jPopupMenu1.add(jMenuItem2);
+        jPopupMenu1.add(jSeparator3);
+
+        jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/stop.png"))); // NOI18N
         jMenuItem1.setText("Eliminar");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3412,11 +3571,13 @@ public class Evo extends javax.swing.JPanel {
         javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("root");
         jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
         jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                jTree1MousePressed(evt);
-            }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 jTree1MouseReleased(evt);
+            }
+        });
+        jTree1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+                jTree1ValueChanged(evt);
             }
         });
         jScrollPane3.setViewportView(jTree1);
@@ -3448,6 +3609,28 @@ public class Evo extends javax.swing.JPanel {
             }
         });
         jToolBar1.add(jButton1);
+
+        jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/23.png"))); // NOI18N
+        jButton14.setText("Egreso");
+        jButton14.setFocusable(false);
+        jButton14.setOpaque(false);
+        jButton14.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton14.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton14MouseExited(evt);
+            }
+        });
+        jButton14.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton14MouseMoved(evt);
+            }
+        });
+        jButton14.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton14ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton14);
 
         jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file_document_paper_save.png"))); // NOI18N
         jButton12.setText("Guardar");
@@ -3674,14 +3857,62 @@ public class Evo extends javax.swing.JPanel {
         jTabbedPane6.setMinimumSize(new java.awt.Dimension(608, 414));
         jTabbedPane6.setPreferredSize(new java.awt.Dimension(608, 414));
 
+        jLabel57.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel57.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/bullet_blue.png"))); // NOI18N
+        jLabel57.setText("Nota de Egreso");
+        jLabel57.setMaximumSize(new java.awt.Dimension(89, 11));
+        jLabel57.setMinimumSize(new java.awt.Dimension(89, 11));
+        jLabel57.setPreferredSize(new java.awt.Dimension(89, 11));
+
+        jLabel60.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel60.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/bullet_green.png"))); // NOI18N
+        jLabel60.setText("Evolución Finalizada");
+
+        jLabel61.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel61.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/bullet_grey.png"))); // NOI18N
+        jLabel61.setText("Nota Borrador");
+
+        jLabel62.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel62.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/bullet_yellow.png"))); // NOI18N
+        jLabel62.setText("Nota sin Finalizar");
+
+        jLabel63.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel63.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/bullet_purple.png"))); // NOI18N
+        jLabel63.setText("Nota de Valoracion");
+
+        jLabel64.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel64.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/bullet_orange.png"))); // NOI18N
+        jLabel64.setText("Nota de Interconsulta");
+        jLabel64.setMaximumSize(new java.awt.Dimension(89, 11));
+        jLabel64.setMinimumSize(new java.awt.Dimension(89, 11));
+        jLabel64.setPreferredSize(new java.awt.Dimension(89, 11));
+
+        jLabel65.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel65.setForeground(new java.awt.Color(0, 0, 204));
+        jLabel65.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabel65.setText("Evolucion Activa");
+        jLabel65.setMaximumSize(new java.awt.Dimension(89, 11));
+        jLabel65.setMinimumSize(new java.awt.Dimension(89, 11));
+        jLabel65.setPreferredSize(new java.awt.Dimension(89, 11));
+
         javax.swing.GroupLayout jPanel33Layout = new javax.swing.GroupLayout(jPanel33);
         jPanel33.setLayout(jPanel33Layout);
         jPanel33Layout.setHorizontalGroup(
             jPanel33Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(jPanel33Layout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel33Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel33Layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 1, Short.MAX_VALUE))
+                    .addComponent(jLabel57, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel60, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel61, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel64, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel63, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel62, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel65, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jTabbedPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 609, Short.MAX_VALUE))
             .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel33Layout.setVerticalGroup(
@@ -3690,24 +3921,27 @@ public class Evo extends javax.swing.JPanel {
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel33Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3)
-                    .addComponent(jTabbedPane6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jTabbedPane6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel33Layout.createSequentialGroup()
+                        .addComponent(jLabel65, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel57, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel60, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel61, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel64, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel63, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel62, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
 
         jTabbedPane3.addTab("Nota de Evolucion", jPanel33);
-
-        javax.swing.GroupLayout jPanel34Layout = new javax.swing.GroupLayout(jPanel34);
-        jPanel34.setLayout(jPanel34Layout);
-        jPanel34Layout.setHorizontalGroup(
-            jPanel34Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 759, Short.MAX_VALUE)
-        );
-        jPanel34Layout.setVerticalGroup(
-            jPanel34Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 445, Short.MAX_VALUE)
-        );
-
-        jTabbedPane3.addTab("Nota de Egreso", jPanel34);
 
         jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/editdelete.png"))); // NOI18N
         jButton9.setBorderPainted(false);
@@ -4147,9 +4381,14 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel51MouseClicked
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        atencionurgencia.AtencionUrgencia.panelindex.jpContainer.removeAll(); 
-        atencionurgencia.AtencionUrgencia.panelindex.jpContainer.validate();
-        atencionurgencia.AtencionUrgencia.panelindex.jpContainer.repaint();
+        String mensaje = "Guarde sus cambios antes de salir.\n¿Desea salir de la ????? de este usuario? ";
+        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Cerrar ??????",JOptionPane.YES_NO_OPTION);
+        if(entrada==0){
+            atencionurgencia.AtencionUrgencia.panelindex.jpContainer.removeAll(); 
+            atencionurgencia.AtencionUrgencia.panelindex.jpContainer.validate();
+            atencionurgencia.AtencionUrgencia.panelindex.jpContainer.repaint();
+            Funciones.setLabelInfo();
+        }        
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jLabel48MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel48MouseClicked
@@ -4708,8 +4947,7 @@ public class Evo extends javax.swing.JPanel {
 
     private void jTextArea16KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea16KeyPressed
         if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+            if(evt.getModifiers()>0){                
                 jTextArea16.transferFocusBackward();
             }else{
                 jTextArea16.transferFocus();
@@ -4788,12 +5026,12 @@ public class Evo extends javax.swing.JPanel {
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
         if(getValidaFirma()){
-                impresionesHC imp = new impresionesHC();
-                imp.setidHC(this.infohistoriac);
-                imp.setdestinoHc("OBSERVACION DE URGENCIAS");
-                imp.setLocationRelativeTo(null);
-                imp.setNoValido(true);
-                imp.setVisible(true);
+            impresionesHC imp = new impresionesHC();
+            imp.setidHC(this.infohistoriac);
+            imp.setdestinoHc("OBSERVACION DE URGENCIAS");
+            imp.setLocationRelativeTo(null);
+            imp.setNoValido(true);
+            imp.setVisible(true);
         }
     }//GEN-LAST:event_jButton11ActionPerformed
 
@@ -4912,11 +5150,6 @@ public class Evo extends javax.swing.JPanel {
         Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
     }//GEN-LAST:event_jButton8MouseMoved
 
-    private void jTree1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MousePressed
-
-        
-    }//GEN-LAST:event_jTree1MousePressed
-
     private void jButton10MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton10MouseExited
         Funciones.setLabelInfo();
     }//GEN-LAST:event_jButton10MouseExited
@@ -4930,13 +5163,32 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton10MousePressed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        if(!evol.isValid())
-            addClosableTab(jTabbedPane6, evol, "Signos Vitales", PAGE_SIGNOS);
-        
+        if(!evol.isValid()){
+            if(jButton10.getText().equals("S. Vitales")){
+                addClosableTab(jTabbedPane6, evol, "Signos Vitales", PAGE_SIGNOS);
+            }else{
+                addClosableTab(jTabbedPane6, evol, "Estado General", PAGE_SIGNOS);
+            }
+        }
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        imphcuEvo imEvo = new imphcuEvo(null, true);
+        imEvo.setLocationRelativeTo(null);
+        imEvo.setVisible(true);
+        imEvo.setEvolucion(evoSeleccion);
+        imEvo.setNoValido(false);
         
+//        oldConnection.Database db = new Database(AtencionUrgencia.props);
+//            ImprimirEvolucion imprimirEvolucion = new ImprimirEvolucion();
+//            db.Conectar();
+//            imprimirEvolucion.setConnection(db.conexion);
+//            
+//            imprimirEvolucion.setIdevolucion("32");
+//            
+//            imprimirEvolucion.         ImprimirEvolucion();
+//            db.DesconectarBasedeDatos();
+
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton12MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton12MouseExited
@@ -5004,33 +5256,55 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if(!objetivo.isValid())
-            addClosableTab(jTabbedPane6, objetivo, "Nota Objetiva", PAGE_OBJETIVOS);
+        if(!objetivo.isValid()){
+            if(jButton2.getText().equals("Objetivo")){
+                addClosableTab(jTabbedPane6, objetivo, "Nota Objetiva", PAGE_OBJETIVOS);
+            }else{
+                addClosableTab(jTabbedPane6, objetivo, "Síntesis", PAGE_OBJETIVOS);
+            }
+        }
+            
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        if(!analisis.isValid())
-            addClosableTab(jTabbedPane6, analisis, "Analisis", PAGE_ANALISIS);
+        if(!analisis.isValid()){
+            if(jButton6.getText().equals("")){
+                addClosableTab(jTabbedPane6, analisis, "Analisis", PAGE_ANALISIS);
+            }else{
+                addClosableTab(jTabbedPane6, analisis, "DX Egreso", PAGE_ANALISIS);
+            }
+        }
+            
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        if(!pplan.isValid())
-            addClosableTab(jTabbedPane6, pplan, "Plan", PAGE_PLAN);
+        if(!pplan.isValid()){
+            if(jButton4.getText().equals("Plan")){
+                addClosableTab(jTabbedPane6, pplan, "Plan", PAGE_PLAN);
+            }else{
+                addClosableTab(jTabbedPane6, pplan, "Conducta", PAGE_PLAN);
+            }
+        }   
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
         if(hcuEvolucionJpaController==null) hcuEvolucionJpaController=new HcuEvolucionJpaController(factory);
         HcuEvolucion he = null;
         try {
-            he = evol.getHcuEvolucion(factory);
+            he = evoSeleccion;
             if(he.getEstado()==1){
                 String mensaje = "¿Si finaliza la nota de Evolución no podra modificarla posteriormente? ";
                 int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Confirmar finalizacion",JOptionPane.YES_NO_OPTION);
                 if(entrada==0){
                     he.setEstado(2);
                     hcuEvolucionJpaController.edit(he);
+//                    setJTreeEvo();
                 }
-             }
+             }else if(he.getEstado()==0){
+                 JOptionPane.showMessageDialog(null, "No se puede finalizar Notas en estado Borrador");
+             }else if(he.getEstado()>1 && he.getEstado()!=3 ){    
+                JOptionPane.showMessageDialog(null, "Esta Nota ya se encuentra finalizada");
+            }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "No puede finalizar la nota de Evolución sin haber guardado");
         }
@@ -5038,56 +5312,101 @@ public class Evo extends javax.swing.JPanel {
 
     private void jTree1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseReleased
         TreePath selPath = jTree1. getPathForLocation(evt.getX(), evt.getY());
-        if(selPath!=null && evt.getButton()==1){
-            Object nodo = selPath.getLastPathComponent();
-            if(((DefaultMutableTreeNode)nodo).  getUserObject().getClass()==HcuEvolucion.class){
-                HcuEvolucion evolucion = (HcuEvolucion)((DefaultMutableTreeNode)nodo).getUserObject();
-                this.activarComponentes(evolucion);            
-            }
-        }
+        jTree1.setSelectionPath(selPath);
         if(evt.isPopupTrigger()){
             if(selPath!=null){
                 Object nodo = selPath. getLastPathComponent();
-                if(((DefaultMutableTreeNode)nodo).  getUserObject()   .getClass()==HcuEvolucion.class ){
-                    HcuEvolucion evolucion = (HcuEvolucion)((DefaultMutableTreeNode)nodo).getUserObject();
-                    if (evolucion.getEstado()!= 2){
-                        jPopupMenu1.show(evt.getComponent(),evt.getX(),evt.getY() ); 
-                        evoDelete = evolucion;
+                if(((DefaultMutableTreeNode)nodo).getUserObject() instanceof HcuEvolucion){
+                    HcuEvolucion evolucion = (HcuEvolucion)((DefaultMutableTreeNode)nodo).getUserObject();                    
+                    if (evolucion.getEstado()!=0 && evolucion.getEstado()!=1){
+                        jMenuItem1.setEnabled(false);
+                    }else{
+                        jMenuItem1.setEnabled(true);
                     }                    
+                    jPopupMenu1.show(evt.getComponent(),evt.getX(),evt.getY());
+                    evoSeleccion = evolucion;               
                 }                
             }
         }
-        
     }//GEN-LAST:event_jTree1MouseReleased
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-            if(evoDelete!=null){
-                HcuEvolucion evolucion = evoDelete;
-                String mensaje = "Desea anular la Evolución "+MyDate.yyyyMMddHHmm.format(evolucion.getFechaEvo());
-                int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Anular Evolución",JOptionPane.YES_NO_OPTION);
+        TreePath selPath = jTree1.getSelectionPath();
+        if(selPath!=null){
+            Object nodo = selPath. getLastPathComponent();
+            if(((DefaultMutableTreeNode)nodo).getUserObject() instanceof HcuEvolucion){
+                HcuEvolucion evolucion = (HcuEvolucion)((DefaultMutableTreeNode)nodo).getUserObject(); 
+                String mensaje;
+                int entrada;
+                if(evolucion.getEstado()==3){
+                    mensaje = "Desea anular la Nota de Egreso "+MyDate.yyyyMMddHHmm.format(evolucion.getFechaEvo());
+                    entrada = JOptionPane.showConfirmDialog(null, mensaje,"Anular Nota de Egreso",JOptionPane.YES_NO_OPTION);
+                }else{
+                    mensaje = "Desea anular la Evolución "+MyDate.yyyyMMddHHmm.format(evolucion.getFechaEvo());
+                    entrada = JOptionPane.showConfirmDialog(null, mensaje,"Anular Evolución",JOptionPane.YES_NO_OPTION);
+                }
                 if(entrada==0){
-                    evolucion.setEstado(0);
                     if(hcuEvolucionJpaController==null) hcuEvolucionJpaController=new HcuEvolucionJpaController(factory);
                     try {
-                        hcuEvolucionJpaController.edit(evolucion);
-                        setJTreeEvo();
-                        if(evol.getHcuEvolucion(factory).getFechaEvo()==evolucion.getFechaEvo()){
-                            jTabbedPane6.removeAll();
-                            jButton8.setEnabled(false);
-                            jButton10.setEnabled(false);
-                            jButton2.setEnabled(false);
-                            jButton6.setEnabled(false);
-                            jButton4.setEnabled(false);
-                            jButton12.setEnabled(false);
-                            jButton13.setEnabled(false);
-                            jButton5.setEnabled(false);
+                        if(evolucion.getId()!=null){
+                            evolucion.setEstado(0);
+                            hcuEvolucionJpaController.edit(evolucion);                            
+                            jTree1.removeSelectionPath(selPath);
+                            if(jLabel65.getText().equals(MyDate.yyyyMMddHHmm2.format(evolucion.getFechaEvo()))){
+                                jTabbedPane6.removeAll();
+                                jButton8.setVisible(true);
+                                jButton8.setEnabled(false);
+                                jButton10.setEnabled(false);
+                                jButton10.setText("S. Vitales");
+                                jButton10.setToolTipText("SIGNOS VITALES");
+                                jButton2.setEnabled(false);
+                                jButton2.setText("Objetivo");
+                                jButton2.setToolTipText("NOTAS OBJETIVAS");
+                                jButton6.setEnabled(false);
+                                jButton6.setText("Analisis");
+                                jButton6.setToolTipText("NOTAS DE ANALISIS");
+                                jButton4.setEnabled(false);
+                                jButton4.setText("Plan");
+                                jButton4.setToolTipText("PLAN DE MANEJO");
+                                jButton12.setEnabled(false);
+                                jButton13.setEnabled(false);
+                                jButton5.setEnabled(false);
+                                jButton14.setEnabled(true);
+                            }
                         }
                     }catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, "10131:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
                     }
-                }                
+                }
             }
+        }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jButton14MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton14MouseExited
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton14MouseExited
+
+    private void jButton14MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton14MouseMoved
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton14MouseMoved
+
+    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
+        notaEgreso();
+        Funciones.setLabelInfo();
+    }//GEN-LAST:event_jButton14ActionPerformed
+
+    private void jTree1ValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_jTree1ValueChanged
+
+    }//GEN-LAST:event_jTree1ValueChanged
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        if(evoSeleccion.getEstado()==3){
+            this.activarComponentesEgreso(evoSeleccion); 
+            this.jButton13.setEnabled(false);
+        }else{
+            this.activarComponentes(evoSeleccion);
+        }
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     // </editor-fold>
     
@@ -5099,6 +5418,7 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton13;
+    private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
@@ -5174,13 +5494,21 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel54;
     private javax.swing.JLabel jLabel55;
     private javax.swing.JLabel jLabel56;
+    private javax.swing.JLabel jLabel57;
     private javax.swing.JLabel jLabel58;
     private javax.swing.JLabel jLabel59;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel60;
+    private javax.swing.JLabel jLabel61;
+    private javax.swing.JLabel jLabel62;
+    private javax.swing.JLabel jLabel63;
+    private javax.swing.JLabel jLabel64;
+    private javax.swing.JLabel jLabel65;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -5208,7 +5536,6 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel31;
     private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel33;
-    private javax.swing.JPanel jPanel34;
     private javax.swing.JPanel jPanel35;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -5246,6 +5573,7 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;

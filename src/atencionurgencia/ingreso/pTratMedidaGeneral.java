@@ -252,7 +252,7 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
                 List<InfoMedidasgHcu> imh = imhjc.ListFindInfoMedidasGHcu(evol.getIdInfoHistoriac());
                 /* verificamos que la hcu tiene medidasG */
                 if(!imh.isEmpty()){
-                    this.migrarMediGeneToEvo(medidasgs, false);
+                    this.migrarMediGeneToEvo(imh, false);
                 }
             }
         }
@@ -286,7 +286,6 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
                 }
             }
         }
-
     }
 
     /**
