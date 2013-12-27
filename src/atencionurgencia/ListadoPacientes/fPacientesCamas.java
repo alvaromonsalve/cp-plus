@@ -5,14 +5,18 @@
 package atencionurgencia.ListadoPacientes;
 
 import atencionurgencia.AtencionUrgencia;
+import atencionurgencia.DselectEspecialidad;
 import atencionurgencia.evolucion.Evo;
+import entidades.CmEspPprofesional;
 import entidades.InfoCamas;
 import entidades.InfoHistoriac;
 import entidades.StaticCie10;
+import entidades.StaticEspecialidades;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -27,6 +31,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import jpa.InfoCamasJpaController;
 import jpa.StaticCie10JpaController;
+import jpa.StaticEspecialidadesJpaController;
 import tools.Funciones;
 
 /**
@@ -49,7 +54,7 @@ public class fPacientesCamas extends javax.swing.JFrame {
     }
     
     public void inicio(){        
-        TimerTask timerListar = new TimerTask() {
+        TimerTask timerListar = new TimerTask(){
         @Override
         public void run() {
                 jLabel1.setVisible(true);
@@ -117,7 +122,7 @@ public class fPacientesCamas extends javax.swing.JFrame {
         factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
         InfoCamasJpaController icjc = new InfoCamasJpaController(factory);
 
-        List<InfoCamas> infocamasList = icjc.findInfoCamasEntities(0);
+        List<InfoCamas> infocamasList = icjc.findInfoCamasEntities(1);
         if(infocamasList!=null){
             while(modeloC.getRowCount()>0){
                 modeloC.removeRow(0);
@@ -574,7 +579,7 @@ public class fPacientesCamas extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -736,7 +741,7 @@ public class fPacientesCamas extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE))
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -775,11 +780,13 @@ public class fPacientesCamas extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel50)
                 .addGap(18, 18, 18)
-                .addComponent(jTabbedPane1)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 457, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton1)
-                    .addComponent(jLabel1))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel1))
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -791,7 +798,7 @@ public class fPacientesCamas extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 558, Short.MAX_VALUE)
         );
 
         pack();
@@ -822,17 +829,47 @@ public class fPacientesCamas extends javax.swing.JFrame {
     }//GEN-LAST:event_jTable2KeyReleased
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if(historiac!=null){
-            atencionurgencia.AtencionUrgencia.panelindex.jpContainer.removeAll();
-            atencionurgencia.AtencionUrgencia.panelindex.evo = new Evo();
-            atencionurgencia.AtencionUrgencia.panelindex.evo.setBounds(0, 0, 764, 514);
-            atencionurgencia.AtencionUrgencia.panelindex.jpContainer.add(atencionurgencia.AtencionUrgencia.panelindex.evo);
-                    atencionurgencia.AtencionUrgencia.panelindex.evo.setVisible(true);
-                    atencionurgencia.AtencionUrgencia.panelindex.jpContainer.validate();
-                    atencionurgencia.AtencionUrgencia.panelindex.jpContainer.repaint();
-                    atencionurgencia.AtencionUrgencia.panelindex.evo.viewClinicHistory(historiac);
-                    atencionurgencia.AtencionUrgencia.panelindex.evo.DatosAntPersonales();//mostrar antecedentes personales
-                    closed();
+        if(historiac!=null && AtencionUrgencia.cep!=null){
+            int especialidad=0;
+            List<StaticEspecialidades> ses=new ArrayList<StaticEspecialidades>();
+            StaticEspecialidades se=null;
+            if(AtencionUrgencia.cep.getCmEspPprofesionalList().size()>1){
+                for(CmEspPprofesional cep:AtencionUrgencia.cep.getCmEspPprofesionalList()){
+                    if(cep.getIdEspecialidad().getId()!=45){
+                        especialidad = especialidad+1;
+                        ses.add(cep.getIdEspecialidad());
+                    }
+                }
+            }else if(AtencionUrgencia.cep.getCmEspPprofesionalList().size()==1){
+                if(AtencionUrgencia.cep.getCmEspPprofesionalList().get(0).getIdEspecialidad().getId()!=45){
+                        se=AtencionUrgencia.cep.getCmEspPprofesionalList().get(0).getIdEspecialidad();
+                 }
+            }
+            if(especialidad>0 && AtencionUrgencia.configUser.getIdPerfiles().getId()==3){
+                DselectEspecialidad de = new DselectEspecialidad(null, true);
+                    de.setEspecialidades(ses);
+                    de.setLocationRelativeTo(null);
+                    de.setVisible(true);
+                    se = de.especialidades;
+            }
+            StaticEspecialidadesJpaController sejc = new StaticEspecialidadesJpaController(factory);
+            AtencionUrgencia.panelindex.jpContainer.removeAll();
+            AtencionUrgencia.panelindex.evo = new Evo();
+            AtencionUrgencia.panelindex.evo.setBounds(0, 0, 764, 514);
+            AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.evo);
+            AtencionUrgencia.panelindex.evo.setVisible(true);            
+            if(AtencionUrgencia.configUser.getIdPerfiles().getId()==3){//ESPECIALISTA EN EL SERVICIO DE URGENCIAS
+                AtencionUrgencia.panelindex.evo.tipoEvo=2;//2 es interconsulta  
+                AtencionUrgencia.panelindex.evo.staticEspecialidades = se;
+            }else{
+                AtencionUrgencia.panelindex.evo.staticEspecialidades = sejc.findStaticEspecialidades(45);//medicina general
+                AtencionUrgencia.panelindex.evo.tipoEvo=0;//0 es evolucion med general ronda                
+            }                        
+            AtencionUrgencia.panelindex.jpContainer.validate();
+            AtencionUrgencia.panelindex.jpContainer.repaint();
+            AtencionUrgencia.panelindex.evo.viewClinicHistory(historiac);
+            AtencionUrgencia.panelindex.evo.DatosAntPersonales();//mostrar antecedentes personales
+            closed();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

@@ -63,7 +63,7 @@ public class fListPacientes extends javax.swing.JFrame {
              jtable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
              jtable1.setDefaultRenderer(Object.class, new tools.ColorTableCellRendererMedicamentos());
              Funciones.setOcultarColumnas(jtable1, new int[]{7});
-             Funciones.setSizeColumnas(jtable1, new int[]{0,1,2,3,4,5,6}, new int[]{60,80,140,100,90,270,55});
+             Funciones.setSizeColumnas(jtable1, new int[]{0,1,2,3,4,5,6}, new int[]{60,80,140,100,90,270,58});
              jtable1.setDefaultRenderer(Object.class, new tools.ColorDefaultTableCellRenderer());
          } catch (Exception ex) {
              JOptionPane.showMessageDialog(null, "10045:\n"+ex.getMessage(), fListPacientes.class.getName(), JOptionPane.INFORMATION_MESSAGE);
