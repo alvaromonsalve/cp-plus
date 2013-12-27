@@ -131,7 +131,7 @@ public class enAtencion extends javax.swing.JDialog {
                     atencionurgencia.AtencionUrgencia.panelindex.jpContainer.removeAll();
                     atencionurgencia.AtencionUrgencia.panelindex.hc = new HC();
                     atencionurgencia.AtencionUrgencia.panelindex.hc.setBounds(0, 0, 764, 540);
-                    atencionurgencia.AtencionUrgencia.panelindex.jpContainer.add(atencionurgencia.AtencionUrgencia.panelindex.hc);
+                    atencionurgencia.AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.hc);
                     atencionurgencia.AtencionUrgencia.panelindex.hc.setVisible(true);
                     atencionurgencia.AtencionUrgencia.panelindex.jpContainer.validate();
                     atencionurgencia.AtencionUrgencia.panelindex.jpContainer.repaint();
