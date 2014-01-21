@@ -12,7 +12,6 @@ import entidades.InfoHistoriac;
 import entidades.InfoProcedimientoHcu;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
@@ -46,6 +45,7 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
     RowSorter<TableModel> sorter;
     private boolean evo=false;
     private StaticEstructuraCupsJpaController estructuraCupsJPA=null;
+//    private HcuEvolucionJpaController jpaController=null;
 
     /**
      * Creates new form pTratMasProcedimientos
@@ -208,13 +208,13 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
         if(hcuEvoProcedimientoJpa==null)
             hcuEvoProcedimientoJpa=new HcuEvoProcedimientoJpaController(factory);
         listInfoProcedimientoEvo = hcuEvoProcedimientoJpa.ListFindInfoProcedimientoEvo(evo);
-        for(int i=0;i<ModeloTabla.getRowCount();i++){
+        for(int i=0;i<ModeloTabla.getRowCount();i++){            
             HcuEvoProcedimiento hcuEvoProcedimiento=null;
             boolean exist=false;
-            for(int a=0;a<listInfoProcedimientoEvo.size();a++){
-                if(((ConfigCups)ModeloTabla.getValueAt(i, 0))==listInfoProcedimientoEvo.get(a).getIdConfigCups()){
+            for(int a=0;a<listInfoProcedimientoEvo.size();a++){         
+                hcuEvoProcedimiento=listInfoProcedimientoEvo.get(a);
+                if(((ConfigCups)ModeloTabla.getValueAt(i, 0)).equals(listInfoProcedimientoEvo.get(a).getIdConfigCups())){
                     exist=true;
-                    hcuEvoProcedimiento=listInfoProcedimientoEvo.get(a);
                     break;
                 }
             }
@@ -224,11 +224,14 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
                 hcuEvoProcedimiento.setIdHcuEvolucion(evo);
                 hcuEvoProcedimiento.setObservacion(ModeloTabla.getValueAt(i, 3).toString());
                 hcuEvoProcedimiento.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
-                hcuEvoProcedimiento.setEstado(1);//estado activo
+                hcuEvoProcedimiento.setEstado(1);//estado activo                
                 hcuEvoProcedimientoJpa.create(hcuEvoProcedimiento);
+                listInfoProcedimientoEvo.add(hcuEvoProcedimiento);
+                evo.setHcuEvoProcedimientos(listInfoProcedimientoEvo);
+                
             }else{
                 if(hcuEvoProcedimiento!=null){
-                    try {
+                    try {                        
                         hcuEvoProcedimiento.setObservacion(ModeloTabla.getValueAt(i, 3).toString());
                         hcuEvoProcedimiento.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
                         hcuEvoProcedimientoJpa.edit(hcuEvoProcedimiento);
@@ -239,16 +242,11 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
             }
         }
         for(int i=0;i<listInfoProcedimientoEvo.size();i++){
-            if(cupsJpaController==null)
-                cupsJpaController=new ConfigCupsJpaController(factory);
-            HcuEvoProcedimiento hcuEvoProcedimiento=null;            
+            HcuEvoProcedimiento hcuEvoProcedimiento=listInfoProcedimientoEvo.get(i);            
             boolean exist=false;
             for(int a=0;a<ModeloTabla.getRowCount();a++){
-                System.out.println(listInfoProcedimientoEvo.get(i).getIdConfigCups() +" - "+((ConfigCups)ModeloTabla.getValueAt(a, 0)));
-                if(listInfoProcedimientoEvo.get(i).getIdConfigCups().getId()==((ConfigCups)ModeloTabla.getValueAt(a, 0)).getId()){
-                    
+                if(listInfoProcedimientoEvo.get(i).getIdConfigCups().equals((ConfigCups)ModeloTabla.getValueAt(a, 0))){
                     exist=true;
-                    hcuEvoProcedimiento=listInfoProcedimientoEvo.get(i);
                     break;                    
                 }
             }
@@ -307,14 +305,14 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
                  */
                 if(!evoProcedimientos.isEmpty() && evol.getFechaEvo().compareTo(hes.get(hes.size()-1).getFechaEvo())>0 ){
                     /* preguntamos si se desea hacer la migracion */
-                    
+                    migrarProcedimToEvo(hes, evo, factory);
                 }
             }else{
                 HcuEvoProcedimientoJpaController hepjc = new HcuEvoProcedimientoJpaController(factory);
                 List<HcuEvoProcedimiento> heps = hepjc.ListFindInfoProcedimientoEvo(evol);
                 /* verificamos que la hcu tiene procedimientos */
                 if(!heps.isEmpty()){
-                    
+                    migrarProcedimToEvo(heps, evo, factory);
                 }
             }
         }

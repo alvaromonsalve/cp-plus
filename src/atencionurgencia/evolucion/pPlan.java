@@ -47,7 +47,7 @@ public class pPlan extends javax.swing.JPanel {
         this.factory = factory;
     }
     
-    public HcuEvolucion saveChanged(){
+    public HcuEvolucion saveChanged(EntityManagerFactory factory, HcuEvolucion hcuEvolucion){
         if(pMedidaGeneral!=null) pMedidaGeneral.saveChanges(factory, hcuEvolucion);
         if(pMedic!=null) pMedic.saveChanges(factory, hcuEvolucion);
         if(pInterconsulta0!=null) pInterconsulta0.saveChanges(factory, hcuEvolucion);
@@ -58,9 +58,9 @@ public class pPlan extends javax.swing.JPanel {
         if(pOtrasInterconsultas!=null) pOtrasInterconsultas.saveChanges(factory, hcuEvolucion);
         if(pProcedimientos!=null) pProcedimientos.saveChanges(factory, hcuEvolucion);
         if(destino!=null) destino.saveChanges(factory, hcuEvolucion);
-        if(hejc ==null) hejc = new HcuEvolucionJpaController(factory);        
-        this.hcuEvolucion = hejc.findHcuEvolucion(hcuEvolucion.getId());
-        return this.hcuEvolucion;
+//        if(hejc ==null) hejc = new HcuEvolucionJpaController(factory);        
+//        this.hcuEvolucion = hejc.findHcuEvolucion(hcuEvolucion.getId());
+        return hcuEvolucion;
     }
 
     /**
@@ -836,6 +836,7 @@ public class pPlan extends javax.swing.JPanel {
         jPanel1.add(destino);
         jPanel1.setVisible(true);
         jPanel1.validate();
+        jPanel1.repaint();
     }//GEN-LAST:event_jLabel50MouseClicked
 
     private void jLabel50MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel50MouseExited

@@ -11,6 +11,7 @@ import entidades.HcuEvolucion;
 import entidades.InfoHistoriac;
 import entidades.InfoInterconsultaHcu;
 import entidades.StaticEspecialidades;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -165,6 +166,9 @@ public class pTratInterconsulta extends javax.swing.JPanel {
                 evoInterconsulta.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
                 evoInterconsulta.setEstado(1);//registro activo
                 evoInterconsultaJpa.create(evoInterconsulta);
+                List<HcuEvoInterconsulta> evoInterconsultas = new ArrayList<HcuEvoInterconsulta>();
+                evoInterconsultas.add(evoInterconsulta);
+                evol.setHcuEvoInterconsultas(evoInterconsultas);
             }
         }else{
             if(delete){

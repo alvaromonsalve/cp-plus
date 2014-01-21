@@ -4,7 +4,7 @@
  */
 package atencionurgencia.evolucion;
 
-import Documentos.ImprimirEvolucion;
+
 import atencionurgencia.AtencionUrgencia;
 import atencionurgencia.ListadoPacientes.Ftriaje;
 import atencionurgencia.ingreso.pAnexo3;
@@ -673,135 +673,161 @@ public class Evo extends javax.swing.JPanel {
         // </editor-fold>
         
         private void newEvolucion(){
-            StaticCie10JpaController scjc = new StaticCie10JpaController(factory);
-            HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
-            JDdateEvo evo = new JDdateEvo(null,true);
-            evo.setLocationRelativeTo(null);
-            evo.setVisible(true);
-            if(evo.fecha_hora!=null){
-                HcuEvolucion evolucion = new HcuEvolucion();
-                evolucion.setIdInfoHistoriac(infohistoriac);
-                evolucion.setFechaEvo(evo.fecha_hora);
-                evolucion.setTipo(tipoEvo);
-                evolucion.setIdStaticEspecialidades(staticEspecialidades);
-                List<HcuEvolucion> hes= hejc.FindHcuEvolucions(infohistoriac); 
-                if(hes.isEmpty()){
-                    evolucion.setDx(scjc.findStaticCie10(infohistoriac.getDiagnostico()));
-                    evolucion.setDx1(scjc.findStaticCie10(infohistoriac.getDiagnostico2()));
-                    evolucion.setDx2(scjc.findStaticCie10(infohistoriac.getDiagnostico3()));
-                    evolucion.setDx3(scjc.findStaticCie10(infohistoriac.getDiagnostico4()));
-                    evolucion.setDx4(scjc.findStaticCie10(infohistoriac.getDiagnostico5()));
-                }else{
-                    evolucion.setDx(hes.get(hes.size()-1).getDx());
-                    evolucion.setDx1(hes.get(hes.size()-1).getDx1());
-                    evolucion.setDx2(hes.get(hes.size()-1).getDx2());
-                    evolucion.setDx3(hes.get(hes.size()-1).getDx3());
-                    evolucion.setDx4(hes.get(hes.size()-1).getDx4());
-                }                
-                evolucion.setEstado(0);
-                evoSeleccion = evolucion;
-                TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
-                DefaultMutableTreeNode fechaEvo = null;
-                DefaultMutableTreeNode Evo = null;
-                boolean existeFechaEvo=false;
-                boolean existeEvo=false;
-                for(int i=0;i<raiz.getChildCount();i++){
-                    if(raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()))){
-                        existeFechaEvo = true;
-                        for(int a=0;a<raiz.getChildAt(i).getChildCount();a++){
-                            if(raiz.getChildAt(i).getChildAt(a).toString().equals(evolucion.toString())){
-                                existeEvo = true;   
-                                break;
+            if(Finalizada()==false){
+                StaticCie10JpaController scjc = new StaticCie10JpaController(factory);
+                HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
+                JDdateEvo evo = new JDdateEvo(null,true);
+                evo.setLocationRelativeTo(null);
+                evo.setVisible(true);
+                if(evo.fecha_hora!=null){
+                    HcuEvolucion evolucion = new HcuEvolucion();
+                    evolucion.setIdInfoHistoriac(infohistoriac);
+                    evolucion.setFechaEvo(evo.fecha_hora);
+                    evolucion.setTipo(tipoEvo);
+                    evolucion.setIdStaticEspecialidades(staticEspecialidades);
+                    List<HcuEvolucion> hes= hejc.FindHcuEvolucions(infohistoriac); 
+                    if(hes.isEmpty()){
+                        evolucion.setDx(scjc.findStaticCie10(infohistoriac.getDiagnostico()));
+                        evolucion.setDx1(scjc.findStaticCie10(infohistoriac.getDiagnostico2()));
+                        evolucion.setDx2(scjc.findStaticCie10(infohistoriac.getDiagnostico3()));
+                        evolucion.setDx3(scjc.findStaticCie10(infohistoriac.getDiagnostico4()));
+                        evolucion.setDx4(scjc.findStaticCie10(infohistoriac.getDiagnostico5()));
+                    }else{
+                        evolucion.setDx(hes.get(hes.size()-1).getDx());
+                        evolucion.setDx1(hes.get(hes.size()-1).getDx1());
+                        evolucion.setDx2(hes.get(hes.size()-1).getDx2());
+                        evolucion.setDx3(hes.get(hes.size()-1).getDx3());
+                        evolucion.setDx4(hes.get(hes.size()-1).getDx4());
+                    }                
+                    evolucion.setEstado(0);
+                    evoSeleccion = evolucion;
+                    TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
+                    DefaultMutableTreeNode fechaEvo = null;
+                    DefaultMutableTreeNode Evo = null;
+                    boolean existeFechaEvo=false;
+                    boolean existeEvo=false;
+                    for(int i=0;i<raiz.getChildCount();i++){
+                        if(raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()))){
+                            existeFechaEvo = true;
+                            for(int a=0;a<raiz.getChildAt(i).getChildCount();a++){
+                                if(raiz.getChildAt(i).getChildAt(a).toString().equals(evolucion.toString())){
+                                    existeEvo = true;   
+                                    break;
+                                }
                             }
+                            if(!existeEvo){
+                                fechaEvo = (DefaultMutableTreeNode) raiz.getChildAt(i);
+                                Evo = new DefaultMutableTreeNode(evolucion);
+                                fechaEvo.add(Evo); 
+                                modeloTree.nodeStructureChanged(raiz);
+                                jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+                            }
+                            break;
                         }
+                    }
+                    if(!existeFechaEvo){
+                        fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()));
+                        modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
+                        Evo = new DefaultMutableTreeNode(evolucion);
+                        fechaEvo.add(Evo); 
+                        jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+                    }else{
                         if(!existeEvo){
-                            fechaEvo = (DefaultMutableTreeNode) raiz.getChildAt(i);
-                            Evo = new DefaultMutableTreeNode(evolucion);
-                            fechaEvo.add(Evo); 
-                            modeloTree.nodeStructureChanged(raiz);
-                            jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+    //                        modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
+    //                        Evo = new DefaultMutableTreeNode(evolucion);
+    //                        fechaEvo.add(Evo); 
+    //                        jTree1.setSelectionPath(new TreePath(Evo.getPath()));
                         }
-                        break;
                     }
+                    this.activarComponentes(evolucion);
                 }
-                if(!existeFechaEvo){
-                    fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()));
-                    modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
-                    Evo = new DefaultMutableTreeNode(evolucion);
-                    fechaEvo.add(Evo); 
-                    jTree1.setSelectionPath(new TreePath(Evo.getPath()));
-                }else{
-                    if(!existeEvo){
-//                        modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
-//                        Evo = new DefaultMutableTreeNode(evolucion);
-//                        fechaEvo.add(Evo); 
-//                        jTree1.setSelectionPath(new TreePath(Evo.getPath()));
-                    }
-                }
-                this.activarComponentes(evolucion);
+            }else{
+                JOptionPane.showMessageDialog(null, "Historia Clinica Finalizada");
             }
         }
         
-        private void notaEgreso(){
-            StaticCie10JpaController scjc = new StaticCie10JpaController(factory);
-            HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
-            JDdateEvo evo = new JDdateEvo(null,true,"Fecha de Egreso");
-            evo.setLocationRelativeTo(null);
-            evo.setVisible(true);
-            if(evo.fecha_hora!=null){
-                HcuEvolucion evolucion = new HcuEvolucion();
-                evolucion.setIdInfoHistoriac(infohistoriac);
-                evolucion.setFechaEvo(evo.fecha_hora);
-                evolucion.setTipo(tipoEvo);
-                evolucion.setIdStaticEspecialidades(staticEspecialidades);
-                List<HcuEvolucion> hes= hejc.FindHcuEvolucions(infohistoriac); 
-                if(hes.isEmpty()){
-                    evolucion.setDx(scjc.findStaticCie10(infohistoriac.getDiagnostico()));
-                    evolucion.setDx1(scjc.findStaticCie10(infohistoriac.getDiagnostico2()));
-                    evolucion.setDx2(scjc.findStaticCie10(infohistoriac.getDiagnostico3()));
-                    evolucion.setDx3(scjc.findStaticCie10(infohistoriac.getDiagnostico4()));
-                    evolucion.setDx4(scjc.findStaticCie10(infohistoriac.getDiagnostico5()));
-                }else{
-                    evolucion.setDx(hes.get(hes.size()-1).getDx());
-                    evolucion.setDx1(hes.get(hes.size()-1).getDx1());
-                    evolucion.setDx2(hes.get(hes.size()-1).getDx2());
-                    evolucion.setDx3(hes.get(hes.size()-1).getDx3());
-                    evolucion.setDx4(hes.get(hes.size()-1).getDx4());
-                }                
-                evolucion.setEstado(3);
-                evoSeleccion = evolucion;
-                TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
-                DefaultMutableTreeNode fechaEvo = null;
-                DefaultMutableTreeNode Evo = null;
-                boolean existeFechaEvo=false;
-                boolean existeEvo=false;
-                for(int i=0;i<raiz.getChildCount();i++){
-                    if(raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()))){
-                        existeFechaEvo = true;
-                        for(int a=0;a<raiz.getChildAt(i).getChildCount();a++){
-                            if(raiz.getChildAt(i).getChildAt(a).toString().equals(evolucion.toString())){
-                                existeEvo = true;
-                                break;
-                            }
+        private boolean Finalizada(){
+            boolean finaliza=false;
+            TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
+            DefaultMutableTreeNode Evo = null;
+            for(int i=0;i<raiz.getChildCount();i++){
+                for(int a=0;a<raiz.getChildAt(i).getChildCount();a++){
+                    Evo = (DefaultMutableTreeNode) raiz.getChildAt(i).getChildAt(a);
+                    if(Evo.getUserObject() instanceof HcuEvolucion){
+                        HcuEvolucion evolu = (HcuEvolucion) Evo.getUserObject();
+                        if(evolu.getEstado()==3){
+                            finaliza = true;
                         }
-                        if(!existeEvo){
-                            fechaEvo = (DefaultMutableTreeNode) raiz.getChildAt(i);
-                            Evo = new DefaultMutableTreeNode(evolucion);
-                            fechaEvo.add(Evo);
-                            modeloTree.nodeStructureChanged(raiz);
-                            jTree1.setSelectionPath(new TreePath(Evo.getPath()));
-                        }
-                        break;
                     }
                 }
-                if(!existeFechaEvo){
-                    fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()));
-                    modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
-                    Evo = new DefaultMutableTreeNode(evolucion);
-                    fechaEvo.add(Evo);
-                    jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+            }
+            return finaliza;
+        }
+        
+        private void notaEgreso(){
+            if(Finalizada()==false){
+                StaticCie10JpaController scjc = new StaticCie10JpaController(factory);
+                HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
+                JDdateEvo evo = new JDdateEvo(null,true,"Fecha de Egreso");
+                evo.setLocationRelativeTo(null);
+                evo.setVisible(true);
+                if(evo.fecha_hora!=null){
+                    HcuEvolucion evolucion = new HcuEvolucion();
+                    evolucion.setIdInfoHistoriac(infohistoriac);
+                    evolucion.setFechaEvo(evo.fecha_hora);
+                    evolucion.setTipo(tipoEvo);
+                    evolucion.setIdStaticEspecialidades(staticEspecialidades);
+                    List<HcuEvolucion> hes= hejc.FindHcuEvolucions(infohistoriac); 
+                    if(hes.isEmpty()){
+                        evolucion.setDx(scjc.findStaticCie10(infohistoriac.getDiagnostico()));
+                        evolucion.setDx1(scjc.findStaticCie10(infohistoriac.getDiagnostico2()));
+                        evolucion.setDx2(scjc.findStaticCie10(infohistoriac.getDiagnostico3()));
+                        evolucion.setDx3(scjc.findStaticCie10(infohistoriac.getDiagnostico4()));
+                        evolucion.setDx4(scjc.findStaticCie10(infohistoriac.getDiagnostico5()));
+                    }else{
+                        evolucion.setDx(hes.get(hes.size()-1).getDx());
+                        evolucion.setDx1(hes.get(hes.size()-1).getDx1());
+                        evolucion.setDx2(hes.get(hes.size()-1).getDx2());
+                        evolucion.setDx3(hes.get(hes.size()-1).getDx3());
+                        evolucion.setDx4(hes.get(hes.size()-1).getDx4());
+                    }                
+                    evolucion.setEstado(3);
+                    evoSeleccion = evolucion;
+                    TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
+                    DefaultMutableTreeNode fechaEvo = null;
+                    DefaultMutableTreeNode Evo = null;
+                    boolean existeFechaEvo=false;
+                    boolean existeEvo=false;
+                    for(int i=0;i<raiz.getChildCount();i++){
+                        if(raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()))){
+                            existeFechaEvo = true;
+                            for(int a=0;a<raiz.getChildAt(i).getChildCount();a++){
+                                if(raiz.getChildAt(i).getChildAt(a).toString().equals(evolucion.toString())){
+                                    existeEvo = true;
+                                    break;
+                                }
+                            }
+                            if(!existeEvo){
+                                fechaEvo = (DefaultMutableTreeNode) raiz.getChildAt(i);
+                                Evo = new DefaultMutableTreeNode(evolucion);
+                                fechaEvo.add(Evo);
+                                modeloTree.nodeStructureChanged(raiz);
+                                jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+                            }
+                            break;
+                        }
+                    }
+                    if(!existeFechaEvo){
+                        fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()));
+                        modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
+                        Evo = new DefaultMutableTreeNode(evolucion);
+                        fechaEvo.add(Evo);
+                        jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+                    }
+                    this.activarComponentesEgreso(evolucion);
                 }
-                this.activarComponentesEgreso(evolucion);
+            }else{
+                JOptionPane.showMessageDialog(null, "Historia Clinica Finalizada");
             }
         }
         
@@ -902,10 +928,11 @@ public class Evo extends javax.swing.JPanel {
                 if(evoSeleccion.getEstado()!=3){
                     subjetivo.saveChanged(factory,evoSeleccion);
                 }                
-                objetivo.saveChanged(factory,evoSeleccion);          
+                objetivo.saveChanged(factory,evoSeleccion);
                 analisis.saveChanged(factory,evoSeleccion);
-                pplan.saveChanged();
+                evoSeleccion = pplan.saveChanged(factory,evoSeleccion);
                 jTree1.repaint();
+                jTree1.validate();
 //                setJTreeEvo();
             }
         }
@@ -1136,6 +1163,7 @@ public class Evo extends javax.swing.JPanel {
         jLabel63 = new javax.swing.JLabel();
         jLabel64 = new javax.swing.JLabel();
         jLabel65 = new javax.swing.JLabel();
+        jLabel66 = new javax.swing.JLabel();
         jButton9 = new javax.swing.JButton();
 
         jpMotivoC.setMaximumSize(new java.awt.Dimension(584, 445));
@@ -3858,7 +3886,7 @@ public class Evo extends javax.swing.JPanel {
         jTabbedPane6.setPreferredSize(new java.awt.Dimension(608, 414));
 
         jLabel57.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel57.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/bullet_blue.png"))); // NOI18N
+        jLabel57.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/bullet_blue2.png"))); // NOI18N
         jLabel57.setText("Nota de Egreso");
         jLabel57.setMaximumSize(new java.awt.Dimension(89, 11));
         jLabel57.setMinimumSize(new java.awt.Dimension(89, 11));
@@ -3895,6 +3923,13 @@ public class Evo extends javax.swing.JPanel {
         jLabel65.setMinimumSize(new java.awt.Dimension(89, 11));
         jLabel65.setPreferredSize(new java.awt.Dimension(89, 11));
 
+        jLabel66.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel66.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/bullet_blue.png"))); // NOI18N
+        jLabel66.setText("Egreso sin Finalizar");
+        jLabel66.setMaximumSize(new java.awt.Dimension(89, 11));
+        jLabel66.setMinimumSize(new java.awt.Dimension(89, 11));
+        jLabel66.setPreferredSize(new java.awt.Dimension(89, 11));
+
         javax.swing.GroupLayout jPanel33Layout = new javax.swing.GroupLayout(jPanel33);
         jPanel33.setLayout(jPanel33Layout);
         jPanel33Layout.setHorizontalGroup(
@@ -3910,7 +3945,8 @@ public class Evo extends javax.swing.JPanel {
                     .addComponent(jLabel64, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel63, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel62, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel65, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel65, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel66, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 609, Short.MAX_VALUE))
             .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -3926,6 +3962,8 @@ public class Evo extends javax.swing.JPanel {
                         .addComponent(jLabel65, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel66, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel57, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -4381,8 +4419,8 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel51MouseClicked
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        String mensaje = "Guarde sus cambios antes de salir.\n¿Desea salir de la ????? de este usuario? ";
-        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Cerrar ??????",JOptionPane.YES_NO_OPTION);
+        String mensaje = "Guarde sus cambios antes de salir.\n¿Desea salir de este Documento? ";
+        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Cerrar Documento",JOptionPane.YES_NO_OPTION);
         if(entrada==0){
             atencionurgencia.AtencionUrgencia.panelindex.jpContainer.removeAll(); 
             atencionurgencia.AtencionUrgencia.panelindex.jpContainer.validate();
@@ -5173,22 +5211,20 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        imphcuEvo imEvo = new imphcuEvo(null, true);
-        imEvo.setLocationRelativeTo(null);
-        imEvo.setVisible(true);
-        imEvo.setEvolucion(evoSeleccion);
-        imEvo.setNoValido(false);
-        
-//        oldConnection.Database db = new Database(AtencionUrgencia.props);
-//            ImprimirEvolucion imprimirEvolucion = new ImprimirEvolucion();
-//            db.Conectar();
-//            imprimirEvolucion.setConnection(db.conexion);
-//            
-//            imprimirEvolucion.setIdevolucion("32");
-//            
-//            imprimirEvolucion.         ImprimirEvolucion();
-//            db.DesconectarBasedeDatos();
-
+        if(evoSeleccion.getEstado()!=0){
+            imphcuEvo imEvo = new imphcuEvo(null, true);
+            imEvo.setLocationRelativeTo(null);
+            imEvo.setEvolucion(evoSeleccion);
+            if(evoSeleccion.getEstado()==1 || evoSeleccion.getEstado() ==3){
+                imEvo.setNoValido(true);
+            }else{
+                imEvo.setNoValido(false);
+            }        
+            imEvo.activeChec();
+            imEvo.setVisible(true);    
+        }else{
+            JOptionPane.showMessageDialog(null, "No puede imprimir una nota borrador");
+        }
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton12MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton12MouseExited
@@ -5302,7 +5338,19 @@ public class Evo extends javax.swing.JPanel {
                 }
              }else if(he.getEstado()==0){
                  JOptionPane.showMessageDialog(null, "No se puede finalizar Notas en estado Borrador");
-             }else if(he.getEstado()>1 && he.getEstado()!=3 ){    
+             }else if(he.getEstado()==3){
+                 if(he.getHcuEvoEgreso().size()>0){
+                    String mensaje = "¿Si finaliza la nota de Egreso no podra modificarla posteriormente? ";
+                    int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Confirmar Finalizacion",JOptionPane.YES_NO_OPTION);
+                    if(entrada==0){
+                        he.setEstado(4);
+                        hcuEvolucionJpaController.edit(he);
+    //                    setJTreeEvo();
+                    }
+                 }else{
+                     JOptionPane.showMessageDialog(null, "No existe destino del paciente relacionado al egreso");
+                 }
+             }else if(he.getEstado()>1){    
                 JOptionPane.showMessageDialog(null, "Esta Nota ya se encuentra finalizada");
             }
         } catch (Exception ex) {
@@ -5400,9 +5448,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTree1ValueChanged
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        if(evoSeleccion.getEstado()==3){
+        if(evoSeleccion.getEstado()>=3){
             this.activarComponentesEgreso(evoSeleccion); 
-            this.jButton13.setEnabled(false);
+            if(evoSeleccion.getEstado()==4){
+                this.jButton13.setEnabled(false);
+            }
         }else{
             this.activarComponentes(evoSeleccion);
         }
@@ -5504,6 +5554,7 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel63;
     private javax.swing.JLabel jLabel64;
     private javax.swing.JLabel jLabel65;
+    private javax.swing.JLabel jLabel66;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;

@@ -1,6 +1,10 @@
 
 package other;
 
+import Documentos.ImprimirEvolucion;
+import Documentos.ImprimirNotaegreso;
+import Documentos.Imprimirautorizacionlaboratorio;
+import Documentos.Imprimirautorizacionrx;
 import atencionurgencia.AtencionUrgencia;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
@@ -31,7 +35,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.JOptionPane;
 import jpa.HcuEvoProcedimientoJpaController;
-import net.sf.jasperreports.engine.JRException;
+import jpa.HcuEvolucionJpaController;
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -47,12 +51,47 @@ public class imphcuEvo extends javax.swing.JDialog {
     private HcuEvolucion hcuEvolucion=null;
     private Boolean noValido;
     private HcuEvoProcedimientoJpaController procedimientoJpa=null;
+    private HcuEvolucionJpaController evolucionJpa=null;
     private EntityManagerFactory factory;
+    private Imprimirautorizacionlaboratorio impautlab;
 
     public imphcuEvo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         jLabel1.setVisible(false);
+    }
+    
+    public void activeChec(){
+        if(procedimientoJpa==null){
+            factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
+            procedimientoJpa = new HcuEvoProcedimientoJpaController(factory);
+        }
+        //LAB
+        List<HcuEvoProcedimiento> hcuEvoProcedimientos = procedimientoJpa.ListFindInfoProcedimientoEvo(hcuEvolucion,17);
+        if(hcuEvoProcedimientos.isEmpty()){ 
+            jCheckBox5.setEnabled(false);
+        }else{
+            jCheckBox5.setEnabled(true);
+        }
+        //IMAGENOLOGIA
+        hcuEvoProcedimientos = procedimientoJpa.ListFindInfoProcedimientoEvo(hcuEvolucion,15);
+        if(hcuEvoProcedimientos.isEmpty()){ 
+            jCheckBox6.setEnabled(false);
+        }else{
+            jCheckBox6.setEnabled(true);
+        }
+        //Nota EGRESO
+        if(hcuEvolucion.getEstado()!=4){
+            jCheckBox2.setEnabled(false);
+        }else{
+            jCheckBox2.setEnabled(true);
+        }
+        //nota de evolucion
+        if(hcuEvolucion.getEstado() == 2){
+            jCheckBox2.setEnabled(false);
+        }else{
+            jCheckBox2.setEnabled(true);
+        }
     }
     
     public void setNoValido(boolean val){
@@ -85,96 +124,51 @@ public class imphcuEvo extends javax.swing.JDialog {
             try {
                 PdfReader reader1 = null,reader2 = null,reader3 = null,reader4=null,reader5=null,reader6=null;
                 File archivoTemporal = File.createTempFile("Evolucion_Urgencia",".pdf");
-//                if(jCheckBox2.isSelected()){//otros procedimientos
-//                    if(infoProcedimientoHcuJPA==null){
-//                        factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
-//                        infoProcedimientoHcuJPA = new InfoProcedimientoHcuJpaController(factory);
-//                    }
-//                    List<InfoProcedimientoHcu> listInfoProcedimientoHcu = infoProcedimientoHcuJPA.ListFindInfoProcedimientoHcu(idHC);
-//                    if(listInfoProcedimientoHcu.size()>0){
-//                        String master = System.getProperty("user.dir")+"/reportes/solPorcedimientos.jasper";
-//                        if(master!=null){
-//                            oldConnection.Database db = new Database(AtencionUrgencia.props);
-//                            db.Conectar();
-//                            Map param = new HashMap();
-//                            param.put("id_hc",idHC.getId());
-//                            param.put("NombreReport","SOLICITUD DE PROCEDIMIENTOS");
-//                            param.put("version","1.0");
-//                            param.put("codigo","R-FA-005");
-//                            param.put("servicio","URGENCIAS");
-//                            param.put("novalido",setValueValidoInt(noValido));
-//                            JasperPrint informe = JasperFillManager.fillReport(master, param,db.conexion);
-//                            JRExporter exporter = new JRPdfExporter();
-//                            exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
-//                            File tempFile = File.createTempFile("Solicitud_de_Procedimientos",".pdf");
-//                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE,tempFile);
-//                            exporter.exportReport();
-//                            reader1 = new PdfReader(tempFile.getAbsolutePath());
-//                            db.DesconectarBasedeDatos();
-//                            tempFile.deleteOnExit();
-//                        }
-//                    }
-//                }
-//                if(jCheckBox5.isSelected()){//Laboratorios no valido
-//                    if(procedimientoJpa==null){
-//                        factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
-//                        procedimientoJpa = new HcuEvoProcedimientoJpaController(factory);
-//                    }
-//                    List<HcuEvoProcedimiento> hcuEvoProcedimientos = procedimientoJpa.ListFindInfoProcedimientoEvo(hcuEvolucion);
-//                    if(hcuEvoProcedimientos.size()>0){
-//                        String master = System.getProperty("user.dir")+"/reportes/solicitudprocedimientolab.jasper";
-//                        if(master!=null){
-//                            Database db = new Database(AtencionUrgencia.props);
-//                            db.Conectar();
-//                            Map param = new HashMap();
-//                            param.put("idevu",hcuEvolucion.getId());
-//                            param.put("namereport","SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
-//                            param.put("version","1.0");
-//                            param.put("codigo","?-??-???");
-//                            param.put("namereport","URGENCIAS");
-//                            param.put("novalido",setValueValidoInt(noValido));
-//                            JasperPrint informe = JasperFillManager.fillReport(master, param,db.conexion);
-//                            JRExporter exporter = new JRPdfExporter();
-//                            exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
-//                            File tempFile = File.createTempFile("Solicitud_de_Procedimientos",".pdf");
-//                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE,tempFile);
-//                            exporter.exportReport();
-//                            reader5 = new PdfReader(tempFile.getAbsolutePath());
-//                            db.DesconectarBasedeDatos();
-//                            tempFile.deleteOnExit();
-//                        }
-//                    }
-//                }
-//                if(jCheckBox6.isSelected()){//IMAGENOLOGIA
-//                    if(infoProcedimientoHcuJPA==null){
-//                        factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
-//                        infoProcedimientoHcuJPA = new InfoProcedimientoHcuJpaController(factory);
-//                    }
-//                    List<InfoProcedimientoHcu> listInfoProcedimientoHcu = infoProcedimientoHcuJPA.ListFindInfoProcedimientoHcu(idHC);
-//                    if(listInfoProcedimientoHcu.size()>0){
-//                        String master = System.getProperty("user.dir")+"/reportes/solPorcedimientosImagenologia.jasper";
-//                        if(master!=null){
-//                            oldConnection.Database db = new Database(AtencionUrgencia.props);
-//                            db.Conectar();
-//                            Map param = new HashMap();
-//                            param.put("id_hc",idHC.getId());
-//                            param.put("NombreReport","SOLICITUD DE PROCEDIMIENTOS DE IMAGENOLOGIA");
-//                            param.put("version","1.0");
-//                            param.put("codigo","R-FA-007");
-//                            param.put("servicio","URGENCIAS");
-//                            param.put("novalido",setValueValidoInt(noValido));
-//                            JasperPrint informe = JasperFillManager.fillReport(master, param,db.conexion);
-//                            JRExporter exporter = new JRPdfExporter();
-//                            exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
-//                            File tempFile = File.createTempFile("Solicitud_de_Procedimientos",".pdf");
-//                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE,tempFile);
-//                            exporter.exportReport();
-//                            reader6 = new PdfReader(tempFile.getAbsolutePath());
-//                            db.DesconectarBasedeDatos();
-//                            tempFile.deleteOnExit();
-//                        }
-//                    }
-//                }
+                if(jCheckBox2.isSelected()){//NOTA egreso
+                    ImprimirNotaegreso ie = new ImprimirNotaegreso();
+                    Database db = new Database(AtencionUrgencia.props);
+                    db.Conectar();
+                    ie.setCodigoReport("?-??-???");
+                    ie.setNombrereport("NOTA DE EVOLUCION");
+                    ie.setServicioreport("URGENCIAS");
+                    ie.setVersionreport("?.?");
+                    ie.setIdevolucion(hcuEvolucion.getId().toString());
+                    ie.setConnection(db.conexion);
+                    reader2 = ie.ImprimirNotaEgreso();
+                    db.DesconectarBasedeDatos();
+                    ie.tempFile.deleteOnExit();
+                }
+                if(jCheckBox5.isSelected()){//Laboratorios no valido
+                    Database db = new Database(AtencionUrgencia.props);
+                    db.Conectar();
+                    impautlab = new Imprimirautorizacionlaboratorio();
+                    impautlab.setCodigo("?-??-???");
+                    impautlab.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
+                    impautlab.setNovalido(setValueValidoInt(noValido));
+                    impautlab.setServicio("URGENCIAS");
+                    impautlab.setVersion("?.?");
+                    impautlab.setIdevu(hcuEvolucion.getId().toString());
+                    impautlab.setConnection(db.conexion);
+                    reader5 = impautlab.Imprimirautolab();
+                    db.DesconectarBasedeDatos();
+                    impautlab.tempFile.deleteOnExit();
+                }
+                
+                if(jCheckBox6.isSelected()){//IMAGENOLOGIA
+                    Imprimirautorizacionrx impautrx = new Imprimirautorizacionrx();
+                    Database db = new Database(AtencionUrgencia.props);
+                    db.Conectar();
+                    impautrx.setCodigo("?-??-???");
+                    impautrx.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE IMAGENOLOGIA");
+                    impautrx.setNovalido(setValueValidoInt(noValido));
+                    impautrx.setServicio("URGENCIAS");
+                    impautrx.setVersion("?.?");
+                    impautrx.setIdevu(hcuEvolucion.getId().toString());
+                    impautrx.setConnection(db.conexion);
+                    reader6 = impautrx.Imprimirautorx();
+                    db.DesconectarBasedeDatos();
+                    impautrx.tempFile.deleteOnExit();
+                }
 //                if(jCheckBox1.isSelected()){//RESETA MEDICA
 //                    if(infoPosologiaHcuJPA == null){
 //                        factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
@@ -233,33 +227,24 @@ public class imphcuEvo extends javax.swing.JDialog {
 //                        }
 //                    }
 //                }            
-//                if(jCheckBox4.isSelected()){//evo
-//                    String master = System.getProperty("user.dir")+"/reportes/HClinica.jasper";
-//                        if(master!=null){
-//                            oldConnection.Database db = new Database(AtencionUrgencia.props);
-//                            db.Conectar();
-//                            Map param = new HashMap();
-//                            param.put("idHC",idHC.getId());
-//                            param.put("NameReport","HISTORIA CLINICA DE INGRESO");
-//                            param.put("version","1.0");
-//                            param.put("codigo","R-FA-002");
-//                            param.put("servicio","URGENCIAS");
-//                            param.put("DestinoHC",destinoHc);
-//                            JasperPrint informe = JasperFillManager.fillReport(master, param,db.conexion);
-//                            JRExporter exporter = new JRPdfExporter();
-//                            exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
-//                            File tempFile = File.createTempFile("historia_urgencia",".pdf");
-//                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE,tempFile);
-//                            exporter.exportReport();
-//                            reader4 = new PdfReader(tempFile.getAbsolutePath());
-//                            db.DesconectarBasedeDatos();
-//                            tempFile.deleteOnExit();
-//                        }
-//                }
+                if(jCheckBox4.isSelected()){//NOTA EVO
+                    ImprimirEvolucion ie = new ImprimirEvolucion();
+                    Database db = new Database(AtencionUrgencia.props);
+                    db.Conectar();
+                    ie.setCodigoReport("?-??-???");
+                    ie.setNombrereport("NOTA DE EVOLUCION");
+                    ie.setServicioreport("URGENCIAS");
+                    ie.setVersionreport("?.?");
+                    ie.setIdevolucion(hcuEvolucion.getId().toString());
+                    ie.setConnection(db.conexion);
+                    reader4 = ie.ImprimirEvolucion();
+                    db.DesconectarBasedeDatos();
+                    ie.tempFile.deleteOnExit();
+                }
                 PdfCopyFields copy = new PdfCopyFields(new FileOutputStream(archivoTemporal));
-//                if(jCheckBox2.isSelected()){
-//                    if(reader1!=null) copy.addDocument(reader1);
-//                }                
+                if(jCheckBox2.isSelected()){
+                    if(reader2!=null) copy.addDocument(reader2);
+                }                
 //                if(jCheckBox1.isSelected()){
 //                    if(reader2!=null) copy.addDocument(reader2);
 //                }
@@ -276,13 +261,13 @@ public class imphcuEvo extends javax.swing.JDialog {
                     if(reader4!=null) copy.addDocument(reader4);
                 }
                 try{
-                    if(copy !=null)copy.close();
+                    copy.close();
                     if(noValido){
                         marcaAguaPDF(archivoTemporal);
                     }else{
                         Desktop.getDesktop().open(archivoTemporal);
                     }
-                }catch (IOException ex){
+                }catch (Exception ex){
                     JOptionPane.showMessageDialog(null,"El documento no contiene paginas", "Clipa+", JOptionPane.INFORMATION_MESSAGE);
                 }
                 archivoTemporal.deleteOnExit();
@@ -356,6 +341,9 @@ public class imphcuEvo extends javax.swing.JDialog {
         jLabel2 = new javax.swing.JLabel();
         jCheckBox5 = new javax.swing.JCheckBox();
         jCheckBox6 = new javax.swing.JCheckBox();
+        jCheckBox2 = new javax.swing.JCheckBox();
+        jCheckBox8 = new javax.swing.JCheckBox();
+        jCheckBox9 = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -372,6 +360,7 @@ public class imphcuEvo extends javax.swing.JDialog {
 
         jButton1.setText("Aceptar");
         jButton1.setFocusable(false);
+        jButton1.setOpaque(false);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -380,13 +369,14 @@ public class imphcuEvo extends javax.swing.JDialog {
 
         jButton2.setText("Cancelar");
         jButton2.setFocusable(false);
+        jButton2.setOpaque(false);
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
 
-        jCheckBox4.setText("Historia clinica de ingreso");
+        jCheckBox4.setText("Nota Evolucion");
         jCheckBox4.setFocusable(false);
         jCheckBox4.setOpaque(false);
 
@@ -396,7 +386,6 @@ public class imphcuEvo extends javax.swing.JDialog {
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel2.setText("Seleccione los documentos");
 
-        jCheckBox5.setSelected(true);
         jCheckBox5.setText("Laboratorios");
         jCheckBox5.setFocusable(false);
         jCheckBox5.setOpaque(false);
@@ -404,6 +393,18 @@ public class imphcuEvo extends javax.swing.JDialog {
         jCheckBox6.setText("Imagenologia");
         jCheckBox6.setFocusable(false);
         jCheckBox6.setOpaque(false);
+
+        jCheckBox2.setText("Nota Egreso");
+        jCheckBox2.setFocusable(false);
+        jCheckBox2.setOpaque(false);
+
+        jCheckBox8.setText("Epicrisis");
+        jCheckBox8.setFocusable(false);
+        jCheckBox8.setOpaque(false);
+
+        jCheckBox9.setText("??????????");
+        jCheckBox9.setFocusable(false);
+        jCheckBox9.setOpaque(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -421,9 +422,15 @@ public class imphcuEvo extends javax.swing.JDialog {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jCheckBox4, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jCheckBox5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jCheckBox6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jCheckBox5, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jCheckBox6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(jCheckBox4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jCheckBox2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jCheckBox8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jCheckBox9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -440,8 +447,15 @@ public class imphcuEvo extends javax.swing.JDialog {
                         .addComponent(jCheckBox5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jCheckBox4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox9)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
@@ -467,9 +481,9 @@ public class imphcuEvo extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        hiloReporte ut = new hiloReporte(this);
-        Thread thread = new Thread(ut);
-        thread.start();
+            hiloReporte ut = new hiloReporte(this);
+            Thread thread = new Thread(ut);
+            thread.start();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -483,9 +497,12 @@ public class imphcuEvo extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox4;
     private javax.swing.JCheckBox jCheckBox5;
     private javax.swing.JCheckBox jCheckBox6;
+    private javax.swing.JCheckBox jCheckBox8;
+    private javax.swing.JCheckBox jCheckBox9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel49;

@@ -12,8 +12,6 @@ import entidades.InfoHistoriac;
 import entidades.InfoInterconsultaHcu;
 import entidades.StaticEspecialidades;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.JCheckBox;
@@ -51,8 +49,6 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
         initComponents();
         setCargaTabla();
     }
-    
-    
     
     private DefaultTableModel getModelo(){
         DefaultTableModel model = new DefaultTableModel(
@@ -221,9 +217,9 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
             if(((JCheckBox)ModeloTabla.getValueAt(i, 1)).isSelected()){
                 boolean exist=false;
                 for(HcuEvoInterconsulta hei: listInterconsultaEvo){
-                    if(((StaticEspecialidades)ModeloTabla.getValueAt(i, 0))==hei.getIdStaticEspecialidades()){
-                        exist=true;
-                        evoInter = hei;
+                    evoInter = hei;
+                    if(((StaticEspecialidades)ModeloTabla.getValueAt(i, 0)).equals(hei.getIdStaticEspecialidades())){
+                        exist=true;                        
                         break;
                     }
                 }
@@ -243,20 +239,22 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
                     evoInter.setIdConfigCups(new ConfigCups(5129));
                     evoInter.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
                     evoInter.setEstado(1);
-                    evoInterconsultaJpa.create(evoInter);                    
+                    evoInterconsultaJpa.create(evoInter);    
+                    listInterconsultaEvo.add(evoInter);
+                    evol.setHcuEvoInterconsultas(listInterconsultaEvo);
                 }
             }else{
                 boolean exist=false;
                 for(HcuEvoInterconsulta hei: listInterconsultaEvo){
-                    if(hei.getIdStaticEspecialidades() == ((StaticEspecialidades)ModeloTabla.getValueAt(i, 0))){
-                        exist=true;
-                        evoInter = hei;
+                    evoInter = hei;
+                    if(hei.getIdStaticEspecialidades().equals((StaticEspecialidades)ModeloTabla.getValueAt(i, 0))){
+                        exist=true;                        
                         break;
                     }
                 }
                 if(exist){
                     try {
-                        evoInter.setEstado(0);//activo
+                        evoInter.setEstado(0);//inactivo
                         evoInterconsultaJpa.edit(evoInter);
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, "10126:\n"+ex.getMessage(), pTratOtrasInterconsultas.class.getName(), JOptionPane.INFORMATION_MESSAGE);

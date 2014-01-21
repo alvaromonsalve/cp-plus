@@ -56,11 +56,20 @@
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="103" alignment="0" groupAlignment="0" attributes="0">
-                                  <Component id="jCheckBox4" alignment="0" min="-2" pref="167" max="-2" attributes="0"/>
-                                  <Component id="jCheckBox5" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="jCheckBox5" alignment="0" min="-2" pref="167" max="-2" attributes="0"/>
+                                              <Component id="jCheckBox6" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Component id="jCheckBox4" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Component id="jCheckBox2" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="jCheckBox8" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="jCheckBox6" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
+                              <Component id="jCheckBox9" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jLabel1" max="32767" attributes="0"/>
@@ -82,8 +91,15 @@
                           <Component id="jCheckBox5" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jCheckBox6" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="jCheckBox4" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jCheckBox2" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jCheckBox8" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jCheckBox9" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
@@ -128,6 +144,7 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Aceptar"/>
             <Property name="focusable" type="boolean" value="false"/>
+            <Property name="opaque" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
@@ -137,6 +154,7 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Cancelar"/>
             <Property name="focusable" type="boolean" value="false"/>
+            <Property name="opaque" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
@@ -144,7 +162,7 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="jCheckBox4">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Historia clinica de ingreso"/>
+            <Property name="text" type="java.lang.String" value="Nota Evolucion"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
@@ -167,7 +185,6 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="jCheckBox5">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="Laboratorios"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="opaque" type="boolean" value="false"/>
@@ -176,6 +193,27 @@
         <Component class="javax.swing.JCheckBox" name="jCheckBox6">
           <Properties>
             <Property name="text" type="java.lang.String" value="Imagenologia"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="opaque" type="boolean" value="false"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="jCheckBox2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Nota Egreso"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="opaque" type="boolean" value="false"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="jCheckBox8">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Epicrisis"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="opaque" type="boolean" value="false"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="jCheckBox9">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="??????????"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>

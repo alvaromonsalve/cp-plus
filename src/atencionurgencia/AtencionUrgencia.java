@@ -98,8 +98,5 @@ public class AtencionUrgencia {
             setOpaque(false);
             super.paint(g);
         }
-        
-        
-        
     }
 }

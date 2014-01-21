@@ -17,13 +17,14 @@ import javax.swing.tree.DefaultTreeCellRenderer;
  */
 public class JTreeRendererArbolEvo extends DefaultTreeCellRenderer{
     
-    private final ImageIcon bullet_grey,bullet_green,folder_open,folder,bullet_yellow,bullet_blue,bullet_purple,bullet_orange;
+    private final ImageIcon bullet_grey,bullet_green,folder_open,folder,bullet_yellow,bullet_blue,bullet_blue2,bullet_purple,bullet_orange;
     
     public JTreeRendererArbolEvo(){
         this.bullet_grey=new ImageIcon(getClass().getResource("/images/bullet_grey.png"));
         this.bullet_green=new ImageIcon(getClass().getResource("/images/bullet_green.png"));
         this.bullet_yellow=new ImageIcon(getClass().getResource("/images/bullet_yellow.png"));
         this.bullet_blue=new ImageIcon(getClass().getResource("/images/bullet_blue.png"));
+        this.bullet_blue2=new ImageIcon(getClass().getResource("/images/bullet_blue2.png"));
         this.bullet_purple=new ImageIcon(getClass().getResource("/images/bullet_purple.png"));
         this.bullet_orange=new ImageIcon(getClass().getResource("/images/bullet_orange.png"));
         this.folder_open=new ImageIcon(getClass().getResource("/images/folder_open.png"));
@@ -43,6 +44,8 @@ public class JTreeRendererArbolEvo extends DefaultTreeCellRenderer{
                     this.setIcon(bullet_yellow);
                 }else if(((HcuEvolucion)((DefaultMutableTreeNode)value).getUserObject()).getEstado()==3){   
                     this.setIcon(bullet_blue);
+                }else if(((HcuEvolucion)((DefaultMutableTreeNode)value).getUserObject()).getEstado()==4){   
+                    this.setIcon(bullet_blue2);
                 }else{
                     this.setIcon(bullet_grey);
                 }
@@ -53,6 +56,8 @@ public class JTreeRendererArbolEvo extends DefaultTreeCellRenderer{
                     this.setIcon(bullet_yellow);
                 }else if(((HcuEvolucion)((DefaultMutableTreeNode)value).getUserObject()).getEstado()==3){   
                     this.setIcon(bullet_blue);
+                }else if(((HcuEvolucion)((DefaultMutableTreeNode)value).getUserObject()).getEstado()==4){   
+                    this.setIcon(bullet_blue2);
                 }else{
                     this.setIcon(bullet_grey);
                 }
@@ -63,6 +68,8 @@ public class JTreeRendererArbolEvo extends DefaultTreeCellRenderer{
                     this.setIcon(bullet_yellow);
                 }else if(((HcuEvolucion)((DefaultMutableTreeNode)value).getUserObject()).getEstado()==3){   
                     this.setIcon(bullet_blue);
+                }else if(((HcuEvolucion)((DefaultMutableTreeNode)value).getUserObject()).getEstado()==4){   
+                    this.setIcon(bullet_blue2);
                 }else{
                     this.setIcon(bullet_grey);
                 }

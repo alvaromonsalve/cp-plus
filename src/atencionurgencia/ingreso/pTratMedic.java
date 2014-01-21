@@ -164,6 +164,7 @@ public class pTratMedic extends javax.swing.JPanel {
      public void addMedicamento(entidades.SumSuministro pActivo,Float dosis1, String cantidad_texto,String dosis2, String via, String Observacion,Float Cantidad){
          int row = ModeloTabla.getRowCount();
          boolean exist=false;
+
          for(int i=0;i<ModeloTabla.getRowCount();i++){
              if(((entidades.SumSuministro)ModeloTabla.getValueAt(i, 0)).getId()==pActivo.getId()){
                  exist=true;
@@ -171,7 +172,6 @@ public class pTratMedic extends javax.swing.JPanel {
                  break;
              }
          }
-         
          ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("images/idea.png"));
          if(!exist){
              ModeloTabla.addRow(dato);
@@ -903,6 +903,7 @@ public class pTratMedic extends javax.swing.JPanel {
             medicamentos.editPosologia((SumSuministro)jTable1.getValueAt(rowIndex, 0), jTable1.getValueAt(rowIndex, 5).toString(), 
                     (Float)jTable1.getValueAt(rowIndex, 2), jTable1.getValueAt(rowIndex, 3).toString(), 
                     jTable1.getValueAt(rowIndex, 4).toString(),jTable1.getValueAt(rowIndex, 7).toString());
+            medicamentos.onEvolucion=onEvolucion;
             medicamentos.setVisible(true);
             medicamentos.dispose();
         }
@@ -935,6 +936,7 @@ public class pTratMedic extends javax.swing.JPanel {
             medicCombinados = new addMedicCombinados(null, true);
             medicCombinados.editPosologia(model, jTable2.getValueAt(row, 4).toString(), 
                      jTable2.getValueAt(row, 3).toString());
+            medicCombinados.onEvolucion=onEvolucion;
             medicCombinados.setVisible(true);
             int cerrado = medicCombinados.cerrado;
             medicCombinados.dispose();

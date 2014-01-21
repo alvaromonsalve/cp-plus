@@ -490,7 +490,7 @@ public class addMedicamentos extends javax.swing.JDialog {
             jTextField2.setText("0");
         }
         Numero_a_Letra num = new Numero_a_Letra();
-                if(jTable1.getRowCount() > 0){
+        if(jTable1.getRowCount() > 0){
             suminis = (SumSuministro)jTable1.getValueAt(jTable1.getSelectedRow(), 0);
         }
         if(suminis!=null){
