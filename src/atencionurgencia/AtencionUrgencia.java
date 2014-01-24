@@ -22,7 +22,6 @@ import javax.swing.JPanel;
 import jpa.AccessConfigUserJpaController;
 import jpa.CmProfesionalesJpaController;
 import jpa.ConfigdecripcionloginJpaController;
-import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 
 
 /**
