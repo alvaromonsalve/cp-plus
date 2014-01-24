@@ -65,8 +65,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import jpa.HcuEvolucionJpaController;
-import net.sf.jasperreports.engine.JRException;
-import oldConnection.Database;
 import tools.JTreeRendererArbolEvo;
 import tools.MyDate;
 
