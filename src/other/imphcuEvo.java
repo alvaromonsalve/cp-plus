@@ -1,10 +1,12 @@
 
 package other;
 
+import Documentos.ImprimirEpicrisis;
 import Documentos.ImprimirEvolucion;
 import Documentos.ImprimirNotaegreso;
 import Documentos.Imprimirautorizacionlaboratorio;
 import Documentos.Imprimirautorizacionrx;
+import Documentos.ImprimirNotaegresoFull;
 import atencionurgencia.AtencionUrgencia;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
@@ -36,12 +38,14 @@ import javax.persistence.Persistence;
 import javax.swing.JOptionPane;
 import jpa.HcuEvoProcedimientoJpaController;
 import jpa.HcuEvolucionJpaController;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import oldConnection.Database;
+import org.apache.poi.util.TempFile;
 
 /**
  *
@@ -54,7 +58,7 @@ public class imphcuEvo extends javax.swing.JDialog {
     private HcuEvolucionJpaController evolucionJpa=null;
     private EntityManagerFactory factory;
     private Imprimirautorizacionlaboratorio impautlab;
-
+    
     public imphcuEvo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -83,14 +87,26 @@ public class imphcuEvo extends javax.swing.JDialog {
         //Nota EGRESO
         if(hcuEvolucion.getEstado()!=4){
             jCheckBox2.setEnabled(false);
+            jCheckBox9.setEnabled(false);
         }else{
             jCheckBox2.setEnabled(true);
+            jCheckBox9.setEnabled(true);
+            jCheckBox4.setEnabled(false);
+            jCheckBox8.setEnabled(false);
         }
         //nota de evolucion
         if(hcuEvolucion.getEstado() == 2){
             jCheckBox2.setEnabled(false);
+            jCheckBox9.setEnabled(false);
+            jCheckBox8.setEnabled(true);
         }else{
             jCheckBox2.setEnabled(true);
+            jCheckBox9.setEnabled(true);
+            jCheckBox8.setEnabled(false);
+        }        
+        if(hcuEvolucion.getEstado() == 1){
+            jCheckBox9.setEnabled(false);
+            jCheckBox2.setEnabled(false);
         }
     }
     
@@ -122,7 +138,7 @@ public class imphcuEvo extends javax.swing.JDialog {
             ((imphcuEvo)form).jLabel1.setVisible(true);
             ((imphcuEvo)form).jButton1.setEnabled(false);
             try {
-                PdfReader reader1 = null,reader2 = null,reader3 = null,reader4=null,reader5=null,reader6=null;
+                PdfReader reader1 = null,reader2 = null,reader3 = null,reader4=null,reader5=null,reader6=null, reader7 = null, reader8 = null;
                 File archivoTemporal = File.createTempFile("Evolucion_Urgencia",".pdf");
                 if(jCheckBox2.isSelected()){//NOTA egreso
                     ImprimirNotaegreso ie = new ImprimirNotaegreso();
@@ -241,6 +257,38 @@ public class imphcuEvo extends javax.swing.JDialog {
                     db.DesconectarBasedeDatos();
                     ie.tempFile.deleteOnExit();
                 }
+                
+                if(jCheckBox8.isSelected()){//Epicrisis   
+                    ImprimirEpicrisis iep = new ImprimirEpicrisis();
+                    Database db = new Database(AtencionUrgencia.props);
+                    db.Conectar();
+                    iep.setCodigo("?-??-??");
+                    iep.setNombrereport("EPICRISIS");
+                    iep.setServicio("URGENCIAS");
+                    iep.setVersion("?.?");
+                    iep.setDestinohc("destino");
+                    iep.setIdhc(hcuEvolucion.getIdInfoHistoriac().getId().toString());
+                    iep.setConnection(db.conexion);
+                    reader7 = iep.ImprimirEpicrisis();
+                    db.DesconectarBasedeDatos();
+                    iep.tempFile.deleteOnExit();
+                }
+                
+                if(jCheckBox9.isSelected()){//Miniepicrisis
+                    ImprimirNotaegresoFull ief = new ImprimirNotaegresoFull();
+                    Database db = new Database(AtencionUrgencia.props);
+                    db.Conectar();
+                    ief.setCodigo("?-??-??");
+                    ief.setVersion("?.?");
+                    ief.setServicio("URGENCIAS");
+                    ief.setNombrereport("$#%&*+*");
+                    ief.setIdhc(hcuEvolucion.getIdInfoHistoriac().getId().toString());
+                    System.out.println(hcuEvolucion.getIdInfoHistoriac().getId().toString());
+                    ief.setConnection(db.conexion);
+                    reader8 = ief.ImprimirEgresoFull();
+                    db.DesconectarBasedeDatos();
+                    ief.tempFile.deleteOnExit();
+                }
                 PdfCopyFields copy = new PdfCopyFields(new FileOutputStream(archivoTemporal));
                 if(jCheckBox2.isSelected()){
                     if(reader2!=null) copy.addDocument(reader2);
@@ -259,6 +307,12 @@ public class imphcuEvo extends javax.swing.JDialog {
 //                }
                 if(jCheckBox4.isSelected()){
                     if(reader4!=null) copy.addDocument(reader4);
+                }
+                 if(jCheckBox8.isSelected()){
+                    if(reader7!=null) copy.addDocument(reader7);
+                }
+                 if(jCheckBox9.isSelected()){
+                    if(reader8!=null) copy.addDocument(reader8);
                 }
                 try{
                     copy.close();
@@ -401,6 +455,11 @@ public class imphcuEvo extends javax.swing.JDialog {
         jCheckBox8.setText("Epicrisis");
         jCheckBox8.setFocusable(false);
         jCheckBox8.setOpaque(false);
+        jCheckBox8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox8ActionPerformed(evt);
+            }
+        });
 
         jCheckBox9.setText("??????????");
         jCheckBox9.setFocusable(false);
@@ -494,6 +553,10 @@ public class imphcuEvo extends javax.swing.JDialog {
 //        this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jCheckBox8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox8ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jCheckBox8ActionPerformed
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
