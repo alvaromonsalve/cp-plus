@@ -125,13 +125,14 @@ public class Evo extends javax.swing.JPanel {
     /**
      * Creates new form HC
      */
+    private HcuEvolucion hcuEvolucion=null;
     public Evo() {
         initComponents();
         factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
         TablaAyudDiag();
         inicio();
         InputMap map2 = jTextArea10.getInputMap(JTextArea.WHEN_FOCUSED);
-        map2.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK), "null");
+        map2.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK), "null"); 
     }
     
     private void inicio(){
@@ -5213,6 +5214,7 @@ public class Evo extends javax.swing.JPanel {
             imphcuEvo imEvo = new imphcuEvo(null, true);
             imEvo.setLocationRelativeTo(null);
             imEvo.setEvolucion(evoSeleccion);
+            System.out.println(evoSeleccion);
             if(evoSeleccion.getEstado()==1 || evoSeleccion.getEstado() ==3){
                 imEvo.setNoValido(true);
             }else{
@@ -5324,15 +5326,21 @@ public class Evo extends javax.swing.JPanel {
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
         if(hcuEvolucionJpaController==null) hcuEvolucionJpaController=new HcuEvolucionJpaController(factory);
         HcuEvolucion he = null;
+        imphcuEvo imp = new imphcuEvo(null, true);
         try {
             he = evoSeleccion;
             if(he.getEstado()==1){
                 String mensaje = "¿Si finaliza la nota de Evolución no podra modificarla posteriormente? ";
-                int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Confirmar finalizacion",JOptionPane.YES_NO_OPTION);
+                int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Confirmar finalizacion",JOptionPane.YES_NO_OPTION);  
                 if(entrada==0){
                     he.setEstado(2);
                     hcuEvolucionJpaController.edit(he);
-//                    setJTreeEvo();
+                    
+                    //                    setJTreeEvo(); 
+                    imp.setNoValido(false);
+                    imp.setEvolucion(he);
+                    imp.imprimir(); 
+                    jButton13.setEnabled(false);
                 }
              }else if(he.getEstado()==0){
                  JOptionPane.showMessageDialog(null, "No se puede finalizar Notas en estado Borrador");
@@ -5343,7 +5351,12 @@ public class Evo extends javax.swing.JPanel {
                     if(entrada==0){
                         he.setEstado(4);
                         hcuEvolucionJpaController.edit(he);
-    //                    setJTreeEvo();
+                        
+    //                    setJTreeEvo(); 
+                        imp.setNoValido(false);
+                        imp.setEvolucion(he);
+                        imp.imprimir(); 
+                        jButton13.setEnabled(false);
                     }
                  }else{
                      JOptionPane.showMessageDialog(null, "No existe destino del paciente relacionado al egreso");
@@ -5352,7 +5365,9 @@ public class Evo extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(null, "Esta Nota ya se encuentra finalizada");
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "No puede finalizar la nota de Evolución sin haber guardado");
+//            JOptionPane.showMessageDialog(null, "No puede finalizar la nota de Evolución sin haber guardado");
+            
+            JOptionPane.showMessageDialog(null,  ex.getMessage());
         }
     }//GEN-LAST:event_jButton13ActionPerformed
 
@@ -5446,13 +5461,18 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTree1ValueChanged
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        if(evoSeleccion.getEstado()>=3){
+        if(evoSeleccion.getEstado()==2){
+            this.activarComponentes(evoSeleccion);
+            this.jButton13.setEnabled(false);
+        }else{
+            if(evoSeleccion.getEstado()>=3){
             this.activarComponentesEgreso(evoSeleccion); 
             if(evoSeleccion.getEstado()==4){
                 this.jButton13.setEnabled(false);
             }
         }else{
             this.activarComponentes(evoSeleccion);
+        }
         }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
