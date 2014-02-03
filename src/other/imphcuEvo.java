@@ -7,6 +7,8 @@ import Documentos.ImprimirNotaegreso;
 import Documentos.Imprimirautorizacionlaboratorio;
 import Documentos.Imprimirautorizacionrx;
 import Documentos.ImprimirNotaegresoFull;
+import Documentos.ImprimirautorizacionlaboratorioFinal;
+import Documentos.ImprimirautorizacionrxFinal;
 import atencionurgencia.AtencionUrgencia;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
@@ -53,11 +55,12 @@ import org.apache.poi.util.TempFile;
  */
 public class imphcuEvo extends javax.swing.JDialog {
     private HcuEvolucion hcuEvolucion=null;
-    private Boolean noValido;
+    private boolean noValido;
     private HcuEvoProcedimientoJpaController procedimientoJpa=null;
     private HcuEvolucionJpaController evolucionJpa=null;
     private EntityManagerFactory factory;
     private Imprimirautorizacionlaboratorio impautlab;
+    private ImprimirautorizacionlaboratorioFinal implabf;
     
     public imphcuEvo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -128,7 +131,7 @@ public class imphcuEvo extends javax.swing.JDialog {
     
     private class hiloReporte extends Thread{
         Dialog form=null;
-        
+
         public hiloReporte(Dialog form){
             this.form =form;
         }
@@ -138,14 +141,14 @@ public class imphcuEvo extends javax.swing.JDialog {
             ((imphcuEvo)form).jLabel1.setVisible(true);
             ((imphcuEvo)form).jButton1.setEnabled(false);
             try {
-                PdfReader reader1 = null,reader2 = null,reader3 = null,reader4=null,reader5=null,reader6=null, reader7 = null, reader8 = null;
+                PdfReader reader1 = null,reader2 = null,reader3 = null,reader4=null,reader5=null,reader6=null,reader7=null,reader8=null,reader9=null;
                 File archivoTemporal = File.createTempFile("Evolucion_Urgencia",".pdf");
                 if(jCheckBox2.isSelected()){//NOTA egreso
                     ImprimirNotaegreso ie = new ImprimirNotaegreso();
                     Database db = new Database(AtencionUrgencia.props);
                     db.Conectar();
                     ie.setCodigoReport("?-??-???");
-                    ie.setNombrereport("NOTA DE EVOLUCION");
+                    ie.setNombrereport("NOTA DE EGRESO");
                     ie.setServicioreport("URGENCIAS");
                     ie.setVersionreport("?.?");
                     ie.setIdevolucion(hcuEvolucion.getId().toString());
@@ -169,6 +172,21 @@ public class imphcuEvo extends javax.swing.JDialog {
                     db.DesconectarBasedeDatos();
                     impautlab.tempFile.deleteOnExit();
                 }
+                
+//                if(jCheckBox5.isSelected() && (atencionurgencia.evolucion.Evo.ena == 1)){//Laboratorios no valido
+//                Database db = new Database(AtencionUrgencia.props);
+//                db.Conectar();
+//                implabf = new ImprimirautorizacionlaboratorioFinal();
+//                implabf.setCodigo("?-??-???");
+//                implabf.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
+//                implabf.setServicio("URGENCIAS");
+//                implabf.setVersion("?.?");
+//                implabf.setIdevu(hcuEvolucion.getId().toString());
+//                implabf.setConnection(db.conexion);
+//                reader5 = implabf.ImprimirautolabFinal();
+//                db.DesconectarBasedeDatos();
+//                implabf.tempFile.deleteOnExit();
+//              }                            
                 
                 if(jCheckBox6.isSelected()){//IMAGENOLOGIA
                     Imprimirautorizacionrx impautrx = new Imprimirautorizacionrx();
@@ -332,10 +350,10 @@ public class imphcuEvo extends javax.swing.JDialog {
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(null, "100??:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
             }
-            if(!noValido){
+//            if(!noValido){
 //                AtencionUrgencia.panelindex.FramEnable(true);
 //                AtencionUrgencia.panelindex.hc.cerrarPanel();
-            }
+//            }
             ((imphcuEvo)form).jLabel1.setVisible(false);
             ((imphcuEvo)form).jButton1.setEnabled(true);
             ((imphcuEvo)form).dispose();
@@ -344,6 +362,171 @@ public class imphcuEvo extends javax.swing.JDialog {
     
     
    
+    public void imprimir(){
+        if(hcuEvolucion.getEstado()==2 || hcuEvolucion.getEstado()==1){
+            jCheckBox4.setSelected(true);
+            jCheckBox5.setSelected(true);
+            jCheckBox6.setSelected(true);
+            jCheckBox8.setSelected(true);
+            jCheckBox2.setSelected(false);
+            jCheckBox9.setSelected(false);            
+        }else{
+            if(hcuEvolucion.getEstado()==4 || hcuEvolucion.getEstado()==3){
+                jCheckBox4.setSelected(false);
+                jCheckBox5.setSelected(false);
+                jCheckBox6.setSelected(false);
+                jCheckBox8.setSelected(false);
+                jCheckBox2.setSelected(true);
+                jCheckBox9.setSelected(true);
+            }
+        }
+        hiloReporte ut = new hiloReporte(this);
+        Thread thread = new Thread(ut);
+        thread.start();
+    }
+    
+   
+        public void imprimir2(){
+            jLabel1.setVisible(true);
+            jButton1.setEnabled(false);
+        try {
+                PdfReader reader1 = null,reader2 = null,reader3 = null,reader4=null,reader5=null,reader6=null,reader7=null,reader8=null,reader9=null;
+                File archivoTemporal = File.createTempFile("Evolucion_Urgencia",".pdf");
+                if(jCheckBox2.isSelected()){//NOTA egreso
+                    ImprimirNotaegreso ie = new ImprimirNotaegreso();
+                    Database db = new Database(AtencionUrgencia.props);
+                    db.Conectar();
+                    ie.setCodigoReport("?-??-???");
+                    ie.setNombrereport("NOTA DE EGRESO");
+                    ie.setServicioreport("URGENCIAS");
+                    ie.setVersionreport("?.?");
+                    ie.setIdevolucion(hcuEvolucion.getId().toString());
+                    ie.setConnection(db.conexion);
+                    reader2 = ie.ImprimirNotaEgreso();
+                    db.DesconectarBasedeDatos();
+                    ie.tempFile.deleteOnExit();
+                }
+                               
+                if(jCheckBox5.isSelected()){//Laboratorios no valido
+                Database db = new Database(AtencionUrgencia.props);
+                db.Conectar();
+                implabf = new ImprimirautorizacionlaboratorioFinal();
+                implabf.setCodigo("?-??-???");
+                implabf.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
+                implabf.setServicio("URGENCIAS");
+                implabf.setVersion("?.?");
+                implabf.setIdevu(hcuEvolucion.getId().toString());
+                implabf.setConnection(db.conexion);
+                reader5 = implabf.ImprimirautolabFinal();
+                db.DesconectarBasedeDatos();
+                implabf.tempFile.deleteOnExit();
+              }                            
+                
+                if(jCheckBox6.isSelected()){//IMAGENOLOGIA
+                    ImprimirautorizacionrxFinal impautrxf = new ImprimirautorizacionrxFinal();
+                    Database db = new Database(AtencionUrgencia.props);
+                    db.Conectar();
+                    impautrxf.setCodigo("?-??-???");
+                    impautrxf.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE IMAGENOLOGIA");
+                    impautrxf.setServicio("URGENCIAS");
+                    impautrxf.setVersion("?.?");
+                    impautrxf.setIdevu(hcuEvolucion.getId().toString());
+                    impautrxf.setConnection(db.conexion);
+                    reader6 = impautrxf.ImprimirautorxFinal();
+                    db.DesconectarBasedeDatos();
+                    impautrxf.tempFile.deleteOnExit();
+                }
+//                
+                if(jCheckBox4.isSelected()){//NOTA EVO
+                    ImprimirEvolucion ie = new ImprimirEvolucion();
+                    Database db = new Database(AtencionUrgencia.props);
+                    db.Conectar();
+                    ie.setCodigoReport("?-??-???");
+                    ie.setNombrereport("NOTA DE EVOLUCION");
+                    ie.setServicioreport("URGENCIAS");
+                    ie.setVersionreport("?.?");
+                    ie.setIdevolucion(hcuEvolucion.getId().toString());
+                    ie.setConnection(db.conexion);
+                    reader4 = ie.ImprimirEvolucion();
+                    db.DesconectarBasedeDatos();
+                    ie.tempFile.deleteOnExit();
+                }
+                
+                if(jCheckBox8.isSelected()){//Epicrisis   
+                    ImprimirEpicrisis iep = new ImprimirEpicrisis();
+                    Database db = new Database(AtencionUrgencia.props);
+                    db.Conectar();
+                    iep.setCodigo("?-??-??");
+                    iep.setNombrereport("EPICRISIS");
+                    iep.setServicio("URGENCIAS");
+                    iep.setVersion("?.?");
+                    iep.setDestinohc("destino");
+                    iep.setIdhc(hcuEvolucion.getIdInfoHistoriac().getId().toString());
+                    iep.setConnection(db.conexion);
+                    reader7 = iep.ImprimirEpicrisis();
+                    db.DesconectarBasedeDatos();
+                    iep.tempFile.deleteOnExit();
+                }
+                
+                if(jCheckBox9.isSelected()){//Miniepicrisis
+                    ImprimirNotaegresoFull ief = new ImprimirNotaegresoFull();
+                    Database db = new Database(AtencionUrgencia.props);
+                    db.Conectar();
+                    ief.setCodigo("?-??-??");
+                    ief.setVersion("?.?");
+                    ief.setServicio("URGENCIAS");
+                    ief.setNombrereport("$#%&*+*");
+                    ief.setIdhc(hcuEvolucion.getIdInfoHistoriac().getId().toString());
+                    System.out.println(hcuEvolucion.getIdInfoHistoriac().getId().toString());
+                    ief.setConnection(db.conexion);
+                    reader8 = ief.ImprimirEgresoFull();
+                    db.DesconectarBasedeDatos();
+                    ief.tempFile.deleteOnExit();
+                }
+                PdfCopyFields copy = new PdfCopyFields(new FileOutputStream(archivoTemporal));
+                if(jCheckBox2.isSelected()){
+                    if(reader2!=null) copy.addDocument(reader2);
+                }                
+//                if(jCheckBox1.isSelected()){
+//                    if(reader2!=null) copy.addDocument(reader2);
+//                }
+                if(jCheckBox5.isSelected()){
+                    if(reader5!=null) copy.addDocument(reader5);
+                }
+                if(jCheckBox6.isSelected()){
+                    if(reader6!=null) copy.addDocument(reader6);
+                }
+//                if(jCheckBox3.isSelected()){
+//                    if(reader3!=null) copy.addDocument(reader3);
+//                }
+                if(jCheckBox4.isSelected()){
+                    if(reader4!=null) copy.addDocument(reader4);
+                }
+                 if(jCheckBox8.isSelected()){
+                    if(reader7!=null) copy.addDocument(reader7);
+                }
+                 if(jCheckBox9.isSelected()){
+                    if(reader8!=null) copy.addDocument(reader8);
+                }
+                try{
+                    copy.close();
+                    if(noValido){
+                        marcaAguaPDF(archivoTemporal);
+                    }else{
+                        Desktop.getDesktop().open(archivoTemporal);
+                    }
+                }catch (Exception ex){
+                    JOptionPane.showMessageDialog(null,"El documento no contiene paginas", "Clipa+", JOptionPane.INFORMATION_MESSAGE);
+                }
+                archivoTemporal.deleteOnExit();
+            } catch (DocumentException ex) {
+                JOptionPane.showMessageDialog(null, "100??:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            } catch (HeadlessException ex) {
+                JOptionPane.showMessageDialog(null, "100??:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "100??:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }
+        }        
     
     private void marcaAguaPDF(File archivo_entrada){
         try {
@@ -540,9 +723,16 @@ public class imphcuEvo extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if(hcuEvolucion.getEstado() == 1 || hcuEvolucion.getEstado() == 3){
             hiloReporte ut = new hiloReporte(this);
             Thread thread = new Thread(ut);
-            thread.start();
+            thread.start(); 
+        }else{
+            imprimir2();
+            jLabel1.setVisible(false);
+            jButton1.setEnabled(true);
+            this.dispose();
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -558,7 +748,7 @@ public class imphcuEvo extends javax.swing.JDialog {
     }//GEN-LAST:event_jCheckBox8ActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    public static javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox4;
