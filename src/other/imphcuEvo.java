@@ -92,6 +92,14 @@ public class imphcuEvo extends javax.swing.JDialog {
             jCheckBox2.setEnabled(false);
             jCheckBox9.setEnabled(false);
         }else{
+             if(hcuEvolucion.getEstado()==4){
+                jCheckBox2.setEnabled(true);
+                jCheckBox9.setEnabled(true);
+                jCheckBox4.setEnabled(false);
+                jCheckBox8.setEnabled(false);
+            }
+        }
+        if(hcuEvolucion.getEstado()==3){
             jCheckBox2.setEnabled(true);
             jCheckBox9.setEnabled(true);
             jCheckBox4.setEnabled(false);
