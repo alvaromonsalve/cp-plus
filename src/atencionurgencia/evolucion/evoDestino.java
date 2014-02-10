@@ -9,6 +9,7 @@ package atencionurgencia.evolucion;
 import atencionurgencia.AtencionUrgencia;
 import entidades.HcuEvoEgreso;
 import entidades.HcuEvolucion;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.swing.JOptionPane;
@@ -41,7 +42,9 @@ public class evoDestino extends javax.swing.JPanel {
             egreso.setObservaciones(jTextArea26.getText().toUpperCase());
             egreso.setEstado(1);
             jpaController.create(egreso);    
-            
+            List<HcuEvoEgreso> evodestino = new ArrayList<HcuEvoEgreso>();
+            evodestino.add(egreso);
+            evol.setHcuEvoEgreso(evodestino);
         }else{
             try {
                 HcuEvoEgreso egreso = evoEgresos.get(0);
