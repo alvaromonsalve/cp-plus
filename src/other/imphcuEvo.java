@@ -69,6 +69,7 @@ public class imphcuEvo extends javax.swing.JDialog {
     }
     
     public void activeChec(){
+        jCheckBox9.setEnabled(false);
         if(procedimientoJpa==null){
             factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
             procedimientoJpa = new HcuEvoProcedimientoJpaController(factory);
@@ -90,33 +91,33 @@ public class imphcuEvo extends javax.swing.JDialog {
         //Nota EGRESO
         if(hcuEvolucion.getEstado()!=4){
             jCheckBox2.setEnabled(false);
-            jCheckBox9.setEnabled(false);
+//            jCheckBox9.setEnabled(false);
         }else{
              if(hcuEvolucion.getEstado()==4){
                 jCheckBox2.setEnabled(true);
-                jCheckBox9.setEnabled(true);
+//                jCheckBox9.setEnabled(true);
                 jCheckBox4.setEnabled(false);
                 jCheckBox8.setEnabled(false);
             }
         }
         if(hcuEvolucion.getEstado()==3){
             jCheckBox2.setEnabled(true);
-            jCheckBox9.setEnabled(true);
+//            jCheckBox9.setEnabled(true);
             jCheckBox4.setEnabled(false);
             jCheckBox8.setEnabled(false);
         }
         //nota de evolucion
         if(hcuEvolucion.getEstado() == 2){
             jCheckBox2.setEnabled(false);
-            jCheckBox9.setEnabled(false);
+//            jCheckBox9.setEnabled(false);
             jCheckBox8.setEnabled(true);
         }else{
             jCheckBox2.setEnabled(true);
-            jCheckBox9.setEnabled(true);
+//            jCheckBox9.setEnabled(true);
             jCheckBox8.setEnabled(false);
         }        
         if(hcuEvolucion.getEstado() == 1){
-            jCheckBox9.setEnabled(false);
+//            jCheckBox9.setEnabled(false);
             jCheckBox2.setEnabled(false);
         }
     }
@@ -300,21 +301,21 @@ public class imphcuEvo extends javax.swing.JDialog {
                     iep.tempFile.deleteOnExit();
                 }
                 
-                if(jCheckBox9.isSelected()){//Miniepicrisis
-                    ImprimirNotaegresoFull ief = new ImprimirNotaegresoFull();
-                    Database db = new Database(AtencionUrgencia.props);
-                    db.Conectar();
-                    ief.setCodigo("?-??-??");
-                    ief.setVersion("?.?");
-                    ief.setServicio("URGENCIAS");
-                    ief.setNombrereport("$#%&*+*");
-                    ief.setIdhc(hcuEvolucion.getIdInfoHistoriac().getId().toString());
-                    System.out.println(hcuEvolucion.getIdInfoHistoriac().getId().toString());
-                    ief.setConnection(db.conexion);
-                    reader8 = ief.ImprimirEgresoFull();
-                    db.DesconectarBasedeDatos();
-                    ief.tempFile.deleteOnExit();
-                }
+//                if(jCheckBox9.isSelected()){//Miniepicrisis
+//                    ImprimirNotaegresoFull ief = new ImprimirNotaegresoFull();
+//                    Database db = new Database(AtencionUrgencia.props);
+//                    db.Conectar();
+//                    ief.setCodigo("?-??-??");
+//                    ief.setVersion("?.?");
+//                    ief.setServicio("URGENCIAS");
+//                    ief.setNombrereport("$#%&*+*");
+//                    ief.setIdhc(hcuEvolucion.getIdInfoHistoriac().getId().toString());
+//                    System.out.println(hcuEvolucion.getIdInfoHistoriac().getId().toString());
+//                    ief.setConnection(db.conexion);
+//                    reader8 = ief.ImprimirEgresoFull();
+//                    db.DesconectarBasedeDatos();
+//                    ief.tempFile.deleteOnExit();
+//                }
                 PdfCopyFields copy = new PdfCopyFields(new FileOutputStream(archivoTemporal));
                 if(jCheckBox2.isSelected()){
                     if(reader2!=null) copy.addDocument(reader2);
@@ -337,9 +338,9 @@ public class imphcuEvo extends javax.swing.JDialog {
                  if(jCheckBox8.isSelected()){
                     if(reader7!=null) copy.addDocument(reader7);
                 }
-                 if(jCheckBox9.isSelected()){
-                    if(reader8!=null) copy.addDocument(reader8);
-                }
+//                 if(jCheckBox9.isSelected()){
+//                    if(reader8!=null) copy.addDocument(reader8);
+//                }
                 try{
                     copy.close();
                     if(noValido){
@@ -385,7 +386,7 @@ public class imphcuEvo extends javax.swing.JDialog {
                 jCheckBox6.setSelected(false);
                 jCheckBox8.setSelected(false);
                 jCheckBox2.setSelected(true);
-                jCheckBox9.setSelected(true);
+                jCheckBox9.setSelected(false);
             }
         }
         hiloReporte ut = new hiloReporte(this);
@@ -476,21 +477,21 @@ public class imphcuEvo extends javax.swing.JDialog {
                     iep.tempFile.deleteOnExit();
                 }
                 
-                if(jCheckBox9.isSelected()){//Miniepicrisis
-                    ImprimirNotaegresoFull ief = new ImprimirNotaegresoFull();
-                    Database db = new Database(AtencionUrgencia.props);
-                    db.Conectar();
-                    ief.setCodigo("?-??-??");
-                    ief.setVersion("?.?");
-                    ief.setServicio("URGENCIAS");
-                    ief.setNombrereport("$#%&*+*");
-                    ief.setIdhc(hcuEvolucion.getIdInfoHistoriac().getId().toString());
-                    System.out.println(hcuEvolucion.getIdInfoHistoriac().getId().toString());
-                    ief.setConnection(db.conexion);
-                    reader8 = ief.ImprimirEgresoFull();
-                    db.DesconectarBasedeDatos();
-                    ief.tempFile.deleteOnExit();
-                }
+//                if(jCheckBox9.isSelected()){//Miniepicrisis
+//                    ImprimirNotaegresoFull ief = new ImprimirNotaegresoFull();
+//                    Database db = new Database(AtencionUrgencia.props);
+//                    db.Conectar();
+//                    ief.setCodigo("?-??-??");
+//                    ief.setVersion("?.?");
+//                    ief.setServicio("URGENCIAS");
+//                    ief.setNombrereport("$#%&*+*");
+//                    ief.setIdhc(hcuEvolucion.getIdInfoHistoriac().getId().toString());
+//                    System.out.println(hcuEvolucion.getIdInfoHistoriac().getId().toString());
+//                    ief.setConnection(db.conexion);
+//                    reader8 = ief.ImprimirEgresoFull();
+//                    db.DesconectarBasedeDatos();
+//                    ief.tempFile.deleteOnExit();
+//                }
                 PdfCopyFields copy = new PdfCopyFields(new FileOutputStream(archivoTemporal));
                 if(jCheckBox2.isSelected()){
                     if(reader2!=null) copy.addDocument(reader2);
@@ -513,9 +514,9 @@ public class imphcuEvo extends javax.swing.JDialog {
                  if(jCheckBox8.isSelected()){
                     if(reader7!=null) copy.addDocument(reader7);
                 }
-                 if(jCheckBox9.isSelected()){
-                    if(reader8!=null) copy.addDocument(reader8);
-                }
+//                 if(jCheckBox9.isSelected()){
+//                    if(reader8!=null) copy.addDocument(reader8);
+//                }
                 try{
                     copy.close();
                     if(noValido){
