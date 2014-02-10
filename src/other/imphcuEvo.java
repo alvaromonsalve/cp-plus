@@ -30,9 +30,7 @@ import java.awt.HeadlessException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
@@ -40,14 +38,7 @@ import javax.persistence.Persistence;
 import javax.swing.JOptionPane;
 import jpa.HcuEvoProcedimientoJpaController;
 import jpa.HcuEvolucionJpaController;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
 import oldConnection.Database;
-import org.apache.poi.util.TempFile;
 
 /**
  *
