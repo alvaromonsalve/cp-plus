@@ -126,6 +126,7 @@ public class Evo extends javax.swing.JPanel {
      * Creates new form HC
      */
     private HcuEvolucion hcuEvolucion=null;
+    private int est = 0;
     public Evo() {
         initComponents();
         factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
@@ -322,12 +323,18 @@ public class Evo extends javax.swing.JPanel {
                TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
                DefaultMutableTreeNode fechaEvo = null;
                DefaultMutableTreeNode Evo = null;
-               if(hcuEvo.getEstado()==3){
-                   jButton1.setVisible(false);
-                   jButton14.setVisible(false);
+               if(hcuEvo.getEstado()==3 || hcuEvo.getEstado()== 4){
+//                   jButton1.setVisible(false);
+//                   jButton14.setVisible(false);
+//                   if(hcuEvo.getEstado()== 4){
+                        jButton1.setEnabled(false);
+                        jButton14.setEnabled(false);
+                        est = 1;
+//                   }
                }else{
                    jButton1.setVisible(true);
                    jButton14.setVisible(true);
+                   est = 0;
                }
                boolean existeFechaEvo=false;
                for(int i=0;i<raiz.getChildCount();i++){
@@ -777,6 +784,9 @@ public class Evo extends javax.swing.JPanel {
                     evolucion.setTipo(tipoEvo);
                     evolucion.setIdStaticEspecialidades(staticEspecialidades);
                     List<HcuEvolucion> hes= hejc.FindHcuEvolucions(infohistoriac); 
+                    evolucion.setEstado(3);
+                    jButton1.setEnabled(false);
+                    jButton14.setEnabled(false);
                     if(hes.isEmpty()){
                         evolucion.setDx(scjc.findStaticCie10(infohistoriac.getDiagnostico()));
                         evolucion.setDx1(scjc.findStaticCie10(infohistoriac.getDiagnostico2()));
@@ -789,8 +799,7 @@ public class Evo extends javax.swing.JPanel {
                         evolucion.setDx2(hes.get(hes.size()-1).getDx2());
                         evolucion.setDx3(hes.get(hes.size()-1).getDx3());
                         evolucion.setDx4(hes.get(hes.size()-1).getDx4());
-                    }                
-                    evolucion.setEstado(3);
+                    } 
                     evoSeleccion = evolucion;
                     TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
                     DefaultMutableTreeNode fechaEvo = null;
@@ -5341,22 +5350,30 @@ public class Evo extends javax.swing.JPanel {
                     imp.setEvolucion(he);
                     imp.imprimir(); 
                     jButton13.setEnabled(false);
+                    jButton12.setEnabled(false);
+                    if(est == 1){
+                    jButton14.setEnabled(false);
+                    }
                 }
              }else if(he.getEstado()==0){
                  JOptionPane.showMessageDialog(null, "No se puede finalizar Notas en estado Borrador");
              }else if(he.getEstado()==3){
+                 System.out.println("1");
                  if(he.getHcuEvoEgreso().size()>0){
                     String mensaje = "¿Si finaliza la nota de Egreso no podra modificarla posteriormente? ";
                     int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Confirmar Finalizacion",JOptionPane.YES_NO_OPTION);
                     if(entrada==0){
                         he.setEstado(4);
                         hcuEvolucionJpaController.edit(he);
-                        
     //                    setJTreeEvo(); 
                         imp.setNoValido(false);
                         imp.setEvolucion(he);
                         imp.imprimir(); 
                         jButton13.setEnabled(false);
+                        jButton12.setEnabled(false);
+                        if(est == 1){
+                           jButton14.setEnabled(false);
+                        }
                     }
                  }else{
                      JOptionPane.showMessageDialog(null, "No existe destino del paciente relacionado al egreso");
@@ -5365,9 +5382,8 @@ public class Evo extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(null, "Esta Nota ya se encuentra finalizada");
             }
         } catch (Exception ex) {
-//            JOptionPane.showMessageDialog(null, "No puede finalizar la nota de Evolución sin haber guardado");
-            
-            JOptionPane.showMessageDialog(null,  ex.getMessage());
+            JOptionPane.showMessageDialog(null, "No puede finalizar la nota de Evolución sin haber guardado");
+//            JOptionPane.showMessageDialog(null,  ex.getMessage());
         }
     }//GEN-LAST:event_jButton13ActionPerformed
 
@@ -5464,11 +5480,20 @@ public class Evo extends javax.swing.JPanel {
         if(evoSeleccion.getEstado()==2){
             this.activarComponentes(evoSeleccion);
             this.jButton13.setEnabled(false);
+            this.jButton12.setEnabled(false);
+            if(est == 1){
+                this.jButton14.setEnabled(false);
+            }
         }else{
             if(evoSeleccion.getEstado()>=3){
             this.activarComponentesEgreso(evoSeleccion); 
+            this.jButton14.setEnabled(false);
+            this.jButton1.setEnabled(false);
             if(evoSeleccion.getEstado()==4){
                 this.jButton13.setEnabled(false);
+                this.jButton1.setEnabled(false);
+                this.jButton14.setEnabled(false);
+                this.jButton12.setEnabled(false);
             }
         }else{
             this.activarComponentes(evoSeleccion);
