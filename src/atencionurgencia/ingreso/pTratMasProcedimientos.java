@@ -318,11 +318,15 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
         }
     }
     
-    private void migrarProcedimToEvo(Object proceds, boolean evo, EntityManagerFactory factory){
-        String mensaje = "¿Quiere continuar con los procedimientos de la Nota de Ingreso? ";
+    private void migrarProcedimToEvo(Object proceds, boolean evo, EntityManagerFactory factory){//Se quito la funcionalidad de migrar de otra evolucion CAUCASIA 10/02/2014 A LAS 3:25 PM
+//        String mensaje = "¿Quiere continuar con los procedimientos de la Nota de Ingreso? ";
+        String mensaje = "Seleccione procedimiento";
         if(evo)
-            mensaje = "¿Quiere continuar con los procedimientos de la Evolución anterior? ";
-        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Migración de procedimientos",JOptionPane.YES_NO_OPTION);
+//            mensaje = "¿Quiere continuar con los procedimientos de la Evolución anterior? ";
+            mensaje = "Seleccione procedimiento";
+//        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Migración de procedimientos",JOptionPane.YES_NO_OPTION);
+        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Seleccion procedimiento",JOptionPane.DEFAULT_OPTION);
+        entrada = 1;
         if(entrada==0){
             if(evo){
                 List<HcuEvoProcedimiento> evoProceds = (List<HcuEvoProcedimiento>) proceds;
