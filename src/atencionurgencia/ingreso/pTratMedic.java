@@ -569,12 +569,16 @@ public class pTratMedic extends javax.swing.JPanel {
        * @param posologias list de medicamentos 
        * @param evo true si viene de evolucion; false si viene de hcu
        */
-      private void migrarPosologiaToEvo(Object posologias, boolean evo){
-          String mensaje = "¿Quiere continuar con los medicamentos de la Nota de Ingreso? ";
+      private void migrarPosologiaToEvo(Object posologias, boolean evo){//Se quito la funcionalidad de migrar de otra evolucion CAUCASIA 11/02/2014 A LAS 7:53 AM
+//          String mensaje = "¿Quiere continuar con los medicamentos de la Nota de Ingreso? ";
+            String mensaje = "Agregue medicamentos";
         if(evo){
-            mensaje = "¿Quiere continuar con los medicamentos de la Evolución anterior? ";
+//            mensaje = "¿Quiere continuar con los medicamentos de la Evolución anterior? ";
+              mensaje = "Agregue medicamentos";
         }
-        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Migración de medicamentos",JOptionPane.YES_NO_OPTION);
+//        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Migración de medicamentos",JOptionPane.YES_NO_OPTION);
+        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Seleccion procedimiento",JOptionPane.DEFAULT_OPTION);
+        entrada = 1;
         if(entrada==0){
             if(evo){
                 List<HcuEvoPosologia> evoPosologias = (List<HcuEvoPosologia>) posologias;
