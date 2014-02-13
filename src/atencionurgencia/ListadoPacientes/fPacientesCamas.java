@@ -53,7 +53,7 @@ public class fPacientesCamas extends javax.swing.JFrame {
         jLabel1.setVisible(false);        
     }
     
-    public void inicio(){        
+    public void inicio(){
         TimerTask timerListar = new TimerTask(){
         @Override
         public void run() {
@@ -67,7 +67,7 @@ public class fPacientesCamas extends javax.swing.JFrame {
     }
 
     @Override
-    public Image getIconImage() {
+    public Image getIconImage(){
         Image retValue = Toolkit.getDefaultToolkit().
                 getImage(ClassLoader.getSystemResource("images/icono.png"));
         return retValue;
@@ -96,7 +96,7 @@ public class fPacientesCamas extends javax.swing.JFrame {
         public boolean isCellEditable(int rowIndex, int colIndex){
            return canEdit [colIndex];
         }
-    };  
+    };
         return model;
     }
     
@@ -155,7 +155,6 @@ public class fPacientesCamas extends javax.swing.JFrame {
                 }
             }
         }     
-
     }
     
     private void pacientesCamasOfTable(InfoCamas ic, int rows,int siteTable){
@@ -237,8 +236,7 @@ public class fPacientesCamas extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null,"getModImagen "+this.getName()+" - "+e.getMessage());
             }
             return tabla;
-        }
-    
+        }    
     
     private JTable getModDescripcion(String nombreC, String paciente, String Diag){
          JTable tabla = new JTable(); 
