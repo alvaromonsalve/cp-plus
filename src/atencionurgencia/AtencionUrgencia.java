@@ -73,7 +73,7 @@ public class AtencionUrgencia {
             for(AccessRoles ar:roles){
                 if(ar.getRuta()==10000){
                     panelindex = new panelIndex();
-                    if(configUser.getIdPerfiles().getId()!=3) panelindex.jButton4.setVisible(false);//3 es el id del perfil de especialista de urgencia
+//                    if(configUser.getIdPerfiles().getId()!=3);//3 es el id del perfil de especialista de urgencia
                     AtencionUrgencia.props =props;       
                     jPanel = panelindex;
                 }
