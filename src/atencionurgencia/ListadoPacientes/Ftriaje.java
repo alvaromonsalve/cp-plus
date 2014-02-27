@@ -28,7 +28,7 @@ import oldConnection.Database;
 
 /**
  *
- * @author AlvaroVirtual
+ * @author Alvaro Monsalve
  */
 public class Ftriaje extends javax.swing.JFrame {
 
@@ -69,13 +69,7 @@ public class Ftriaje extends javax.swing.JFrame {
         AtencionUrgencia.panelindex.hc.saveHistoryClinic();
     }
     
-    /**
-     * 
-     * Genera el reporte de receta medica.
-     * El reporte utiliza un procedimiento almacenado que crea el consecutivo del mismo
-     * y guarda toda la informacion de este en un registro de log
-     */
-    
+
     private class hiloReporte extends Thread{
         Frame form=null;
         InfoHistoriac idHC;
@@ -111,10 +105,10 @@ public class Ftriaje extends javax.swing.JFrame {
                     reader2 = new PdfReader(tempFile.getAbsolutePath());
                     db.DesconectarBasedeDatos();
                     tempFile.deleteOnExit();
-                 }     
+             }     
                 PdfCopyFields copy = new PdfCopyFields(new FileOutputStream(archivoTemporal));
 
-                    if(reader2!=null) copy.addDocument(reader2);
+                if(reader2!=null) copy.addDocument(reader2);
 
                 try{
                     copy.close();
@@ -334,7 +328,7 @@ public class Ftriaje extends javax.swing.JFrame {
             int n = JOptionPane.showOptionDialog(this, "¿Desea continuar la atención como cita prioritaria?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
                     JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[2]);
             if(n==0){
-                JOptionPane.showMessageDialog(this, "El modulo de Historia Clinica para consulta externa aun se encuentra en desarrollo.");
+                JOptionPane.showMessageDialog(this, "El modulo de Historia Clinica para consulta externa aun se encuentra en desarrollo.\nDebe diligenciar la Historia Clínica manual.");
                 
                 //comienza el hilo para reporte
 
@@ -345,9 +339,9 @@ public class Ftriaje extends javax.swing.JFrame {
                 AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());
                 AtencionUrgencia.panelindex.FramEnable(true);
                 generateHC(3);//el estado para consulta externa
-                hiloReporte ut = new hiloReporte(this,AtencionUrgencia.panelindex.hc.infohistoriac);
-                Thread thread = new Thread(ut);
-                thread.start();
+//                hiloReporte ut = new hiloReporte(this,AtencionUrgencia.panelindex.hc.infohistoriac);
+//                Thread thread = new Thread(ut);
+//                thread.start();
 //                this.setVisible(false);                
             }else if(n==1){
                 AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());
