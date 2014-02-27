@@ -2869,7 +2869,6 @@ public class HC extends javax.swing.JPanel {
         jLabel58.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/product-sales-report-icon.png"))); // NOI18N
         jLabel58.setText("Anexo 3");
         jLabel58.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel58.setEnabled(false);
         jLabel58.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel58MouseClicked(evt);
@@ -4007,7 +4006,7 @@ public class HC extends javax.swing.JPanel {
     private void jLabel58MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel58MouseClicked
 //        if(pAnexo31==null){
 //            pAnexo31 = new pAnexo3();
-//            pAnexo31.showLista(infohistoriac);
+//            pAnexo31.showLista(infohistoriac,factory);
 //        }
 //        jPanel35.removeAll();
 //        pAnexo31.setBounds(0,0,380,420);
