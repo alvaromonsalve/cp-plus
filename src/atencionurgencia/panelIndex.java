@@ -9,6 +9,7 @@ import atencionurgencia.ListadoPacientes.enAtencion;
 import atencionurgencia.ListadoPacientes.fListPacientes;
 import atencionurgencia.ListadoPacientes.fListinterconsulta;
 import atencionurgencia.ListadoPacientes.fPacientesCamas;
+import atencionurgencia.documentos.jDocumentos;
 import atencionurgencia.evolucion.Evo;
 import atencionurgencia.ingreso.HC;
 import entidades.AccessRoles;
@@ -27,6 +28,7 @@ public class panelIndex extends javax.swing.JPanel {
     private enAtencion enatencion=null;
     public HC hc;
     public Evo evo;
+    public jDocumentos documentos;    
     
 //    private PanelHilo panelHilo=null;
     
@@ -56,6 +58,7 @@ public class panelIndex extends javax.swing.JPanel {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
         jToolBar1 = new javax.swing.JToolBar();
         jLabel1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JToolBar.Separator();
@@ -166,6 +169,31 @@ public class panelIndex extends javax.swing.JPanel {
             }
         });
 
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefinedParameters.png"))); // NOI18N
+        jButton5.setToolTipText("DOCUMENTOS");
+        jButton5.setContentAreaFilled(false);
+        jButton5.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jButton5.setDoubleBuffered(true);
+        jButton5.setFocusable(false);
+        jButton5.setMaximumSize(new java.awt.Dimension(46, 46));
+        jButton5.setMinimumSize(new java.awt.Dimension(46, 46));
+        jButton5.setPreferredSize(new java.awt.Dimension(46, 46));
+        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton5MouseExited(evt);
+            }
+        });
+        jButton5.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton5MouseMoved(evt);
+            }
+        });
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelImage1Layout = new javax.swing.GroupLayout(panelImage1);
         panelImage1.setLayout(panelImage1Layout);
         panelImage1Layout.setHorizontalGroup(
@@ -174,6 +202,7 @@ public class panelIndex extends javax.swing.JPanel {
             .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         panelImage1Layout.setVerticalGroup(
             panelImage1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -186,6 +215,8 @@ public class panelIndex extends javax.swing.JPanel {
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -333,12 +364,33 @@ public class panelIndex extends javax.swing.JPanel {
             jpContainer.repaint();
         }
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseExited
+        Funciones.setLabelInfo();
+        jButton5.setContentAreaFilled(false);
+    }//GEN-LAST:event_jButton5MouseExited
+
+    private void jButton5MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseMoved
+        jlInfo.setText(jButton5.getToolTipText());
+        jButton5.setContentAreaFilled(true);
+    }//GEN-LAST:event_jButton5MouseMoved
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        this.jpContainer.removeAll();
+        this.documentos = new jDocumentos();
+        this.documentos.setBounds(0, 0, 764, 514);
+        this.jpContainer.add(this.documentos);
+        this.documentos.setVisible(true);
+        this.jpContainer.validate();
+        this.jpContainer.repaint();
+    }//GEN-LAST:event_jButton5ActionPerformed
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     public javax.swing.JButton jButton3;
     public javax.swing.JButton jButton4;
+    public javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar jToolBar1;
