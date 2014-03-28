@@ -174,6 +174,7 @@ public class panelIndex extends javax.swing.JPanel {
         jButton5.setContentAreaFilled(false);
         jButton5.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jButton5.setDoubleBuffered(true);
+        jButton5.setEnabled(false);
         jButton5.setFocusable(false);
         jButton5.setMaximumSize(new java.awt.Dimension(46, 46));
         jButton5.setMinimumSize(new java.awt.Dimension(46, 46));
