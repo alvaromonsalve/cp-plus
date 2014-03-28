@@ -17,3 +17,5 @@ nbproject/
 *.ear
 /dist/
 /build/
+/build.xml
+/manifest.mf
