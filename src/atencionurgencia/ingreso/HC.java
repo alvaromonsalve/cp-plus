@@ -301,9 +301,9 @@ public class HC extends javax.swing.JPanel {
         if(pMedidaGeneral!=null){
             pMedidaGeneral.saveChanges(factory, infohistoriac);
         }
-        if(pAnexo31!=null){
-            pAnexo31.saveChanges(infohistoriac);
-        }
+//        if(pAnexo31!=null){
+//            pAnexo31.saveChanges(infohistoriac);
+//        }
         if(pMedic!=null){
             pMedic.saveChanges(factory, infohistoriac);
         }
