@@ -107,6 +107,8 @@ public class impresionesHC extends javax.swing.JFrame {
             try {
                 PdfReader reader1 = null,reader2 = null,reader3 = null,reader4=null,reader5=null,reader6=null;
                 File archivoTemporal = File.createTempFile("Historia_Urgencia",".pdf");
+                
+                
                 if(jCheckBox2.isSelected()){//otros procedimientos
                     if(infoProcedimientoHcuJPA==null){
                         factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
@@ -142,7 +144,7 @@ public class impresionesHC extends javax.swing.JFrame {
                         factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
                         infoProcedimientoHcuJPA = new InfoProcedimientoHcuJpaController(factory);
                     }
-                    List<InfoProcedimientoHcu> listInfoProcedimientoHcu = infoProcedimientoHcuJPA.ListFindInfoProcedimientoHcu(idHC);
+                    List<InfoProcedimientoHcu> listInfoProcedimientoHcu = infoProcedimientoHcuJPA.ListFindInfoProcedimientoHcu(idHC,17);
                     if(listInfoProcedimientoHcu.size()>0){
                         String master = System.getProperty("user.dir")+"/reportes/solPorcedimientosLaboratorio.jasper";
                         if(master!=null){
@@ -172,7 +174,7 @@ public class impresionesHC extends javax.swing.JFrame {
                         factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
                         infoProcedimientoHcuJPA = new InfoProcedimientoHcuJpaController(factory);
                     }
-                    List<InfoProcedimientoHcu> listInfoProcedimientoHcu = infoProcedimientoHcuJPA.ListFindInfoProcedimientoHcu(idHC);
+                    List<InfoProcedimientoHcu> listInfoProcedimientoHcu = infoProcedimientoHcuJPA.ListFindInfoProcedimientoHcu(idHC,15);
                     if(listInfoProcedimientoHcu.size()>0){
                         String master = System.getProperty("user.dir")+"/reportes/solPorcedimientosImagenologia.jasper";
                         if(master!=null){
