@@ -101,6 +101,7 @@ public class HC extends javax.swing.JPanel {
         inicio();
         InputMap map2 = jTextArea10.getInputMap(JTextArea.WHEN_FOCUSED);
         map2.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK), "null");
+        jXTaskPane5.setVisible(false);
     }    
     
     private void inicio(){
