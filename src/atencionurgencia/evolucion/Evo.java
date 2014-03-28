@@ -1,9 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package atencionurgencia.evolucion;
-
 
 import atencionurgencia.AtencionUrgencia;
 import atencionurgencia.ListadoPacientes.Ftriaje;
@@ -75,81 +70,79 @@ import tools.MyDate;
 public class Evo extends javax.swing.JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="Declaracion de variables">
-    FormPersonas personas=null;
+    FormPersonas personas = null;
     public InfoPaciente infopaciente = null;
-    public InfoHistoriac infohistoriac=null;
-    public InfoAdmision infoadmision =null;
+    public InfoHistoriac infohistoriac = null;
+    public InfoAdmision infoadmision = null;
     private InfoHcExpfisica infoexploracion = null;
     private StaticCie10 staticCie10 = null;
-    private StaticCie10JpaController staticcie=null;
+    private StaticCie10JpaController staticcie = null;
     private EntityManagerFactory factory;
-    public int idDiag1 = 1,idDiag2= 1,idDiag3= 1,idDiag4= 1,idDiag5= 1;
-    public DefaultTableModel modeloAyudDiag,modDestroyAyudDiag;
+    public int idDiag1 = 1, idDiag2 = 1, idDiag3 = 1, idDiag4 = 1, idDiag5 = 1;
+    public DefaultTableModel modeloAyudDiag, modDestroyAyudDiag;
     public int finalizar = 0;
     private Boolean edite = false;
     private final Object dato[] = null;
     private List<InfoPruebasComplement> listaPruebas = null;
     private final String s = System.getProperty("file.separator");
-    private InfoAntPersonalesJpaController antPersonalesJPA=null;
-    private InfoAntPersonales antPersonales;    
-    public pTratMedic pMedic=null;
-    public pTratPConsultDiag pConsultDiag=null;
-    public pTratLaboratorio pLaboratorio=null;
-    public pTratImagenologia pImagenologia=null;
-    public pTratQuirurgico pQuirurgico=null;
-    public pTratMasProcedimientos pProcedimientos=null;
-    public pTratInterconsulta pInterconsulta0=null,pInterconsulta1=null,pInterconsulta2=null
-            ,pInterconsulta3=null,pInterconsulta4=null;
-    public pTratOtrasInterconsultas pOtrasInterconsultas=null;
-    public pTratMedidaGeneral pMedidaGeneral=null;
-    public pAnexo3 pAnexo31=null;
-    public Ftriaje ftriaje=null;
+    private InfoAntPersonalesJpaController antPersonalesJPA = null;
+    private InfoAntPersonales antPersonales;
+    public pTratMedic pMedic = null;
+    public pTratPConsultDiag pConsultDiag = null;
+    public pTratLaboratorio pLaboratorio = null;
+    public pTratImagenologia pImagenologia = null;
+    public pTratQuirurgico pQuirurgico = null;
+    public pTratMasProcedimientos pProcedimientos = null;
+    public pTratInterconsulta pInterconsulta0 = null, pInterconsulta1 = null, pInterconsulta2 = null, pInterconsulta3 = null, pInterconsulta4 = null;
+    public pTratOtrasInterconsultas pOtrasInterconsultas = null;
+    public pTratMedidaGeneral pMedidaGeneral = null;
+    public pAnexo3 pAnexo31 = null;
+    public Ftriaje ftriaje = null;
     private newEvo evol = null;
-    private pSubjetivo subjetivo=null;
-    private pObjetivo objetivo=null;
-    public pAnalisis analisis=null;
-    public pPlan pplan=null;
-    private grafic_sVitales gSignos=null;
-    private List<HcuEvolucion> hcuEvolucionList=null;
-    private HcuEvolucionJpaController hcuEvolucionJpaController =null;
+    private pSubjetivo subjetivo = null;
+    private pObjetivo objetivo = null;
+    public pAnalisis analisis = null;
+    public pPlan pplan = null;
+    private grafic_sVitales gSignos = null;
+    private List<HcuEvolucion> hcuEvolucionList = null;
+    private HcuEvolucionJpaController hcuEvolucionJpaController = null;
     private DefaultTreeModel modeloTree;
     private DefaultMutableTreeNode EvosHC;
-    private HcuEvolucion evoSeleccion=null;
+    private HcuEvolucion evoSeleccion = null;
     private datosHCU cU;
     public int tipoEvo;
-    public StaticEspecialidades staticEspecialidades =null;
-    
-    
+    public StaticEspecialidades staticEspecialidades = null;
+
     // </editor-fold>
-    
     /**
      * Creates new form HC
      */
-    private HcuEvolucion hcuEvolucion=null;
+    private HcuEvolucion hcuEvolucion = null;
     private int est = 0;
+
     public Evo() {
         initComponents();
-        factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
+        factory = Persistence.createEntityManagerFactory("ClipaEJBPU", AtencionUrgencia.props);
         TablaAyudDiag();
         inicio();
         InputMap map2 = jTextArea10.getInputMap(JTextArea.WHEN_FOCUSED);
-        map2.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK), "null"); 
+        map2.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK), "null");
     }
-    
-    private void inicio(){
-            jpCentro.removeAll();
-            jpMotivoC.setBounds(0, 0, 584, 472);
-            jpCentro.add(jpMotivoC);
-            jpMotivoC.setVisible(true);
-            jpCentro.validate();
-            jpCentro.repaint();
-            activeCheck(1);   
-            jButton7.setVisible(false);
+
+    private void inicio() {
+        jpCentro.removeAll();
+        jpMotivoC.setBounds(0, 0, 584, 472);
+        jpCentro.add(jpMotivoC);
+        jpMotivoC.setVisible(true);
+        jpCentro.validate();
+        jpCentro.repaint();
+        activeCheck(1);
+        jButton7.setVisible(false);
     }
-    
+
     // <editor-fold defaultstate="collapsed" desc="private void activeCheck(int val){">
-    private void activeCheck(int val){
-        switch(val){
+    private void activeCheck(int val) {
+        switch (val) {
             case 1:
                 jCheckBox6.setSelected(true);
                 jCheckBox10.setSelected(false);
@@ -233,719 +226,719 @@ public class Evo extends javax.swing.JPanel {
         }
     }
     // </editor-fold>
-        
-        public void setSelectionNivelTriage(int var){
-            switch (var){
-                case 0:
-                    jRadioButton1.setSelected(true);
-                    break;
-                case 1:
-                    jRadioButton2.setSelected(true);
-                    break;
-                case 2:
-                    jRadioButton3.setSelected(true);
-                    break;
-                case 3:
-                    jRadioButton4.setSelected(true);
-                    break;
-            }
-        }
-        
-        // <editor-fold defaultstate="collapsed" desc="private DefaultTableModel getModAyudaDiag(){">
-        private DefaultTableModel getModAyudaDiag(){
-            try {
-                return (new DefaultTableModel(
-                null, new String [] {"imagen","iamgen2","archivo","file","tipo","ruta","bd"}){
-                Class[] types = new Class [] {
-                     javax.swing.JLabel.class,
-                     javax.swing.JLabel.class,
-                     java.lang.String.class,
-                     java.io.File.class,
-                     java.lang.String.class,
-                     java.lang.String.class,
-                     java.lang.String.class
-                };
 
-                boolean[] canEdit = new boolean [] {
-                false,false,false,false,false,false,false
-                };
-                @Override
-                public Class getColumnClass(int columnIndex) {
-                   return types [columnIndex];
-                }
-                @Override
-                public boolean isCellEditable(int rowIndex, int colIndex){
-                   return canEdit [colIndex];
-                }
-            });
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "10071:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-                return null;
-            }
-        }
-        // </editor-fold>
-        
-    private void TablaAyudDiag(){
-        try {
-           modeloAyudDiag = getModAyudaDiag();
-           modDestroyAyudDiag = getModAyudaDiag();
-           jtbTratamiento4.setModel(modeloAyudDiag);
-           jtbTratamiento4.getTableHeader().setReorderingAllowed(false);
-           jtbTratamiento4.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-           Funciones.setSizeColumnas(jtbTratamiento4, new int[]{0,1,2}, new int[]{20,20,330});
-           Funciones.setOcultarColumnas(jtbTratamiento4,new int[]{3,5,6});
-           jtbTratamiento4.setDefaultRenderer(Object.class, new tools.IconCellRenderer());
-           jtbTratamiento4.setTableHeader(null);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "10052:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+    public void setSelectionNivelTriage(int var) {
+        switch (var) {
+            case 0:
+                jRadioButton1.setSelected(true);
+                break;
+            case 1:
+                jRadioButton2.setSelected(true);
+                break;
+            case 2:
+                jRadioButton3.setSelected(true);
+                break;
+            case 3:
+                jRadioButton4.setSelected(true);
+                break;
         }
     }
-          
-       public void viewClinicHistory(InfoHistoriac infoHistoriac){
-           this.infohistoriac = infoHistoriac;
-           edite = true;
-           setHistoryC();
-           setFisicExplorer();
-           setHelpDiag();
-           setJTreeEvo();
-       }
-       
-       private void setJTreeEvo(){
-           if(hcuEvolucionJpaController==null){
-               hcuEvolucionJpaController=new HcuEvolucionJpaController(factory);
-           }
-           EvosHC = new DefaultMutableTreeNode("EVOLUCIONES");
-           modeloTree = new DefaultTreeModel(EvosHC);
-           hcuEvolucionList=hcuEvolucionJpaController.FindHcuEvolucions(infohistoriac);
-           jTree1.setModel(modeloTree);
-           jTree1.setCellRenderer(new JTreeRendererArbolEvo());
-           for(HcuEvolucion hcuEvo:hcuEvolucionList){
-               TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
-               DefaultMutableTreeNode fechaEvo = null;
-               DefaultMutableTreeNode Evo = null;
-               if(hcuEvo.getEstado()==3 || hcuEvo.getEstado()== 4){
+
+    // <editor-fold defaultstate="collapsed" desc="private DefaultTableModel getModAyudaDiag(){">
+    private DefaultTableModel getModAyudaDiag() {
+        try {
+            return (new DefaultTableModel(
+                    null, new String[]{"imagen", "iamgen2", "archivo", "file", "tipo", "ruta", "bd"}) {
+                        Class[] types = new Class[]{
+                            javax.swing.JLabel.class,
+                            javax.swing.JLabel.class,
+                            java.lang.String.class,
+                            java.io.File.class,
+                            java.lang.String.class,
+                            java.lang.String.class,
+                            java.lang.String.class
+                        };
+
+                        boolean[] canEdit = new boolean[]{
+                            false, false, false, false, false, false, false
+                        };
+
+                        @Override
+                        public Class getColumnClass(int columnIndex) {
+                            return types[columnIndex];
+                        }
+
+                        @Override
+                        public boolean isCellEditable(int rowIndex, int colIndex) {
+                            return canEdit[colIndex];
+                        }
+                    });
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "10071:\n" + ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            return null;
+        }
+    }
+        // </editor-fold>
+
+    private void TablaAyudDiag() {
+        try {
+            modeloAyudDiag = getModAyudaDiag();
+            modDestroyAyudDiag = getModAyudaDiag();
+            jtbTratamiento4.setModel(modeloAyudDiag);
+            jtbTratamiento4.getTableHeader().setReorderingAllowed(false);
+            jtbTratamiento4.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            Funciones.setSizeColumnas(jtbTratamiento4, new int[]{0, 1, 2}, new int[]{20, 20, 330});
+            Funciones.setOcultarColumnas(jtbTratamiento4, new int[]{3, 5, 6});
+            jtbTratamiento4.setDefaultRenderer(Object.class, new tools.IconCellRenderer());
+            jtbTratamiento4.setTableHeader(null);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "10052:\n" + ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    public void viewClinicHistory(InfoHistoriac infoHistoriac) {
+        this.infohistoriac = infoHistoriac;
+        edite = true;
+        setHistoryC();
+        setFisicExplorer();
+        setHelpDiag();
+        setJTreeEvo();
+    }
+
+    private void setJTreeEvo() {
+        if (hcuEvolucionJpaController == null) {
+            hcuEvolucionJpaController = new HcuEvolucionJpaController(factory);
+        }
+        EvosHC = new DefaultMutableTreeNode("EVOLUCIONES");
+        modeloTree = new DefaultTreeModel(EvosHC);
+        hcuEvolucionList = hcuEvolucionJpaController.FindHcuEvolucions(infohistoriac);
+        jTree1.setModel(modeloTree);
+        jTree1.setCellRenderer(new JTreeRendererArbolEvo());
+        for (HcuEvolucion hcuEvo : hcuEvolucionList) {
+            TreeNode raiz = (TreeNode) jTree1.getModel().getRoot();
+            DefaultMutableTreeNode fechaEvo = null;
+            DefaultMutableTreeNode Evo = null;
+            if (hcuEvo.getEstado() == 3 || hcuEvo.getEstado() == 4) {
 //                   jButton1.setVisible(false);
 //                   jButton14.setVisible(false);
 //                   if(hcuEvo.getEstado()== 4){
-                        jButton1.setEnabled(false);
-                        jButton14.setEnabled(false);
-                        est = 1;
+                jButton1.setEnabled(false);
+                jButton14.setEnabled(false);
+                est = 1;
 //                   }
-               }else{
-                   jButton1.setVisible(true);
-                   jButton14.setVisible(true);
-                   est = 0;
-               }
-               boolean existeFechaEvo=false;
-               for(int i=0;i<raiz.getChildCount();i++){
-                   if(raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(hcuEvo.getFechaEvo()))){
-                       existeFechaEvo = true;
-                       fechaEvo=(DefaultMutableTreeNode) modeloTree.getChild(EvosHC, i);
-                       Evo=new DefaultMutableTreeNode(hcuEvo);
-                       fechaEvo.add(Evo);
-                       break;
-                   }
-               }
-               if(!existeFechaEvo){
-                   fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(hcuEvo.getFechaEvo()));
-                   modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
-                   Evo = new DefaultMutableTreeNode(hcuEvo);
-                   fechaEvo.add(Evo);
-               }
-           }
-           jTree1.expandRow(0);
-       }
-       
-       // <editor-fold defaultstate="collapsed" desc="Mostrar datos de Nota de Ingreso">
-       public void DatosAntPersonales(){
-            if(antPersonalesJPA==null){
-                antPersonalesJPA=new InfoAntPersonalesJpaController(factory);
+            } else {
+                jButton1.setVisible(true);
+                jButton14.setVisible(true);
+                est = 0;
             }
-            antPersonales=antPersonalesJPA.findInfoAntPersonalesIDPac(infopaciente);
-            jTextArea11.setText(antPersonales.getAlergias());
-            jTextArea11.setCaretPosition(0);
-            jTextArea12.setText(antPersonales.getIngresosPrevios());
-            jTextArea12.setCaretPosition(0);
-            jTextArea22.setText(antPersonales.getTraumatismos());
-            jTextArea22.setCaretPosition(0);
-            jTextArea23.setText(antPersonales.getTratamientos());
-            jTextArea23.setCaretPosition(0);
-            jTextArea24.setText(antPersonales.getSituacionBasal());
-            jTextArea24.setCaretPosition(0);
-            jCheckBox1.setSelected(antPersonales.getHta());
-            jCheckBox2.setSelected(antPersonales.getDm());
-            jCheckBox3.setSelected(antPersonales.getDislipidemia());
-            jCheckBox7.setSelected(antPersonales.getTabaco());
-            jCheckBox8.setSelected(antPersonales.getAlcohol());
-            jCheckBox9.setSelected(antPersonales.getDroga());
-            jTextArea7.setText(antPersonales.getOtrosHabitos());
-            jTextArea7.setCaretPosition(0);
-            jTextArea5.setText(antPersonales.getDescHdd());
-            jTextArea5.setCaretPosition(0);
-            jTextArea25.setText(antPersonales.getAntFamiliares());
-            jTextArea25.setCaretPosition(0);
+            boolean existeFechaEvo = false;
+            for (int i = 0; i < raiz.getChildCount(); i++) {
+                if (raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(hcuEvo.getFechaEvo()))) {
+                    existeFechaEvo = true;
+                    fechaEvo = (DefaultMutableTreeNode) modeloTree.getChild(EvosHC, i);
+                    Evo = new DefaultMutableTreeNode(hcuEvo);
+                    fechaEvo.add(Evo);
+                    break;
+                }
+            }
+            if (!existeFechaEvo) {
+                fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(hcuEvo.getFechaEvo()));
+                modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
+                Evo = new DefaultMutableTreeNode(hcuEvo);
+                fechaEvo.add(Evo);
+            }
         }
-       
-       private void setHistoryC(){
-           infoadmision = infohistoriac.getIdInfoAdmision();
-           infopaciente = infoadmision.getIdDatosPersonales();
-           jlbNombrePaciente.setText(infopaciente.getNombre1()+" "+infopaciente.getApellido1()+" ["+infopaciente.getNumDoc()+"]     ["+infohistoriac.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad()+"]");
-           jTextArea10.setText(infohistoriac.getMotivoConsulta());
-           jTextArea10.setCaretPosition(0);
-           jComboBox1.setSelectedItem(infohistoriac.getCausaExterna());
-           this.setSelectionNivelTriage(infohistoriac.getNivelTriaje());
-           jTextArea11.setText(infohistoriac.getAlergias());
-           jTextArea11.setCaretPosition(0);
-           jTextArea12.setText(infohistoriac.getIngresosPrevios());
-           jTextArea12.setCaretPosition(0);
-           jTextArea22.setText(infohistoriac.getTraumatismos());
-           jTextArea22.setCaretPosition(0);
-           jTextArea23.setText(infohistoriac.getTratamientos());
-           jTextArea23.setCaretPosition(0);
-           jTextArea24.setText(infohistoriac.getSituacionBasal());
-           jTextArea24.setCaretPosition(0);
-           jCheckBox1.setSelected(infohistoriac.getHta());
-           jCheckBox2.setSelected(infohistoriac.getDm());
-           jCheckBox3.setSelected(infohistoriac.getDislipidemia());
-           jCheckBox7.setSelected(infohistoriac.getTabaco());
-           jCheckBox8.setSelected(infohistoriac.getAlcohol());
-           jCheckBox9.setSelected(infohistoriac.getDroga());
-           jTextArea7.setText(infohistoriac.getOtrosHabitos());
-           jTextArea7.setCaretPosition(0);
-           jTextArea5.setText(infohistoriac.getDescHdd());
-           jTextArea5.setCaretPosition(0);
-           jTextArea13.setText(infohistoriac.getEnfermedadActual());
-           jTextArea13.setCaretPosition(0);
-           jTextArea25.setText(infohistoriac.getAntFamiliar());
-           jTextArea25.setCaretPosition(0);
-           if(staticcie == null){
-               factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
-               staticcie = new StaticCie10JpaController(factory);
-           }
-           if (infohistoriac.getDiagnostico()!= 0 && infohistoriac.getDiagnostico()!= 1) {
-               staticCie10 = staticcie.findStaticCie10(infohistoriac.getDiagnostico());
-               jTextField11.setText("["+staticCie10.getCodigo()+"] "+staticCie10.getDescripcion());
-               jTextField11.setCaretPosition(0);
-               jTextArea12.setToolTipText(myStringsFunctions.stringToDIVstring(jTextArea12.getText()));
-               idDiag1 = infohistoriac.getDiagnostico();
-           }
-           if (infohistoriac.getDiagnostico2()!=0 && infohistoriac.getDiagnostico2()!= 1) {
-               staticCie10 = staticcie.findStaticCie10(infohistoriac.getDiagnostico2());
-               jTextField12.setText("["+staticCie10.getCodigo()+"] "+staticCie10.getDescripcion());
-               jTextField12.setCaretPosition(0);
-               jTextArea12.setToolTipText(myStringsFunctions.stringToDIVstring(jTextArea12.getText()));
-               idDiag2 = infohistoriac.getDiagnostico2();
-           }
-           if (infohistoriac.getDiagnostico3()!=0 && infohistoriac.getDiagnostico3()!= 1) {
-               staticCie10 = staticcie.findStaticCie10(infohistoriac.getDiagnostico3());
-               jTextField13.setText("["+staticCie10.getCodigo()+"] "+staticCie10.getDescripcion());
-               jTextField13.setCaretPosition(0);
-               jTextArea13.setToolTipText(myStringsFunctions.stringToDIVstring(jTextArea13.getText()));
-               idDiag3 = infohistoriac.getDiagnostico3();
-           }
-           if (infohistoriac.getDiagnostico4()!=0 && infohistoriac.getDiagnostico4()!= 1) {
-               staticCie10 = staticcie.findStaticCie10(infohistoriac.getDiagnostico4());
-               jTextField14.setText("["+staticCie10.getCodigo()+"] "+staticCie10.getDescripcion());
-               jTextField14.setCaretPosition(0);
-               jTextArea14.setToolTipText(myStringsFunctions.stringToDIVstring(jTextArea14.getText()));
-               idDiag4 = infohistoriac.getDiagnostico4();
-           }
-           if (infohistoriac.getDiagnostico5()!=0 && infohistoriac.getDiagnostico5()!= 1) {
-               staticCie10 = staticcie.findStaticCie10(infohistoriac.getDiagnostico5());
-               jTextField15.setText("["+staticCie10.getCodigo()+"] "+staticCie10.getDescripcion());
-               jTextField15.setCaretPosition(0);
-               jTextArea15.setToolTipText(myStringsFunctions.stringToDIVstring(jTextArea15.getText()));
-               idDiag5 = infohistoriac.getDiagnostico5();
-           }
-           jTextArea19.setText(infohistoriac.getHallazgo());
-           jpCentro.removeAll();
-            cU = new datosHCU(infohistoriac);
-            cU.setBounds(0, 0, 584, 445);
-            jpCentro.add(cU);
-            cU.setVisible(true);
-            jpCentro.validate();
-            jpCentro.repaint(); 
-            activeCheck(8);
-       }
-       
-        private void setFisicExplorer(){
-            infoexploracion = infohistoriac.getInfoHcExpfisica();
-            jTextField1.setText(infoexploracion.getTa());
-            jTextField1.setCaretPosition(0);
-            jTextField8.setText(infoexploracion.getT());
-            jTextField8.setCaretPosition(0);
-            jTextField2.setText(infoexploracion.getTam());
-            jTextField2.setCaretPosition(0);
-            jTextField7.setText(infoexploracion.getSao2());
-            jTextField7.setCaretPosition(0);
-            jTextField3.setText(infoexploracion.getFc());
-            jTextField3.setCaretPosition(0);
-            jTextField6.setText(infoexploracion.getPvc());
-            jTextField6.setCaretPosition(0);
-            jTextField4.setText(infoexploracion.getFr());
-            jTextField4.setCaretPosition(0);
-            jTextField5.setText(infoexploracion.getPic());
-            jTextField5.setCaretPosition(0);
-            jTextField9.setText(infoexploracion.getPeso());
-            jTextField9.setCaretPosition(0);
-            jTextField10.setText(infoexploracion.getTalla());
-            jTextField10.setCaretPosition(0);
-            jTextArea2.setText(infoexploracion.getOtros());
-            jTextArea2.setCaretPosition(0);
-            jTextArea3.setText(infoexploracion.getAspectogeneral());
-            jTextArea3.setCaretPosition(0);
-            jTextArea4.setText(infoexploracion.getCara());
-            jTextArea4.setCaretPosition(0);
-            jTextArea6.setText(infoexploracion.getCardio());
-            jTextArea6.setCaretPosition(0);
-            jTextArea8.setText(infoexploracion.getRespiratorio());
-            jTextArea8.setCaretPosition(0);
-            jTextArea9.setText(infoexploracion.getGastro());
-            jTextArea9.setCaretPosition(0);
-            jTextArea14.setText(infoexploracion.getRenal());
-            jTextArea14.setCaretPosition(0);
-            jTextArea15.setText(infoexploracion.getHemato());
-            jTextArea15.setCaretPosition(0);
-            jTextArea16.setText(infoexploracion.getEndo());
-            jTextArea16.setCaretPosition(0);
-            jTextArea17.setText(infoexploracion.getOsteo());
-            jTextArea17.setCaretPosition(0);
-        }        
-       
-        private void setHelpDiag() {
-            ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("images/Delete16x16.png"));
-            ImageIcon icon2 = new ImageIcon(ClassLoader.getSystemResource("images/download.png"));
-            File file = null;
-            try {
-                file = File.createTempFile("temporal", null);
-            } catch (IOException ex) {
-               JOptionPane.showMessageDialog(null, "10065:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            }
-            listaPruebas = infohistoriac.getInfoPruebasComplements();
-            for(int i=0;i<listaPruebas.size();i++){
-                modeloAyudDiag.addRow(dato);
-                modeloAyudDiag.setValueAt(new JLabel(icon), i, 0);
-                modeloAyudDiag.setValueAt(new JLabel(icon2), i, 1);
-                modeloAyudDiag.setValueAt(listaPruebas.get(i).getNombre(), i, 2);
-                modeloAyudDiag.setValueAt(file, i, 3);
-                modeloAyudDiag.setValueAt(listaPruebas.get(i).getTipo(), i, 4);
-                modeloAyudDiag.setValueAt(ReturnPathdiagHelpSaveFile(listaPruebas.get(i).getTipo()), i, 5);
-                modeloAyudDiag.setValueAt("1", i, 6);
-            }
+        jTree1.expandRow(0);
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="Mostrar datos de Nota de Ingreso">
+    public void DatosAntPersonales() {
+        if (antPersonalesJPA == null) {
+            antPersonalesJPA = new InfoAntPersonalesJpaController(factory);
+        }
+        antPersonales = antPersonalesJPA.findInfoAntPersonalesIDPac(infopaciente);
+        jTextArea11.setText(antPersonales.getAlergias());
+        jTextArea11.setCaretPosition(0);
+        jTextArea12.setText(antPersonales.getIngresosPrevios());
+        jTextArea12.setCaretPosition(0);
+        jTextArea22.setText(antPersonales.getTraumatismos());
+        jTextArea22.setCaretPosition(0);
+        jTextArea23.setText(antPersonales.getTratamientos());
+        jTextArea23.setCaretPosition(0);
+        jTextArea24.setText(antPersonales.getSituacionBasal());
+        jTextArea24.setCaretPosition(0);
+        jCheckBox1.setSelected(antPersonales.getHta());
+        jCheckBox2.setSelected(antPersonales.getDm());
+        jCheckBox3.setSelected(antPersonales.getDislipidemia());
+        jCheckBox7.setSelected(antPersonales.getTabaco());
+        jCheckBox8.setSelected(antPersonales.getAlcohol());
+        jCheckBox9.setSelected(antPersonales.getDroga());
+        jTextArea7.setText(antPersonales.getOtrosHabitos());
+        jTextArea7.setCaretPosition(0);
+        jTextArea5.setText(antPersonales.getDescHdd());
+        jTextArea5.setCaretPosition(0);
+        jTextArea25.setText(antPersonales.getAntFamiliares());
+        jTextArea25.setCaretPosition(0);
+    }
+
+    private void setHistoryC() {
+        infoadmision = infohistoriac.getIdInfoAdmision();
+        infopaciente = infoadmision.getIdDatosPersonales();
+        jlbNombrePaciente.setText(infopaciente.getNombre1() + " " + infopaciente.getApellido1() + " [" + infopaciente.getNumDoc() + "]     [" + infohistoriac.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad() + "]");
+        jTextArea10.setText(infohistoriac.getMotivoConsulta());
+        jTextArea10.setCaretPosition(0);
+        jComboBox1.setSelectedItem(infohistoriac.getCausaExterna());
+        this.setSelectionNivelTriage(infohistoriac.getNivelTriaje());
+        jTextArea11.setText(infohistoriac.getAlergias());
+        jTextArea11.setCaretPosition(0);
+        jTextArea12.setText(infohistoriac.getIngresosPrevios());
+        jTextArea12.setCaretPosition(0);
+        jTextArea22.setText(infohistoriac.getTraumatismos());
+        jTextArea22.setCaretPosition(0);
+        jTextArea23.setText(infohistoriac.getTratamientos());
+        jTextArea23.setCaretPosition(0);
+        jTextArea24.setText(infohistoriac.getSituacionBasal());
+        jTextArea24.setCaretPosition(0);
+        jCheckBox1.setSelected(infohistoriac.getHta());
+        jCheckBox2.setSelected(infohistoriac.getDm());
+        jCheckBox3.setSelected(infohistoriac.getDislipidemia());
+        jCheckBox7.setSelected(infohistoriac.getTabaco());
+        jCheckBox8.setSelected(infohistoriac.getAlcohol());
+        jCheckBox9.setSelected(infohistoriac.getDroga());
+        jTextArea7.setText(infohistoriac.getOtrosHabitos());
+        jTextArea7.setCaretPosition(0);
+        jTextArea5.setText(infohistoriac.getDescHdd());
+        jTextArea5.setCaretPosition(0);
+        jTextArea13.setText(infohistoriac.getEnfermedadActual());
+        jTextArea13.setCaretPosition(0);
+        jTextArea25.setText(infohistoriac.getAntFamiliar());
+        jTextArea25.setCaretPosition(0);
+        if (staticcie == null) {
+            factory = Persistence.createEntityManagerFactory("ClipaEJBPU", AtencionUrgencia.props);
+            staticcie = new StaticCie10JpaController(factory);
+        }
+        if (infohistoriac.getDiagnostico() != 0 && infohistoriac.getDiagnostico() != 1) {
+            staticCie10 = staticcie.findStaticCie10(infohistoriac.getDiagnostico());
+            jTextField11.setText("[" + staticCie10.getCodigo() + "] " + staticCie10.getDescripcion());
+            jTextField11.setCaretPosition(0);
+            jTextArea12.setToolTipText(myStringsFunctions.stringToDIVstring(jTextArea12.getText()));
+            idDiag1 = infohistoriac.getDiagnostico();
+        }
+        if (infohistoriac.getDiagnostico2() != 0 && infohistoriac.getDiagnostico2() != 1) {
+            staticCie10 = staticcie.findStaticCie10(infohistoriac.getDiagnostico2());
+            jTextField12.setText("[" + staticCie10.getCodigo() + "] " + staticCie10.getDescripcion());
+            jTextField12.setCaretPosition(0);
+            jTextArea12.setToolTipText(myStringsFunctions.stringToDIVstring(jTextArea12.getText()));
+            idDiag2 = infohistoriac.getDiagnostico2();
+        }
+        if (infohistoriac.getDiagnostico3() != 0 && infohistoriac.getDiagnostico3() != 1) {
+            staticCie10 = staticcie.findStaticCie10(infohistoriac.getDiagnostico3());
+            jTextField13.setText("[" + staticCie10.getCodigo() + "] " + staticCie10.getDescripcion());
+            jTextField13.setCaretPosition(0);
+            jTextArea13.setToolTipText(myStringsFunctions.stringToDIVstring(jTextArea13.getText()));
+            idDiag3 = infohistoriac.getDiagnostico3();
+        }
+        if (infohistoriac.getDiagnostico4() != 0 && infohistoriac.getDiagnostico4() != 1) {
+            staticCie10 = staticcie.findStaticCie10(infohistoriac.getDiagnostico4());
+            jTextField14.setText("[" + staticCie10.getCodigo() + "] " + staticCie10.getDescripcion());
+            jTextField14.setCaretPosition(0);
+            jTextArea14.setToolTipText(myStringsFunctions.stringToDIVstring(jTextArea14.getText()));
+            idDiag4 = infohistoriac.getDiagnostico4();
+        }
+        if (infohistoriac.getDiagnostico5() != 0 && infohistoriac.getDiagnostico5() != 1) {
+            staticCie10 = staticcie.findStaticCie10(infohistoriac.getDiagnostico5());
+            jTextField15.setText("[" + staticCie10.getCodigo() + "] " + staticCie10.getDescripcion());
+            jTextField15.setCaretPosition(0);
+            jTextArea15.setToolTipText(myStringsFunctions.stringToDIVstring(jTextArea15.getText()));
+            idDiag5 = infohistoriac.getDiagnostico5();
+        }
+        jTextArea19.setText(infohistoriac.getHallazgo());
+        jpCentro.removeAll();
+        cU = new datosHCU(infohistoriac);
+        cU.setBounds(0, 0, 584, 445);
+        jpCentro.add(cU);
+        cU.setVisible(true);
+        jpCentro.validate();
+        jpCentro.repaint();
+        activeCheck(8);
+    }
+
+    private void setFisicExplorer() {
+        infoexploracion = infohistoriac.getInfoHcExpfisica();
+        jTextField1.setText(infoexploracion.getTa());
+        jTextField1.setCaretPosition(0);
+        jTextField8.setText(infoexploracion.getT());
+        jTextField8.setCaretPosition(0);
+        jTextField2.setText(infoexploracion.getTam());
+        jTextField2.setCaretPosition(0);
+        jTextField7.setText(infoexploracion.getSao2());
+        jTextField7.setCaretPosition(0);
+        jTextField3.setText(infoexploracion.getFc());
+        jTextField3.setCaretPosition(0);
+        jTextField6.setText(infoexploracion.getPvc());
+        jTextField6.setCaretPosition(0);
+        jTextField4.setText(infoexploracion.getFr());
+        jTextField4.setCaretPosition(0);
+        jTextField5.setText(infoexploracion.getPic());
+        jTextField5.setCaretPosition(0);
+        jTextField9.setText(infoexploracion.getPeso());
+        jTextField9.setCaretPosition(0);
+        jTextField10.setText(infoexploracion.getTalla());
+        jTextField10.setCaretPosition(0);
+        jTextArea2.setText(infoexploracion.getOtros());
+        jTextArea2.setCaretPosition(0);
+        jTextArea3.setText(infoexploracion.getAspectogeneral());
+        jTextArea3.setCaretPosition(0);
+        jTextArea4.setText(infoexploracion.getCara());
+        jTextArea4.setCaretPosition(0);
+        jTextArea6.setText(infoexploracion.getCardio());
+        jTextArea6.setCaretPosition(0);
+        jTextArea8.setText(infoexploracion.getRespiratorio());
+        jTextArea8.setCaretPosition(0);
+        jTextArea9.setText(infoexploracion.getGastro());
+        jTextArea9.setCaretPosition(0);
+        jTextArea14.setText(infoexploracion.getRenal());
+        jTextArea14.setCaretPosition(0);
+        jTextArea15.setText(infoexploracion.getHemato());
+        jTextArea15.setCaretPosition(0);
+        jTextArea16.setText(infoexploracion.getEndo());
+        jTextArea16.setCaretPosition(0);
+        jTextArea17.setText(infoexploracion.getOsteo());
+        jTextArea17.setCaretPosition(0);
+    }
+
+    private void setHelpDiag() {
+        ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("images/Delete16x16.png"));
+        ImageIcon icon2 = new ImageIcon(ClassLoader.getSystemResource("images/download.png"));
+        File file = null;
+        try {
+            file = File.createTempFile("temporal", null);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "10065:\n" + ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+        }
+        listaPruebas = infohistoriac.getInfoPruebasComplements();
+        for (int i = 0; i < listaPruebas.size(); i++) {
+            modeloAyudDiag.addRow(dato);
+            modeloAyudDiag.setValueAt(new JLabel(icon), i, 0);
+            modeloAyudDiag.setValueAt(new JLabel(icon2), i, 1);
+            modeloAyudDiag.setValueAt(listaPruebas.get(i).getNombre(), i, 2);
+            modeloAyudDiag.setValueAt(file, i, 3);
+            modeloAyudDiag.setValueAt(listaPruebas.get(i).getTipo(), i, 4);
+            modeloAyudDiag.setValueAt(ReturnPathdiagHelpSaveFile(listaPruebas.get(i).getTipo()), i, 5);
+            modeloAyudDiag.setValueAt("1", i, 6);
+        }
         //descargar archivos
-        }
+    }
         // </editor-fold>
-        
-        public void cerrarPanel(){
-            AtencionUrgencia.panelindex.jpContainer.removeAll(); 
-            AtencionUrgencia.panelindex.jpContainer.validate();
-            AtencionUrgencia.panelindex.jpContainer.repaint();
-        }
-       
-        /**
-         * @param tipo
-         * @return "numero documento/año/mes/id admision/tipo de archivo"
-         */
-        private String ReturnPathdiagHelpSaveFile(String tipo){
-            Calendar ahoraCal = Calendar.getInstance();
-            ahoraCal.setTime(infoadmision.getFechaIngreso());
-            String year =String.valueOf(ahoraCal.get(Calendar.YEAR));
-            String month =String.valueOf(ahoraCal.get(Calendar.MONTH));
-            return infoadmision.getIdDatosPersonales().getNumDoc()+s+year+s+month+s+infoadmision.getId()+s+tipo;
-        }
-        
-        private Boolean getValidaFirma(){
-            boolean f = false;
-            try {
-                String sFile = this.infohistoriac.getIdConfigdecripcionlogin().getRuta_firma();
-                File sFile1 = null;
-                if(sFile==null){
+
+    public void cerrarPanel() {
+        AtencionUrgencia.panelindex.jpContainer.removeAll();
+        AtencionUrgencia.panelindex.jpContainer.validate();
+        AtencionUrgencia.panelindex.jpContainer.repaint();
+    }
+
+    /**
+     * @param tipo
+     * @return "numero documento/año/mes/id admision/tipo de archivo"
+     */
+    private String ReturnPathdiagHelpSaveFile(String tipo) {
+        Calendar ahoraCal = Calendar.getInstance();
+        ahoraCal.setTime(infoadmision.getFechaIngreso());
+        String year = String.valueOf(ahoraCal.get(Calendar.YEAR));
+        String month = String.valueOf(ahoraCal.get(Calendar.MONTH));
+        return infoadmision.getIdDatosPersonales().getNumDoc() + s + year + s + month + s + infoadmision.getId() + s + tipo;
+    }
+
+    private Boolean getValidaFirma() {
+        boolean f = false;
+        try {
+            String sFile = this.infohistoriac.getIdConfigdecripcionlogin().getRuta_firma();
+            File sFile1 = null;
+            if (sFile == null) {
+                JOptionPane.showMessageDialog(this, "Errores leyendo archivo de firma del usuario.");
+            } else {
+                sFile1 = new File(sFile);
+                if (sFile1.exists()) {
+                    f = true;
+                } else {
                     JOptionPane.showMessageDialog(this, "Errores leyendo archivo de firma del usuario.");
-                }else{
-                    sFile1 = new File(sFile);
-                    if(sFile1.exists()){
-                        f=true;
-                    }else{
-                        JOptionPane.showMessageDialog(this, "Errores leyendo archivo de firma del usuario.");
-                    }  
-                }                                              
-            } catch (HeadlessException e) {
-                JOptionPane.showMessageDialog(null, "10116:\n"+e.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                }
             }
-            return f;
+        } catch (HeadlessException e) {
+            JOptionPane.showMessageDialog(null, "10116:\n" + e.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
         }
-        
-        // <editor-fold defaultstate="collapsed" desc="private static void addClosableTab(final JTabbedPane tabbedPane,final JComponent c,final String title,final Icon icon) {">
-        private static final Icon CLOSE_TAB_ICON = new ImageIcon(ClassLoader.getSystemResource("images/closeTabButton.png"));
-        private static final Icon  PAGE_ICON = new ImageIcon(ClassLoader.getSystemResource("images/chart_curve_edit_16x16.png"));
-        private static final Icon  PAGE_SUBJETIVO = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_orange.png"));
-        private static final Icon  PAGE_SIGNOS = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_red_signes.png"));
-        private static final Icon  PAGE_OBJETIVOS = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_blue.png"));
-        private static final Icon  PAGE_PLAN = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_green.png"));
-        private static final Icon  PAGE_ANALISIS = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_analisis.png"));
-        
-        
-        
-        /**
-            * Creado por Tad Harrison
-            * Adds a component to a JTabbedPane with a little "close tab" button on the
-            * right side of the tab.
-            *
-            * @param tabbedPane the JTabbedPane
-            * @param c any JComponent
-            * @param title the title for the tab
-            * @param icon the icon for the tab, if desired
-            */
-        private static void addClosableTab(final JTabbedPane tabbedPane,final JComponent c,final String title,final Icon icon) {
-                
-                 // Add the tab to the pane without any label
-                 tabbedPane.addTab(null, c);
-                 int pos = tabbedPane.indexOfComponent(c);
+        return f;
+    }
 
-                 // Create a FlowLayout that will space things 5px apart
-                 FlowLayout f = new FlowLayout(FlowLayout.CENTER, 5, 0);
+    // <editor-fold defaultstate="collapsed" desc="private static void addClosableTab(final JTabbedPane tabbedPane,final JComponent c,final String title,final Icon icon) {">
+    private static final Icon CLOSE_TAB_ICON = new ImageIcon(ClassLoader.getSystemResource("images/closeTabButton.png"));
+    private static final Icon PAGE_ICON = new ImageIcon(ClassLoader.getSystemResource("images/chart_curve_edit_16x16.png"));
+    private static final Icon PAGE_SUBJETIVO = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_orange.png"));
+    private static final Icon PAGE_SIGNOS = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_red_signes.png"));
+    private static final Icon PAGE_OBJETIVOS = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_blue.png"));
+    private static final Icon PAGE_PLAN = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_green.png"));
+    private static final Icon PAGE_ANALISIS = new ImageIcon(ClassLoader.getSystemResource("images/file_document_paper_analisis.png"));
 
-                 // Make a small JPanel with the layout and make it non-opaque
-                 JPanel pnlTab = new JPanel(f);
-                 pnlTab.setOpaque(false);
+    /**
+     * Creado por Tad Harrison Adds a component to a JTabbedPane with a little
+     * "close tab" button on the right side of the tab.
+     *
+     * @param tabbedPane the JTabbedPane
+     * @param c any JComponent
+     * @param title the title for the tab
+     * @param icon the icon for the tab, if desired
+     */
+    private static void addClosableTab(final JTabbedPane tabbedPane, final JComponent c, final String title, final Icon icon) {
 
-                 // Add a JLabel with title and the left-side tab icon
-                 JLabel lblTitle = new JLabel(title);
-                 lblTitle.setIcon(icon);
+        // Add the tab to the pane without any label
+        tabbedPane.addTab(null, c);
+        int pos = tabbedPane.indexOfComponent(c);
 
-                 // Create a JButton for the close tab button
-                 JButton btnClose = new JButton();
-                 btnClose.setOpaque(false);
+        // Create a FlowLayout that will space things 5px apart
+        FlowLayout f = new FlowLayout(FlowLayout.CENTER, 5, 0);
 
-                 // Configure icon and rollover icon for button
-                 btnClose.setRolloverIcon(CLOSE_TAB_ICON);
-                 btnClose.setRolloverEnabled(true);
-                 btnClose.setIcon(CLOSE_TAB_ICON);
+        // Make a small JPanel with the layout and make it non-opaque
+        JPanel pnlTab = new JPanel(f);
+        pnlTab.setOpaque(false);
 
-                 // Set border null so the button doesn't make the tab too big
-                 btnClose.setBorder(null);
+        // Add a JLabel with title and the left-side tab icon
+        JLabel lblTitle = new JLabel(title);
+        lblTitle.setIcon(icon);
 
-                 // Make sure the button can't get focus, otherwise it looks funny
-                 btnClose.setFocusable(false);
+        // Create a JButton for the close tab button
+        JButton btnClose = new JButton();
+        btnClose.setOpaque(false);
 
-                 // Put the panel together
-                 pnlTab.add(lblTitle);
-                 pnlTab.add(btnClose);
+        // Configure icon and rollover icon for button
+        btnClose.setRolloverIcon(CLOSE_TAB_ICON);
+        btnClose.setRolloverEnabled(true);
+        btnClose.setIcon(CLOSE_TAB_ICON);
+
+        // Set border null so the button doesn't make the tab too big
+        btnClose.setBorder(null);
+
+        // Make sure the button can't get focus, otherwise it looks funny
+        btnClose.setFocusable(false);
+
+        // Put the panel together
+        pnlTab.add(lblTitle);
+        pnlTab.add(btnClose);
 
                  // Add a thin border to keep the image below the top edge of the tab
-                 // when the tab is selected
-                 pnlTab.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
+        // when the tab is selected
+        pnlTab.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
 
-                 // Now assign the component for the tab
-                 tabbedPane.setTabComponentAt(pos, pnlTab);
+        // Now assign the component for the tab
+        tabbedPane.setTabComponentAt(pos, pnlTab);
 
-                 // Add the listener that removes the tab
-                 ActionListener listener = new ActionListener() {
-                     @Override
-                     public void actionPerformed(ActionEvent e) {
+        // Add the listener that removes the tab
+        ActionListener listener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
                      // The component parameter must be declared "final" so that it can be
-                     // referenced in the anonymous listener class like this.
-                     tabbedPane.remove(c);
-                   }
-                 };
-                 btnClose.addActionListener(listener);
+                // referenced in the anonymous listener class like this.
+                tabbedPane.remove(c);
+            }
+        };
+        btnClose.addActionListener(listener);
 
-                 // Optionally bring the new tab to the front
-                 tabbedPane.setSelectedComponent(c);
+        // Optionally bring the new tab to the front
+        tabbedPane.setSelectedComponent(c);
 
                  //-------------------------------------------------------------
-                 // Bonus: Adding a <Ctrl-W> keystroke binding to close the tab
-                 //-------------------------------------------------------------
-                 AbstractAction closeTabAction = new AbstractAction() {
-                   @Override
-                   public void actionPerformed(ActionEvent e) {
-                     tabbedPane.remove(c);
-                   }
-                 };
+        // Bonus: Adding a <Ctrl-W> keystroke binding to close the tab
+        //-------------------------------------------------------------
+        AbstractAction closeTabAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tabbedPane.remove(c);
+            }
+        };
 
-                 // Create a keystroke
-                 KeyStroke controlW = KeyStroke.getKeyStroke("control W");
+        // Create a keystroke
+        KeyStroke controlW = KeyStroke.getKeyStroke("control W");
 
                  // Get the appropriate input map using the JComponent constants.
-                 // This one works well when the component is a container. 
-                 InputMap inputMap = c.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        // This one works well when the component is a container. 
+        InputMap inputMap = c.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-                 // Add the key binding for the keystroke to the action name
-                 inputMap.put(controlW, "closeTab");
+        // Add the key binding for the keystroke to the action name
+        inputMap.put(controlW, "closeTab");
 
-                 // Now add a single binding for the action name to the anonymous action
-                 c.getActionMap().put("closeTab", closeTabAction);
-               }
+        // Now add a single binding for the action name to the anonymous action
+        c.getActionMap().put("closeTab", closeTabAction);
+    }
         // </editor-fold>
-        
-        private void newEvolucion(){
-            if(Finalizada()==false){
-                StaticCie10JpaController scjc = new StaticCie10JpaController(factory);
-                HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
-                JDdateEvo evo = new JDdateEvo(null,true);
-                evo.setLocationRelativeTo(null);
-                evo.setVisible(true);
-                if(evo.fecha_hora!=null){
-                    HcuEvolucion evolucion = new HcuEvolucion();
-                    evolucion.setIdInfoHistoriac(infohistoriac);
-                    evolucion.setFechaEvo(evo.fecha_hora);
-                    evolucion.setTipo(tipoEvo);
-                    evolucion.setIdStaticEspecialidades(staticEspecialidades);
-                    List<HcuEvolucion> hes= hejc.FindHcuEvolucions(infohistoriac); 
-                    if(hes.isEmpty()){
-                        evolucion.setDx(scjc.findStaticCie10(infohistoriac.getDiagnostico()));
-                        evolucion.setDx1(scjc.findStaticCie10(infohistoriac.getDiagnostico2()));
-                        evolucion.setDx2(scjc.findStaticCie10(infohistoriac.getDiagnostico3()));
-                        evolucion.setDx3(scjc.findStaticCie10(infohistoriac.getDiagnostico4()));
-                        evolucion.setDx4(scjc.findStaticCie10(infohistoriac.getDiagnostico5()));
-                    }else{
-                        evolucion.setDx(hes.get(hes.size()-1).getDx());
-                        evolucion.setDx1(hes.get(hes.size()-1).getDx1());
-                        evolucion.setDx2(hes.get(hes.size()-1).getDx2());
-                        evolucion.setDx3(hes.get(hes.size()-1).getDx3());
-                        evolucion.setDx4(hes.get(hes.size()-1).getDx4());
-                    }                
-                    evolucion.setEstado(0);
-                    evoSeleccion = evolucion;
-                    TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
-                    DefaultMutableTreeNode fechaEvo = null;
-                    DefaultMutableTreeNode Evo = null;
-                    boolean existeFechaEvo=false;
-                    boolean existeEvo=false;
-                    for(int i=0;i<raiz.getChildCount();i++){
-                        if(raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()))){
-                            existeFechaEvo = true;
-                            for(int a=0;a<raiz.getChildAt(i).getChildCount();a++){
-                                if(raiz.getChildAt(i).getChildAt(a).toString().equals(evolucion.toString())){
-                                    existeEvo = true;   
-                                    break;
-                                }
+
+    private void newEvolucion() {
+        if (Finalizada() == false) {
+            StaticCie10JpaController scjc = new StaticCie10JpaController(factory);
+            HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
+            JDdateEvo evo = new JDdateEvo(null, true);
+            evo.setLocationRelativeTo(null);
+            evo.setVisible(true);
+            if (evo.fecha_hora != null) {
+                HcuEvolucion evolucion = new HcuEvolucion();
+                evolucion.setIdInfoHistoriac(infohistoriac);
+                evolucion.setFechaEvo(evo.fecha_hora);
+                evolucion.setTipo(tipoEvo);
+                evolucion.setIdStaticEspecialidades(staticEspecialidades);
+                List<HcuEvolucion> hes = hejc.FindHcuEvolucions(infohistoriac);
+                if (hes.isEmpty()) {
+                    evolucion.setDx(scjc.findStaticCie10(infohistoriac.getDiagnostico()));
+                    evolucion.setDx1(scjc.findStaticCie10(infohistoriac.getDiagnostico2()));
+                    evolucion.setDx2(scjc.findStaticCie10(infohistoriac.getDiagnostico3()));
+                    evolucion.setDx3(scjc.findStaticCie10(infohistoriac.getDiagnostico4()));
+                    evolucion.setDx4(scjc.findStaticCie10(infohistoriac.getDiagnostico5()));
+                } else {
+                    evolucion.setDx(hes.get(hes.size() - 1).getDx());
+                    evolucion.setDx1(hes.get(hes.size() - 1).getDx1());
+                    evolucion.setDx2(hes.get(hes.size() - 1).getDx2());
+                    evolucion.setDx3(hes.get(hes.size() - 1).getDx3());
+                    evolucion.setDx4(hes.get(hes.size() - 1).getDx4());
+                }
+                evolucion.setEstado(0);
+                evoSeleccion = evolucion;
+                TreeNode raiz = (TreeNode) jTree1.getModel().getRoot();
+                DefaultMutableTreeNode fechaEvo = null;
+                DefaultMutableTreeNode Evo = null;
+                boolean existeFechaEvo = false;
+                boolean existeEvo = false;
+                for (int i = 0; i < raiz.getChildCount(); i++) {
+                    if (raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()))) {
+                        existeFechaEvo = true;
+                        for (int a = 0; a < raiz.getChildAt(i).getChildCount(); a++) {
+                            if (raiz.getChildAt(i).getChildAt(a).toString().equals(evolucion.toString())) {
+                                existeEvo = true;
+                                break;
                             }
-                            if(!existeEvo){
-                                fechaEvo = (DefaultMutableTreeNode) raiz.getChildAt(i);
-                                Evo = new DefaultMutableTreeNode(evolucion);
-                                fechaEvo.add(Evo); 
-                                modeloTree.nodeStructureChanged(raiz);
-                                jTree1.setSelectionPath(new TreePath(Evo.getPath()));
-                            }
-                            break;
                         }
+                        if (!existeEvo) {
+                            fechaEvo = (DefaultMutableTreeNode) raiz.getChildAt(i);
+                            Evo = new DefaultMutableTreeNode(evolucion);
+                            fechaEvo.add(Evo);
+                            modeloTree.nodeStructureChanged(raiz);
+                            jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+                        }
+                        break;
                     }
-                    if(!existeFechaEvo){
-                        fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()));
-                        modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
-                        Evo = new DefaultMutableTreeNode(evolucion);
-                        fechaEvo.add(Evo); 
-                        jTree1.setSelectionPath(new TreePath(Evo.getPath()));
-                    }else{
-                        if(!existeEvo){
+                }
+                if (!existeFechaEvo) {
+                    fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()));
+                    modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
+                    Evo = new DefaultMutableTreeNode(evolucion);
+                    fechaEvo.add(Evo);
+                    jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+                } else {
+                    if (!existeEvo) {
     //                        modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
-    //                        Evo = new DefaultMutableTreeNode(evolucion);
-    //                        fechaEvo.add(Evo); 
-    //                        jTree1.setSelectionPath(new TreePath(Evo.getPath()));
-                        }
-                    }
-                    this.activarComponentes(evolucion);
-                }
-            }else{
-                JOptionPane.showMessageDialog(null, "Historia Clinica Finalizada");
-            }
-        }
-        
-        private boolean Finalizada(){
-            boolean finaliza=false;
-            TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
-            DefaultMutableTreeNode Evo = null;
-            for(int i=0;i<raiz.getChildCount();i++){
-                for(int a=0;a<raiz.getChildAt(i).getChildCount();a++){
-                    Evo = (DefaultMutableTreeNode) raiz.getChildAt(i).getChildAt(a);
-                    if(Evo.getUserObject() instanceof HcuEvolucion){
-                        HcuEvolucion evolu = (HcuEvolucion) Evo.getUserObject();
-                        if(evolu.getEstado()==3){
-                            finaliza = true;
-                        }
+                        //                        Evo = new DefaultMutableTreeNode(evolucion);
+                        //                        fechaEvo.add(Evo); 
+                        //                        jTree1.setSelectionPath(new TreePath(Evo.getPath()));
                     }
                 }
+                this.activarComponentes(evolucion);
             }
-            return finaliza;
+        } else {
+            JOptionPane.showMessageDialog(null, "Historia Clinica Finalizada");
         }
-        
-        private void notaEgreso(){
-            if(Finalizada()==false){
-                StaticCie10JpaController scjc = new StaticCie10JpaController(factory);
-                HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
-                JDdateEvo evo = new JDdateEvo(null,true,"Fecha de Egreso");
-                evo.setLocationRelativeTo(null);
-                evo.setVisible(true);
-                if(evo.fecha_hora!=null){
-                    HcuEvolucion evolucion = new HcuEvolucion();
-                    evolucion.setIdInfoHistoriac(infohistoriac);
-                    evolucion.setFechaEvo(evo.fecha_hora);
-                    evolucion.setTipo(tipoEvo);
-                    evolucion.setIdStaticEspecialidades(staticEspecialidades);
-                    List<HcuEvolucion> hes= hejc.FindHcuEvolucions(infohistoriac); 
-                    evolucion.setEstado(3);
-                    jButton1.setEnabled(false);
-                    jButton14.setEnabled(false);
-                    if(hes.isEmpty()){
-                        evolucion.setDx(scjc.findStaticCie10(infohistoriac.getDiagnostico()));
-                        evolucion.setDx1(scjc.findStaticCie10(infohistoriac.getDiagnostico2()));
-                        evolucion.setDx2(scjc.findStaticCie10(infohistoriac.getDiagnostico3()));
-                        evolucion.setDx3(scjc.findStaticCie10(infohistoriac.getDiagnostico4()));
-                        evolucion.setDx4(scjc.findStaticCie10(infohistoriac.getDiagnostico5()));
-                    }else{
-                        evolucion.setDx(hes.get(hes.size()-1).getDx());
-                        evolucion.setDx1(hes.get(hes.size()-1).getDx1());
-                        evolucion.setDx2(hes.get(hes.size()-1).getDx2());
-                        evolucion.setDx3(hes.get(hes.size()-1).getDx3());
-                        evolucion.setDx4(hes.get(hes.size()-1).getDx4());
-                    } 
-                    evoSeleccion = evolucion;
-                    TreeNode raiz = (TreeNode)jTree1.getModel().getRoot();
-                    DefaultMutableTreeNode fechaEvo = null;
-                    DefaultMutableTreeNode Evo = null;
-                    boolean existeFechaEvo=false;
-                    boolean existeEvo=false;
-                    for(int i=0;i<raiz.getChildCount();i++){
-                        if(raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()))){
-                            existeFechaEvo = true;
-                            for(int a=0;a<raiz.getChildAt(i).getChildCount();a++){
-                                if(raiz.getChildAt(i).getChildAt(a).toString().equals(evolucion.toString())){
-                                    existeEvo = true;
-                                    break;
-                                }
+    }
+
+    private boolean Finalizada() {
+        boolean finaliza = false;
+        TreeNode raiz = (TreeNode) jTree1.getModel().getRoot();
+        DefaultMutableTreeNode Evo = null;
+        for (int i = 0; i < raiz.getChildCount(); i++) {
+            for (int a = 0; a < raiz.getChildAt(i).getChildCount(); a++) {
+                Evo = (DefaultMutableTreeNode) raiz.getChildAt(i).getChildAt(a);
+                if (Evo.getUserObject() instanceof HcuEvolucion) {
+                    HcuEvolucion evolu = (HcuEvolucion) Evo.getUserObject();
+                    if (evolu.getEstado() == 3) {
+                        finaliza = true;
+                    }
+                }
+            }
+        }
+        return finaliza;
+    }
+
+    private void notaEgreso() {
+        if (Finalizada() == false) {
+            StaticCie10JpaController scjc = new StaticCie10JpaController(factory);
+            HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
+            JDdateEvo evo = new JDdateEvo(null, true, "Fecha de Egreso");
+            evo.setLocationRelativeTo(null);
+            evo.setVisible(true);
+            if (evo.fecha_hora != null) {
+                HcuEvolucion evolucion = new HcuEvolucion();
+                evolucion.setIdInfoHistoriac(infohistoriac);
+                evolucion.setFechaEvo(evo.fecha_hora);
+                evolucion.setTipo(tipoEvo);
+                evolucion.setIdStaticEspecialidades(staticEspecialidades);
+                List<HcuEvolucion> hes = hejc.FindHcuEvolucions(infohistoriac);
+                evolucion.setEstado(3);
+                jButton1.setEnabled(false);
+                jButton14.setEnabled(false);
+                if (hes.isEmpty()) {
+                    evolucion.setDx(scjc.findStaticCie10(infohistoriac.getDiagnostico()));
+                    evolucion.setDx1(scjc.findStaticCie10(infohistoriac.getDiagnostico2()));
+                    evolucion.setDx2(scjc.findStaticCie10(infohistoriac.getDiagnostico3()));
+                    evolucion.setDx3(scjc.findStaticCie10(infohistoriac.getDiagnostico4()));
+                    evolucion.setDx4(scjc.findStaticCie10(infohistoriac.getDiagnostico5()));
+                } else {
+                    evolucion.setDx(hes.get(hes.size() - 1).getDx());
+                    evolucion.setDx1(hes.get(hes.size() - 1).getDx1());
+                    evolucion.setDx2(hes.get(hes.size() - 1).getDx2());
+                    evolucion.setDx3(hes.get(hes.size() - 1).getDx3());
+                    evolucion.setDx4(hes.get(hes.size() - 1).getDx4());
+                }
+                evoSeleccion = evolucion;
+                TreeNode raiz = (TreeNode) jTree1.getModel().getRoot();
+                DefaultMutableTreeNode fechaEvo = null;
+                DefaultMutableTreeNode Evo = null;
+                boolean existeFechaEvo = false;
+                boolean existeEvo = false;
+                for (int i = 0; i < raiz.getChildCount(); i++) {
+                    if (raiz.getChildAt(i).toString().equals(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()))) {
+                        existeFechaEvo = true;
+                        for (int a = 0; a < raiz.getChildAt(i).getChildCount(); a++) {
+                            if (raiz.getChildAt(i).getChildAt(a).toString().equals(evolucion.toString())) {
+                                existeEvo = true;
+                                break;
                             }
-                            if(!existeEvo){
-                                fechaEvo = (DefaultMutableTreeNode) raiz.getChildAt(i);
-                                Evo = new DefaultMutableTreeNode(evolucion);
-                                fechaEvo.add(Evo);
-                                modeloTree.nodeStructureChanged(raiz);
-                                jTree1.setSelectionPath(new TreePath(Evo.getPath()));
-                            }
-                            break;
                         }
+                        if (!existeEvo) {
+                            fechaEvo = (DefaultMutableTreeNode) raiz.getChildAt(i);
+                            Evo = new DefaultMutableTreeNode(evolucion);
+                            fechaEvo.add(Evo);
+                            modeloTree.nodeStructureChanged(raiz);
+                            jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+                        }
+                        break;
                     }
-                    if(!existeFechaEvo){
-                        fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()));
-                        modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
-                        Evo = new DefaultMutableTreeNode(evolucion);
-                        fechaEvo.add(Evo);
-                        jTree1.setSelectionPath(new TreePath(Evo.getPath()));
-                    }
-                    this.activarComponentesEgreso(evolucion);
                 }
-            }else{
-                JOptionPane.showMessageDialog(null, "Historia Clinica Finalizada");
+                if (!existeFechaEvo) {
+                    fechaEvo = new DefaultMutableTreeNode(MyDate.ddMMyyyy.format(evolucion.getFechaEvo()));
+                    modeloTree.insertNodeInto(fechaEvo, EvosHC, 0);
+                    Evo = new DefaultMutableTreeNode(evolucion);
+                    fechaEvo.add(Evo);
+                    jTree1.setSelectionPath(new TreePath(Evo.getPath()));
+                }
+                this.activarComponentesEgreso(evolucion);
             }
+        } else {
+            JOptionPane.showMessageDialog(null, "Historia Clinica Finalizada");
         }
-        
-        private void activarComponentes(HcuEvolucion he){            
-            evol=new newEvo();
-            subjetivo = new pSubjetivo();
-            objetivo = new pObjetivo();
-            analisis = new pAnalisis();
-            pplan = new pPlan(he,factory);
-            jTabbedPane6.removeAll();
-            subjetivo.setBounds(0, 0, 386, 603);
-            addClosableTab(jTabbedPane6, subjetivo, "Nota Subjetiva", PAGE_SUBJETIVO);
-            subjetivo.setEvolucion(he);
-            evol.setBounds(0, 0, 386, 603);
-            addClosableTab(jTabbedPane6, evol, "Signos Vitales", PAGE_SIGNOS);
-            evol.setEvolucion(he);
-            objetivo.setBounds(0, 0, 386, 603);
-            addClosableTab(jTabbedPane6, objetivo, "Nota Objetiva", PAGE_OBJETIVOS);
-            objetivo.setEvolucion(he);
-            analisis.setBounds(0, 0, 386, 603);
-            addClosableTab(jTabbedPane6, analisis, "Analisis", PAGE_ANALISIS);
-            analisis.setEvolucion(he);
-            pplan.setBounds(0, 0, 386, 603);
-            addClosableTab(jTabbedPane6, pplan, "Plan", PAGE_PLAN);
-            jLabel65.setText(MyDate.yyyyMMddHHmm2.format(he.getFechaEvo()));
-            jTabbedPane6.setSelectedIndex(0);
-            jButton8.setVisible(true);
-            jButton8.setEnabled(true);
-            jButton10.setEnabled(true);
-            jButton10.setText("S. Vitales");
-            jButton10.setToolTipText("SIGNOS VITALES");
-            jButton2.setEnabled(true);
-            jButton2.setText("Objetivo");
-            jButton2.setToolTipText("NOTAS OBJETIVAS");
-            jButton6.setEnabled(true);
-            jButton6.setText("Analisis");
-            jButton6.setToolTipText("NOTAS DE ANALISIS");
-            jButton4.setEnabled(true);
-            jButton4.setText("Plan");
-            jButton4.setToolTipText("PLAN DE MANEJO");
-            jButton12.setEnabled(true);
-            jButton13.setEnabled(true);
-            jButton5.setEnabled(true);
-            jButton14.setEnabled(true);
-        }
-        
-        private void activarComponentesEgreso(HcuEvolucion he){            
-            evol=new newEvo();
-            evol.titleOther ="OBSERVACIONES ADICIONALES";
+    }
+
+    private void activarComponentes(HcuEvolucion he) {
+        evol = new newEvo();
+        subjetivo = new pSubjetivo();
+        objetivo = new pObjetivo();
+        analisis = new pAnalisis();
+        pplan = new pPlan(he, factory);
+        jTabbedPane6.removeAll();
+        subjetivo.setBounds(0, 0, 386, 603);
+        addClosableTab(jTabbedPane6, subjetivo, "Nota Subjetiva", PAGE_SUBJETIVO);
+        subjetivo.setEvolucion(he);
+        evol.setBounds(0, 0, 386, 603);
+        addClosableTab(jTabbedPane6, evol, "Signos Vitales", PAGE_SIGNOS);
+        evol.setEvolucion(he);
+        objetivo.setBounds(0, 0, 386, 603);
+        addClosableTab(jTabbedPane6, objetivo, "Nota Objetiva", PAGE_OBJETIVOS);
+        objetivo.setEvolucion(he);
+        analisis.setBounds(0, 0, 386, 603);
+        addClosableTab(jTabbedPane6, analisis, "Analisis", PAGE_ANALISIS);
+        analisis.setEvolucion(he);
+        pplan.setBounds(0, 0, 386, 603);
+        addClosableTab(jTabbedPane6, pplan, "Plan", PAGE_PLAN);
+        jLabel65.setText(MyDate.yyyyMMddHHmm2.format(he.getFechaEvo()));
+        jTabbedPane6.setSelectedIndex(0);
+        jButton8.setVisible(true);
+        jButton8.setEnabled(true);
+        jButton10.setEnabled(true);
+        jButton10.setText("S. Vitales");
+        jButton10.setToolTipText("SIGNOS VITALES");
+        jButton2.setEnabled(true);
+        jButton2.setText("Objetivo");
+        jButton2.setToolTipText("NOTAS OBJETIVAS");
+        jButton6.setEnabled(true);
+        jButton6.setText("Analisis");
+        jButton6.setToolTipText("NOTAS DE ANALISIS");
+        jButton4.setEnabled(true);
+        jButton4.setText("Plan");
+        jButton4.setToolTipText("PLAN DE MANEJO");
+        jButton12.setEnabled(true);
+        jButton13.setEnabled(true);
+        jButton5.setEnabled(true);
+        jButton14.setEnabled(true);
+    }
+
+    private void activarComponentesEgreso(HcuEvolucion he) {
+        evol = new newEvo();
+        evol.titleOther = "OBSERVACIONES ADICIONALES";
 //            subjetivo = new pSubjetivo();
-            objetivo = new pObjetivo();
-            objetivo.jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "SÍNTESIS", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 1, 11)));
-            analisis = new pAnalisis();
-            analisis.jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "CONSIDERACIONES ADICIONALES", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 1, 11)));
-            pplan = new pPlan(he,factory);
-            pplan.jXTaskPane3.setVisible(false);
-            pplan.jXTaskPane5.setVisible(true);
-            pplan.jXTaskPane4.setVisible(false);
-            jTabbedPane6.removeAll();
+        objetivo = new pObjetivo();
+        objetivo.jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "SÍNTESIS", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 1, 11)));
+        analisis = new pAnalisis();
+        analisis.jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "CONSIDERACIONES ADICIONALES", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 1, 11)));
+        pplan = new pPlan(he, factory);
+        pplan.jXTaskPane3.setVisible(false);
+        pplan.jXTaskPane5.setVisible(true);
+        pplan.jXTaskPane4.setVisible(false);
+        jTabbedPane6.removeAll();
 //            subjetivo.setBounds(0, 0, 386, 603);
 //            addClosableTab(jTabbedPane6, subjetivo, "Nota Subjetiva", PAGE_SUBJETIVO);
 //            subjetivo.setEvolucion(he);
-            evol.setBounds(0, 0, 386, 603);
-            addClosableTab(jTabbedPane6, evol, "Estado General", PAGE_SIGNOS);
-            evol.setEvolucion(he);
-            objetivo.setBounds(0, 0, 386, 603);
-            addClosableTab(jTabbedPane6, objetivo, "Síntesis", PAGE_OBJETIVOS);
-            objetivo.setEvolucion(he);
-            analisis.setBounds(0, 0, 386, 603);
-            addClosableTab(jTabbedPane6, analisis, "DX Egreso", PAGE_ANALISIS);
-            analisis.setEvolucion(he);
-            pplan.setBounds(0, 0, 386, 603);
-            addClosableTab(jTabbedPane6, pplan, "Conducta", PAGE_PLAN);
-            jLabel65.setText(MyDate.yyyyMMddHHmm2.format(he.getFechaEvo()));
-            jTabbedPane6.setSelectedIndex(0);
-            jButton8.setVisible(false);
-            jButton10.setEnabled(true);
-            jButton10.setText("Estado General");
-            jButton10.setToolTipText("ESTADO GEENRAL DEL PACIENTE");
-            jButton2.setEnabled(true);
-            jButton2.setText("Síntesis");
-            jButton2.setToolTipText("RESUMEN DE NOTAS DE EVOLUCIÓN");
-            jButton6.setEnabled(true);
-            jButton6.setText("DX Egreso");
-            jButton6.setToolTipText("DIAGNOSTICOS DE EGRESO");
-            jButton4.setEnabled(true);
-            jButton4.setText("Conducta");
-            jButton4.setToolTipText("CONDUCTA Y DESTINO");
-            jButton12.setEnabled(true);
-            jButton13.setEnabled(true);
-            jButton5.setEnabled(true);
-        }
-        
-        private void saveEvolucion(){
-            if(evoSeleccion.getEstado()==0) evoSeleccion.setEstado(1);
-            boolean sigue = evol.saveChanged(factory,evoSeleccion);
-            if(evoSeleccion!=null && evoSeleccion.getEstado()!=2 && sigue){
-                if(evoSeleccion.getEstado()!=3){
-                    subjetivo.saveChanged(factory,evoSeleccion);
-                }                
-                objetivo.saveChanged(factory,evoSeleccion);
-                analisis.saveChanged(factory,evoSeleccion);
-                evoSeleccion = pplan.saveChanged(factory,evoSeleccion);
-                jTree1.repaint();
-                jTree1.validate();
-//                setJTreeEvo();
-            }
-        }
+        evol.setBounds(0, 0, 386, 603);
+        addClosableTab(jTabbedPane6, evol, "Estado General", PAGE_SIGNOS);
+        evol.setEvolucion(he);
+        objetivo.setBounds(0, 0, 386, 603);
+        addClosableTab(jTabbedPane6, objetivo, "Síntesis", PAGE_OBJETIVOS);
+        objetivo.setEvolucion(he);
+        analisis.setBounds(0, 0, 386, 603);
+        addClosableTab(jTabbedPane6, analisis, "DX Egreso", PAGE_ANALISIS);
+        analisis.setEvolucion(he);
+        pplan.setBounds(0, 0, 386, 603);
+        addClosableTab(jTabbedPane6, pplan, "Conducta", PAGE_PLAN);
+        jLabel65.setText(MyDate.yyyyMMddHHmm2.format(he.getFechaEvo()));
+        jTabbedPane6.setSelectedIndex(0);
+        jButton8.setVisible(false);
+        jButton10.setEnabled(true);
+        jButton10.setText("Estado General");
+        jButton10.setToolTipText("ESTADO GEENRAL DEL PACIENTE");
+        jButton2.setEnabled(true);
+        jButton2.setText("Síntesis");
+        jButton2.setToolTipText("RESUMEN DE NOTAS DE EVOLUCIÓN");
+        jButton6.setEnabled(true);
+        jButton6.setText("DX Egreso");
+        jButton6.setToolTipText("DIAGNOSTICOS DE EGRESO");
+        jButton4.setEnabled(true);
+        jButton4.setText("Conducta");
+        jButton4.setToolTipText("CONDUCTA Y DESTINO");
+        jButton12.setEnabled(true);
+        jButton13.setEnabled(true);
+        jButton5.setEnabled(true);
+    }
 
-        
+    private void saveEvolucion() {
+        if (evoSeleccion.getEstado() == 0) {
+            evoSeleccion.setEstado(1);
+        }
+        boolean sigue = evol.saveChanged(factory, evoSeleccion);
+        if (evoSeleccion != null && evoSeleccion.getEstado() != 2 && sigue) {
+            if (evoSeleccion.getEstado() != 3) {
+                subjetivo.saveChanged(factory, evoSeleccion);
+            }
+            objetivo.saveChanged(factory, evoSeleccion);
+            analisis.saveChanged(factory, evoSeleccion);
+            evoSeleccion = pplan.saveChanged(factory, evoSeleccion);
+            jTree1.repaint();
+            jTree1.validate();
+//                setJTreeEvo();
+        }
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -4056,7 +4049,7 @@ public class Evo extends javax.swing.JPanel {
         jpCentro.add(jpAntPersonales);
         jpAntPersonales.setVisible(true);
         jpCentro.validate();
-        jpCentro.repaint(); 
+        jpCentro.repaint();
         activeCheck(2);
     }//GEN-LAST:event_jLabel23MouseClicked
 
@@ -4066,7 +4059,7 @@ public class Evo extends javax.swing.JPanel {
         jpCentro.add(jpEnfActual);
         jpEnfActual.setVisible(true);
         jpCentro.validate();
-        jpCentro.repaint(); 
+        jpCentro.repaint();
         activeCheck(3);
     }//GEN-LAST:event_jLabel24MouseClicked
 
@@ -4076,7 +4069,7 @@ public class Evo extends javax.swing.JPanel {
         jpCentro.add(jpExpFisica);
         jpExpFisica.setVisible(true);
         jpCentro.validate();
-        jpCentro.repaint(); 
+        jpCentro.repaint();
         activeCheck(4);
     }//GEN-LAST:event_jLabel25MouseClicked
 
@@ -4086,7 +4079,7 @@ public class Evo extends javax.swing.JPanel {
         jpCentro.add(jpDiagMedico);
         jpDiagMedico.setVisible(true);
         jpCentro.validate();
-        jpCentro.repaint(); 
+        jpCentro.repaint();
         activeCheck(6);
     }//GEN-LAST:event_jLabel26MouseClicked
 
@@ -4096,15 +4089,15 @@ public class Evo extends javax.swing.JPanel {
         jpCentro.add(jpPruebasDiag);
         jpPruebasDiag.setVisible(true);
         jpCentro.validate();
-        jpCentro.repaint(); 
+        jpCentro.repaint();
         activeCheck(5);
     }//GEN-LAST:event_jLabel27MouseClicked
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        if(personas==null){
+        if (personas == null) {
             personas = new FormPersonas();
             personas.infopaciente = this.infopaciente;
-        }else{
+        } else {
             personas.infopaciente = this.infopaciente;
         }
         personas.setVisible(true);
@@ -4116,57 +4109,57 @@ public class Evo extends javax.swing.JPanel {
         jpCentro.add(jpTratamiento);
         jpTratamiento.setVisible(true);
         jpCentro.validate();
-        jpCentro.repaint(); 
+        jpCentro.repaint();
         activeCheck(7);
     }//GEN-LAST:event_jLabel33MouseClicked
 
     private void jtbTratamiento4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtbTratamiento4MouseClicked
-        if(SwingUtilities.isLeftMouseButton(evt)){
-            if(jtbTratamiento4.columnAtPoint(evt.getPoint())==0) {
-            }else if(jtbTratamiento4.columnAtPoint(evt.getPoint())==1){
+        if (SwingUtilities.isLeftMouseButton(evt)) {
+            if (jtbTratamiento4.columnAtPoint(evt.getPoint()) == 0) {
+            } else if (jtbTratamiento4.columnAtPoint(evt.getPoint()) == 1) {
                 //verificar existencia del archivo en la bd o en la clase entidad
-                    if(((String)jtbTratamiento4.getValueAt(jtbTratamiento4.rowAtPoint(evt.getPoint()), 6))
-                            .equals("1")){
-                            String path2 = (String)modeloAyudDiag.getValueAt(jtbTratamiento4.rowAtPoint(evt.getPoint()), 5)
-                                    +s+(String)modeloAyudDiag.getValueAt(jtbTratamiento4.rowAtPoint(evt.getPoint()), 2);
-                            Funciones.fileDownload(path2);
-                    }
+                if (((String) jtbTratamiento4.getValueAt(jtbTratamiento4.rowAtPoint(evt.getPoint()), 6))
+                        .equals("1")) {
+                    String path2 = (String) modeloAyudDiag.getValueAt(jtbTratamiento4.rowAtPoint(evt.getPoint()), 5)
+                            + s + (String) modeloAyudDiag.getValueAt(jtbTratamiento4.rowAtPoint(evt.getPoint()), 2);
+                    Funciones.fileDownload(path2);
+                }
             }
         }
     }//GEN-LAST:event_jtbTratamiento4MouseClicked
 
     private void jTextField15KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField15KeyReleased
-       if("".equals(jTextField15.getText())){
+        if ("".equals(jTextField15.getText())) {
             idDiag5 = 1;
         }
     }//GEN-LAST:event_jTextField15KeyReleased
 
     private void jTextField14KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField14KeyReleased
-        if("".equals(jTextField14.getText())){
+        if ("".equals(jTextField14.getText())) {
             idDiag4 = 1;
         }
     }//GEN-LAST:event_jTextField14KeyReleased
 
     private void jTextField13KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField13KeyReleased
-        if("".equals(jTextField13.getText())){
+        if ("".equals(jTextField13.getText())) {
             idDiag3 = 1;
         }
     }//GEN-LAST:event_jTextField13KeyReleased
 
     private void jTextField12KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField12KeyReleased
-        if("".equals(jTextField12.getText())){
+        if ("".equals(jTextField12.getText())) {
             idDiag2 = 1;
         }
     }//GEN-LAST:event_jTextField12KeyReleased
 
     private void jTextField11KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField11KeyReleased
-        if("".equals(jTextField11.getText())){
+        if ("".equals(jTextField11.getText())) {
             idDiag1 = 1;
         }
     }//GEN-LAST:event_jTextField11KeyReleased
 
     private void jTextArea10KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea10KeyTyped
-        if(evt.getKeyCode()==KeyEvent.VK_CONTROL){
+        if (evt.getKeyCode() == KeyEvent.VK_CONTROL) {
             evt.consume();
         }
     }//GEN-LAST:event_jTextArea10KeyTyped
@@ -4330,12 +4323,12 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jXTaskPane4MouseReleased
 
     private void jLabel46MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel46MouseClicked
-        if(pMedic==null){
+        if (pMedic == null) {
             pMedic = new pTratMedic();
             pMedic.showListExistentes(factory, infohistoriac);
         }
         jPanel35.removeAll();
-        pMedic.setBounds(0,0,380,420);
+        pMedic.setBounds(0, 0, 380, 420);
         jPanel35.add(pMedic);
         pMedic.buttonSeven6.setVisible(false);
         pMedic.buttonSeven7.setVisible(false);
@@ -4347,12 +4340,12 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel46MouseClicked
 
     private void jLabel36MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel36MouseClicked
-        if(pConsultDiag==null){
+        if (pConsultDiag == null) {
             pConsultDiag = new pTratPConsultDiag();
             pConsultDiag.showListExistentes(factory, infohistoriac);
         }
         jPanel35.removeAll();
-        pConsultDiag.setBounds(0,0,380,420);
+        pConsultDiag.setBounds(0, 0, 380, 420);
         jPanel35.add(pConsultDiag);
         pConsultDiag.buttonSeven6.setVisible(false);
         pConsultDiag.buttonSeven7.setVisible(false);
@@ -4363,12 +4356,12 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel36MouseClicked
 
     private void jLabel45MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel45MouseClicked
-        if(pLaboratorio==null){
+        if (pLaboratorio == null) {
             pLaboratorio = new pTratLaboratorio();
             pLaboratorio.showListExistentes(factory, infohistoriac);
         }
         jPanel35.removeAll();
-        pLaboratorio.setBounds(0,0,380,420);
+        pLaboratorio.setBounds(0, 0, 380, 420);
         jPanel35.add(pLaboratorio);
         pLaboratorio.buttonSeven6.setVisible(false);
         pLaboratorio.buttonSeven7.setVisible(false);
@@ -4379,12 +4372,12 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel45MouseClicked
 
     private void jLabel49MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel49MouseClicked
-        if(pImagenologia==null){
+        if (pImagenologia == null) {
             pImagenologia = new pTratImagenologia();
             pImagenologia.showListExistentes(factory, infohistoriac);
         }
         jPanel35.removeAll();
-        pImagenologia.setBounds(0,0,380,420);
+        pImagenologia.setBounds(0, 0, 380, 420);
         jPanel35.add(pImagenologia);
         pImagenologia.buttonSeven6.setVisible(false);
         pImagenologia.buttonSeven7.setVisible(false);
@@ -4395,12 +4388,12 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel49MouseClicked
 
     private void jLabel50MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel50MouseClicked
-        if(pQuirurgico==null){
+        if (pQuirurgico == null) {
             pQuirurgico = new pTratQuirurgico();
             pQuirurgico.showListExistentes(factory, infohistoriac);
         }
         jPanel35.removeAll();
-        pQuirurgico.setBounds(0,0,380,420);
+        pQuirurgico.setBounds(0, 0, 380, 420);
         jPanel35.add(pQuirurgico);
         pQuirurgico.buttonSeven6.setVisible(false);
         pQuirurgico.buttonSeven7.setVisible(false);
@@ -4411,12 +4404,12 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel50MouseClicked
 
     private void jLabel51MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel51MouseClicked
-        if(pProcedimientos==null){
+        if (pProcedimientos == null) {
             pProcedimientos = new pTratMasProcedimientos(false);
             pProcedimientos.showListExistentes(factory, infohistoriac);
         }
         jPanel35.removeAll();
-        pProcedimientos.setBounds(0,0,380,420);
+        pProcedimientos.setBounds(0, 0, 380, 420);
         jPanel35.add(pProcedimientos);
         pProcedimientos.buttonSeven6.setVisible(false);
         pProcedimientos.buttonSeven7.setVisible(false);
@@ -4428,22 +4421,22 @@ public class Evo extends javax.swing.JPanel {
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         String mensaje = "Guarde sus cambios antes de salir.\n¿Desea salir de este Documento? ";
-        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Cerrar Documento",JOptionPane.YES_NO_OPTION);
-        if(entrada==0){
-            atencionurgencia.AtencionUrgencia.panelindex.jpContainer.removeAll(); 
+        int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Cerrar Documento", JOptionPane.YES_NO_OPTION);
+        if (entrada == 0) {
+            atencionurgencia.AtencionUrgencia.panelindex.jpContainer.removeAll();
             atencionurgencia.AtencionUrgencia.panelindex.jpContainer.validate();
             atencionurgencia.AtencionUrgencia.panelindex.jpContainer.repaint();
             Funciones.setLabelInfo();
-        }        
+        }
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jLabel48MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel48MouseClicked
-        if(pInterconsulta0==null){
+        if (pInterconsulta0 == null) {
             pInterconsulta0 = new pTratInterconsulta(0);//cirugia
             pInterconsulta0.showExistente(infohistoriac);
         }
         jPanel35.removeAll();
-        pInterconsulta0.setBounds(0,0,380,420);
+        pInterconsulta0.setBounds(0, 0, 380, 420);
         jPanel35.add(pInterconsulta0);
         pInterconsulta0.buttonSeven7.setVisible(false);
         pInterconsulta0.buttonSeven8.setVisible(false);
@@ -4454,12 +4447,12 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel48MouseClicked
 
     private void jLabel52MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel52MouseClicked
-        if(pInterconsulta1==null){
+        if (pInterconsulta1 == null) {
             pInterconsulta1 = new pTratInterconsulta(1);//Ginecologia
             pInterconsulta1.showExistente(infohistoriac);
         }
         jPanel35.removeAll();
-        pInterconsulta1.setBounds(0,0,380,420);
+        pInterconsulta1.setBounds(0, 0, 380, 420);
         jPanel35.add(pInterconsulta1);
         pInterconsulta1.buttonSeven7.setVisible(false);
         pInterconsulta1.buttonSeven8.setVisible(false);
@@ -4470,12 +4463,12 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel52MouseClicked
 
     private void jLabel53MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel53MouseClicked
-        if(pInterconsulta2==null){
+        if (pInterconsulta2 == null) {
             pInterconsulta2 = new pTratInterconsulta(2);//Medicina Interna
             pInterconsulta2.showExistente(infohistoriac);
         }
         jPanel35.removeAll();
-        pInterconsulta2.setBounds(0,0,380,420);
+        pInterconsulta2.setBounds(0, 0, 380, 420);
         jPanel35.add(pInterconsulta2);
         pInterconsulta2.buttonSeven7.setVisible(false);
         pInterconsulta2.buttonSeven8.setVisible(false);
@@ -4486,12 +4479,12 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel53MouseClicked
 
     private void jLabel54MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel54MouseClicked
-        if(pInterconsulta3==null){
+        if (pInterconsulta3 == null) {
             pInterconsulta3 = new pTratInterconsulta(3);//Ortopedia
             pInterconsulta3.showExistente(infohistoriac);
         }
         jPanel35.removeAll();
-        pInterconsulta3.setBounds(0,0,380,420);
+        pInterconsulta3.setBounds(0, 0, 380, 420);
         jPanel35.add(pInterconsulta3);
         pInterconsulta3.buttonSeven7.setVisible(false);
         pInterconsulta3.buttonSeven8.setVisible(false);
@@ -4502,12 +4495,12 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel54MouseClicked
 
     private void jLabel55MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel55MouseClicked
-        if(pInterconsulta4==null){
+        if (pInterconsulta4 == null) {
             pInterconsulta4 = new pTratInterconsulta(4);//Pediatria
             pInterconsulta4.showExistente(infohistoriac);
         }
         jPanel35.removeAll();
-        pInterconsulta4.setBounds(0,0,380,420);
+        pInterconsulta4.setBounds(0, 0, 380, 420);
         jPanel35.add(pInterconsulta4);
         pInterconsulta4.buttonSeven7.setVisible(false);
         pInterconsulta4.buttonSeven8.setVisible(false);
@@ -4518,12 +4511,12 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel55MouseClicked
 
     private void jLabel56MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel56MouseClicked
-        if(pOtrasInterconsultas==null){
+        if (pOtrasInterconsultas == null) {
             pOtrasInterconsultas = new pTratOtrasInterconsultas();
             pOtrasInterconsultas.showLista(infohistoriac);
         }
         jPanel35.removeAll();
-        pOtrasInterconsultas.setBounds(0,0,380,420);
+        pOtrasInterconsultas.setBounds(0, 0, 380, 420);
         jPanel35.add(pOtrasInterconsultas);
         pOtrasInterconsultas.jTextArea25.setEditable(false);
         pOtrasInterconsultas.setVisible(true);
@@ -4532,12 +4525,12 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel56MouseClicked
 
     private void jLabel47MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel47MouseClicked
-        if(pMedidaGeneral==null){
+        if (pMedidaGeneral == null) {
             pMedidaGeneral = new pTratMedidaGeneral();
             pMedidaGeneral.showListExistentes(factory, infohistoriac);
         }
         jPanel35.removeAll();
-        pMedidaGeneral.setBounds(0,0,380,420);
+        pMedidaGeneral.setBounds(0, 0, 380, 420);
         jPanel35.add(pMedidaGeneral);
         pMedidaGeneral.jButton1.setVisible(false);
         pMedidaGeneral.jButton2.setVisible(false);
@@ -4669,179 +4662,179 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton9MouseMoved
 
     private void jTextArea11FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea11FocusLost
-        if(jTextArea11.getText().isEmpty()){
+        if (jTextArea11.getText().isEmpty()) {
             jTextArea11.setText("NINGUNO");
         }
     }//GEN-LAST:event_jTextArea11FocusLost
 
     private void jTextArea11FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea11FocusGained
-        if("NINGUNO".equals(jTextArea11.getText())){
+        if ("NINGUNO".equals(jTextArea11.getText())) {
             jTextArea11.selectAll();
         }
     }//GEN-LAST:event_jTextArea11FocusGained
 
     private void jTextArea12FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea12FocusGained
-        if("NINGUNO".equals(jTextArea12.getText())){
+        if ("NINGUNO".equals(jTextArea12.getText())) {
             jTextArea12.selectAll();
         }
     }//GEN-LAST:event_jTextArea12FocusGained
 
     private void jTextArea12FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea12FocusLost
-        if(jTextArea12.getText().isEmpty()){
+        if (jTextArea12.getText().isEmpty()) {
             jTextArea12.setText("NINGUNO");
         }
     }//GEN-LAST:event_jTextArea12FocusLost
 
     private void jTextArea22FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea22FocusGained
-        if("NINGUNO".equals(jTextArea22.getText())){
+        if ("NINGUNO".equals(jTextArea22.getText())) {
             jTextArea22.selectAll();
         }
     }//GEN-LAST:event_jTextArea22FocusGained
 
     private void jTextArea22FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea22FocusLost
-        if(jTextArea22.getText().isEmpty()){
+        if (jTextArea22.getText().isEmpty()) {
             jTextArea22.setText("NINGUNO");
         }
     }//GEN-LAST:event_jTextArea22FocusLost
 
     private void jTextArea23FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea23FocusGained
-        if("NINGUNO".equals(jTextArea23.getText())){
+        if ("NINGUNO".equals(jTextArea23.getText())) {
             jTextArea23.selectAll();
         }
     }//GEN-LAST:event_jTextArea23FocusGained
 
     private void jTextArea23FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea23FocusLost
-        if(jTextArea23.getText().isEmpty()){
+        if (jTextArea23.getText().isEmpty()) {
             jTextArea23.setText("NINGUNO");
         }
     }//GEN-LAST:event_jTextArea23FocusLost
 
     private void jTextArea24FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea24FocusGained
-        if("NINGUNO".equals(jTextArea24.getText())){
+        if ("NINGUNO".equals(jTextArea24.getText())) {
             jTextArea24.selectAll();
         }
     }//GEN-LAST:event_jTextArea24FocusGained
 
     private void jTextArea24FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea24FocusLost
-        if(jTextArea24.getText().isEmpty()){
+        if (jTextArea24.getText().isEmpty()) {
             jTextArea24.setText("NINGUNO");
         }
     }//GEN-LAST:event_jTextArea24FocusLost
 
     private void jTextArea25FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea25FocusGained
-        if("NINGUNO".equals(jTextArea25.getText())){
+        if ("NINGUNO".equals(jTextArea25.getText())) {
             jTextArea25.selectAll();
         }
     }//GEN-LAST:event_jTextArea25FocusGained
 
     private void jTextArea25FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea25FocusLost
-        if(jTextArea25.getText().isEmpty()){
+        if (jTextArea25.getText().isEmpty()) {
             jTextArea25.setText("NINGUNO");
         }
     }//GEN-LAST:event_jTextArea25FocusLost
 
     private void jTextArea4FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea4FocusGained
-        if("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea4.getText())){
+        if ("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea4.getText())) {
             jTextArea4.selectAll();
         }
     }//GEN-LAST:event_jTextArea4FocusGained
 
     private void jTextArea4FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea4FocusLost
-        if(jTextArea4.getText().isEmpty()){
+        if (jTextArea4.getText().isEmpty()) {
             jTextArea4.setText("NO SE ENCUENTRAN DATOS RELEVANTES");
         }
     }//GEN-LAST:event_jTextArea4FocusLost
 
     private void jTextArea6FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea6FocusGained
-        if("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea6.getText())){
+        if ("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea6.getText())) {
             jTextArea6.selectAll();
         }
     }//GEN-LAST:event_jTextArea6FocusGained
 
     private void jTextArea6FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea6FocusLost
-        if(jTextArea6.getText().isEmpty()){
+        if (jTextArea6.getText().isEmpty()) {
             jTextArea6.setText("NO SE ENCUENTRAN DATOS RELEVANTES");
         }
     }//GEN-LAST:event_jTextArea6FocusLost
 
     private void jTextArea8FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea8FocusGained
-        if("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea8.getText())){
+        if ("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea8.getText())) {
             jTextArea8.selectAll();
         }
     }//GEN-LAST:event_jTextArea8FocusGained
 
     private void jTextArea8FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea8FocusLost
-        if(jTextArea8.getText().isEmpty()){
+        if (jTextArea8.getText().isEmpty()) {
             jTextArea8.setText("NO SE ENCUENTRAN DATOS RELEVANTES");
         }
     }//GEN-LAST:event_jTextArea8FocusLost
 
     private void jTextArea9FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea9FocusGained
-        if("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea9.getText())){
+        if ("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea9.getText())) {
             jTextArea9.selectAll();
         }
     }//GEN-LAST:event_jTextArea9FocusGained
 
     private void jTextArea9FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea9FocusLost
-        if(jTextArea9.getText().isEmpty()){
+        if (jTextArea9.getText().isEmpty()) {
             jTextArea9.setText("NO SE ENCUENTRAN DATOS RELEVANTES");
         }
     }//GEN-LAST:event_jTextArea9FocusLost
 
     private void jTextArea14FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea14FocusGained
-        if("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea14.getText())){
+        if ("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea14.getText())) {
             jTextArea14.selectAll();
         }
     }//GEN-LAST:event_jTextArea14FocusGained
 
     private void jTextArea14FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea14FocusLost
-        if(jTextArea14.getText().isEmpty()){
+        if (jTextArea14.getText().isEmpty()) {
             jTextArea14.setText("NO SE ENCUENTRAN DATOS RELEVANTES");
         }
     }//GEN-LAST:event_jTextArea14FocusLost
 
     private void jTextArea15FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea15FocusGained
-        if("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea15.getText())){
+        if ("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea15.getText())) {
             jTextArea15.selectAll();
         }
     }//GEN-LAST:event_jTextArea15FocusGained
 
     private void jTextArea15FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea15FocusLost
-        if(jTextArea15.getText().isEmpty()){
+        if (jTextArea15.getText().isEmpty()) {
             jTextArea15.setText("NO SE ENCUENTRAN DATOS RELEVANTES");
         }
     }//GEN-LAST:event_jTextArea15FocusLost
 
     private void jTextArea16FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea16FocusGained
-        if("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea16.getText())){
+        if ("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea16.getText())) {
             jTextArea16.selectAll();
         }
     }//GEN-LAST:event_jTextArea16FocusGained
 
     private void jTextArea16FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea16FocusLost
-        if(jTextArea16.getText().isEmpty()){
+        if (jTextArea16.getText().isEmpty()) {
             jTextArea16.setText("NO SE ENCUENTRAN DATOS RELEVANTES");
         }
     }//GEN-LAST:event_jTextArea16FocusLost
 
     private void jTextArea17FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea17FocusGained
-        if("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea17.getText())){
+        if ("NO SE ENCUENTRAN DATOS RELEVANTES".equals(jTextArea17.getText())) {
             jTextArea17.selectAll();
         }
     }//GEN-LAST:event_jTextArea17FocusGained
 
     private void jTextArea17FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea17FocusLost
-        if(jTextArea17.getText().isEmpty()){
+        if (jTextArea17.getText().isEmpty()) {
             jTextArea17.setText("NO SE ENCUENTRAN DATOS RELEVANTES");
         }
     }//GEN-LAST:event_jTextArea17FocusLost
 
     private void jTextArea2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea2KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea2.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea2.transferFocus();
             }
             evt.consume();
@@ -4849,11 +4842,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea2KeyPressed
 
     private void jTextArea10KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea10KeyPressed
-       if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea10.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea10.transferFocus();
             }
             evt.consume();
@@ -4861,11 +4854,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea10KeyPressed
 
     private void jTextArea11KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea11KeyPressed
-         if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea11.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea11.transferFocus();
             }
             evt.consume();
@@ -4873,11 +4866,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea11KeyPressed
 
     private void jTextArea12KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea12KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea12.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea12.transferFocus();
             }
             evt.consume();
@@ -4885,11 +4878,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea12KeyPressed
 
     private void jTextArea22KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea22KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea22.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea22.transferFocus();
             }
             evt.consume();
@@ -4897,11 +4890,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea22KeyPressed
 
     private void jTextArea23KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea23KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea23.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea23.transferFocus();
             }
             evt.consume();
@@ -4909,10 +4902,10 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea23KeyPressed
 
     private void jTextArea5KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea5KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
                 jTextArea5.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea5.transferFocus();
             }
             evt.consume();
@@ -4920,11 +4913,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea5KeyPressed
 
     private void jTextArea7KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea7KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea7.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea7.transferFocus();
             }
             evt.consume();
@@ -4932,11 +4925,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea7KeyPressed
 
     private void jTextArea24KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea24KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea24.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea24.transferFocus();
             }
             evt.consume();
@@ -4944,11 +4937,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea24KeyPressed
 
     private void jTextArea25KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea25KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea24.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea24.transferFocus();
             }
             evt.consume();
@@ -4956,11 +4949,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea25KeyPressed
 
     private void jTextArea9KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea9KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea9.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea9.transferFocus();
             }
             evt.consume();
@@ -4968,11 +4961,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea9KeyPressed
 
     private void jTextArea14KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea14KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea14.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea14.transferFocus();
             }
             evt.consume();
@@ -4980,11 +4973,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea14KeyPressed
 
     private void jTextArea15KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea15KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea15.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea15.transferFocus();
             }
             evt.consume();
@@ -4992,10 +4985,10 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea15KeyPressed
 
     private void jTextArea16KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea16KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
                 jTextArea16.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea16.transferFocus();
             }
             evt.consume();
@@ -5003,11 +4996,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea16KeyPressed
 
     private void jTextArea17KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea17KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea17.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea17.transferFocus();
             }
             evt.consume();
@@ -5015,11 +5008,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea17KeyPressed
 
     private void jTextArea3KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea3KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea3.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea3.transferFocus();
             }
             evt.consume();
@@ -5027,11 +5020,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea3KeyPressed
 
     private void jTextArea4KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea4KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea4.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea4.transferFocus();
             }
             evt.consume();
@@ -5039,11 +5032,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea4KeyPressed
 
     private void jTextArea6KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea6KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea6.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea6.transferFocus();
             }
             evt.consume();
@@ -5051,11 +5044,11 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextArea6KeyPressed
 
     private void jTextArea8KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea8KeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_TAB){
-            if(evt.getModifiers()>0){
-                
+        if (evt.getKeyCode() == KeyEvent.VK_TAB) {
+            if (evt.getModifiers() > 0) {
+
                 jTextArea8.transferFocusBackward();
-            }else{
+            } else {
                 jTextArea8.transferFocus();
             }
             evt.consume();
@@ -5071,7 +5064,7 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton11MouseMoved
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        if(getValidaFirma()){
+        if (getValidaFirma()) {
             impresionesHC imp = new impresionesHC();
             imp.setidHC(this.infohistoriac);
             imp.setdestinoHc("OBSERVACION DE URGENCIAS");
@@ -5138,7 +5131,7 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel27MouseReleased
 
     private void jButton1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseMoved
-        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+        Funciones.setLabelInfo(((JButton) evt.getSource()).getToolTipText());
     }//GEN-LAST:event_jButton1MouseMoved
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
@@ -5157,7 +5150,7 @@ public class Evo extends javax.swing.JPanel {
         jpCentro.add(cU);
         cU.setVisible(true);
         jpCentro.validate();
-        jpCentro.repaint(); 
+        jpCentro.repaint();
         activeCheck(8);
     }//GEN-LAST:event_jLabel44MouseClicked
 
@@ -5184,8 +5177,9 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton1MouseExited
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        if(!subjetivo.isValid())
+        if (!subjetivo.isValid()) {
             addClosableTab(jTabbedPane6, subjetivo, "Nota Subjetiva", PAGE_SUBJETIVO);
+        }
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton8MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseExited
@@ -5193,7 +5187,7 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton8MouseExited
 
     private void jButton8MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseMoved
-        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+        Funciones.setLabelInfo(((JButton) evt.getSource()).getToolTipText());
     }//GEN-LAST:event_jButton8MouseMoved
 
     private void jButton10MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton10MouseExited
@@ -5201,7 +5195,7 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton10MouseExited
 
     private void jButton10MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton10MouseMoved
-        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+        Funciones.setLabelInfo(((JButton) evt.getSource()).getToolTipText());
     }//GEN-LAST:event_jButton10MouseMoved
 
     private void jButton10MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton10MousePressed
@@ -5209,29 +5203,29 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton10MousePressed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        if(!evol.isValid()){
-            if(jButton10.getText().equals("S. Vitales")){
+        if (!evol.isValid()) {
+            if (jButton10.getText().equals("S. Vitales")) {
                 addClosableTab(jTabbedPane6, evol, "Signos Vitales", PAGE_SIGNOS);
-            }else{
+            } else {
                 addClosableTab(jTabbedPane6, evol, "Estado General", PAGE_SIGNOS);
             }
         }
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        if(evoSeleccion.getEstado()!=0){
+        if (evoSeleccion.getEstado() != 0) {
             imphcuEvo imEvo = new imphcuEvo(null, true);
             imEvo.setLocationRelativeTo(null);
             imEvo.setEvolucion(evoSeleccion);
             System.out.println(evoSeleccion);
-            if(evoSeleccion.getEstado()==1 || evoSeleccion.getEstado() ==3){
+            if (evoSeleccion.getEstado() == 1 || evoSeleccion.getEstado() == 3) {
                 imEvo.setNoValido(true);
-            }else{
+            } else {
                 imEvo.setNoValido(false);
-            }        
+            }
             imEvo.activeChec();
-            imEvo.setVisible(true);    
-        }else{
+            imEvo.setVisible(true);
+        } else {
             JOptionPane.showMessageDialog(null, "No puede imprimir una nota borrador");
         }
     }//GEN-LAST:event_jButton5ActionPerformed
@@ -5241,27 +5235,27 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton12MouseExited
 
     private void jButton12MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton12MouseMoved
-        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+        Funciones.setLabelInfo(((JButton) evt.getSource()).getToolTipText());
     }//GEN-LAST:event_jButton12MouseMoved
 
     private void jButton13MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton13MouseMoved
-        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+        Funciones.setLabelInfo(((JButton) evt.getSource()).getToolTipText());
     }//GEN-LAST:event_jButton13MouseMoved
 
     private void jButton2MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseMoved
-        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+        Funciones.setLabelInfo(((JButton) evt.getSource()).getToolTipText());
     }//GEN-LAST:event_jButton2MouseMoved
 
     private void jButton6MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseMoved
-        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+        Funciones.setLabelInfo(((JButton) evt.getSource()).getToolTipText());
     }//GEN-LAST:event_jButton6MouseMoved
 
     private void jButton4MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseMoved
-        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+        Funciones.setLabelInfo(((JButton) evt.getSource()).getToolTipText());
     }//GEN-LAST:event_jButton4MouseMoved
 
     private void jButton7MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseMoved
-        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+        Funciones.setLabelInfo(((JButton) evt.getSource()).getToolTipText());
     }//GEN-LAST:event_jButton7MouseMoved
 
     private void jButton5MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseExited
@@ -5269,7 +5263,7 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton5MouseExited
 
     private void jButton5MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseMoved
-        Funciones.setLabelInfo(((JButton)evt.getSource()).getToolTipText());
+        Funciones.setLabelInfo(((JButton) evt.getSource()).getToolTipText());
     }//GEN-LAST:event_jButton5MouseMoved
 
     private void jButton13MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton13MouseExited
@@ -5301,84 +5295,86 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if(!objetivo.isValid()){
-            if(jButton2.getText().equals("Objetivo")){
+        if (!objetivo.isValid()) {
+            if (jButton2.getText().equals("Objetivo")) {
                 addClosableTab(jTabbedPane6, objetivo, "Nota Objetiva", PAGE_OBJETIVOS);
-            }else{
+            } else {
                 addClosableTab(jTabbedPane6, objetivo, "Síntesis", PAGE_OBJETIVOS);
             }
         }
-            
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        if(!analisis.isValid()){
-            if(jButton6.getText().equals("")){
+        if (!analisis.isValid()) {
+            if (jButton6.getText().equals("")) {
                 addClosableTab(jTabbedPane6, analisis, "Analisis", PAGE_ANALISIS);
-            }else{
+            } else {
                 addClosableTab(jTabbedPane6, analisis, "DX Egreso", PAGE_ANALISIS);
             }
         }
-            
+
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        if(!pplan.isValid()){
-            if(jButton4.getText().equals("Plan")){
+        if (!pplan.isValid()) {
+            if (jButton4.getText().equals("Plan")) {
                 addClosableTab(jTabbedPane6, pplan, "Plan", PAGE_PLAN);
-            }else{
+            } else {
                 addClosableTab(jTabbedPane6, pplan, "Conducta", PAGE_PLAN);
             }
-        }   
+        }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
-        if(hcuEvolucionJpaController==null) hcuEvolucionJpaController=new HcuEvolucionJpaController(factory);
+        if (hcuEvolucionJpaController == null) {
+            hcuEvolucionJpaController = new HcuEvolucionJpaController(factory);
+        }
         HcuEvolucion he = null;
         imphcuEvo imp = new imphcuEvo(null, true);
         try {
             he = evoSeleccion;
-            if(he.getEstado()==1){
+            if (he.getEstado() == 1) {
                 String mensaje = "¿Si finaliza la nota de Evolución no podra modificarla posteriormente? ";
-                int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Confirmar finalizacion",JOptionPane.YES_NO_OPTION);  
-                if(entrada==0){
+                int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar finalizacion", JOptionPane.YES_NO_OPTION);
+                if (entrada == 0) {
                     he.setEstado(2);
                     hcuEvolucionJpaController.edit(he);
-                    
+
                     //                    setJTreeEvo(); 
                     imp.setNoValido(false);
                     imp.setEvolucion(he);
-                    imp.imprimir(); 
+                    imp.imprimir();
                     jButton13.setEnabled(false);
                     jButton12.setEnabled(false);
-                    if(est == 1){
-                    jButton14.setEnabled(false);
+                    if (est == 1) {
+                        jButton14.setEnabled(false);
                     }
                 }
-             }else if(he.getEstado()==0){
-                 JOptionPane.showMessageDialog(null, "No se puede finalizar Notas en estado Borrador");
-             }else if(he.getEstado()==3){
-                 System.out.println("1");
-                 if(he.getHcuEvoEgreso().size()>0){
+            } else if (he.getEstado() == 0) {
+                JOptionPane.showMessageDialog(null, "No se puede finalizar Notas en estado Borrador");
+            } else if (he.getEstado() == 3) {
+                System.out.println("1");
+                if (he.getHcuEvoEgreso().size() > 0) {
                     String mensaje = "¿Si finaliza la nota de Egreso no podra modificarla posteriormente? ";
-                    int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Confirmar Finalizacion",JOptionPane.YES_NO_OPTION);
-                    if(entrada==0){
+                    int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar Finalizacion", JOptionPane.YES_NO_OPTION);
+                    if (entrada == 0) {
                         he.setEstado(4);
                         hcuEvolucionJpaController.edit(he);
-    //                    setJTreeEvo(); 
+                        //                    setJTreeEvo(); 
                         imp.setNoValido(false);
                         imp.setEvolucion(he);
-                        imp.imprimir(); 
+                        imp.imprimir();
                         jButton13.setEnabled(false);
                         jButton12.setEnabled(false);
-                        if(est == 1){
-                           jButton14.setEnabled(false);
+                        if (est == 1) {
+                            jButton14.setEnabled(false);
                         }
                     }
-                 }else{
-                     JOptionPane.showMessageDialog(null, "No existe destino del paciente relacionado al egreso");
-                 }
-             }else if(he.getEstado()>1){    
+                } else {
+                    JOptionPane.showMessageDialog(null, "No existe destino del paciente relacionado al egreso");
+                }
+            } else if (he.getEstado() > 1) {
                 JOptionPane.showMessageDialog(null, "Esta Nota ya se encuentra finalizada");
             }
         } catch (Exception ex) {
@@ -5388,48 +5384,50 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton13ActionPerformed
 
     private void jTree1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseReleased
-        TreePath selPath = jTree1. getPathForLocation(evt.getX(), evt.getY());
+        TreePath selPath = jTree1.getPathForLocation(evt.getX(), evt.getY());
         jTree1.setSelectionPath(selPath);
-        if(evt.isPopupTrigger()){
-            if(selPath!=null){
-                Object nodo = selPath. getLastPathComponent();
-                if(((DefaultMutableTreeNode)nodo).getUserObject() instanceof HcuEvolucion){
-                    HcuEvolucion evolucion = (HcuEvolucion)((DefaultMutableTreeNode)nodo).getUserObject();                    
-                    if (evolucion.getEstado()!=0 && evolucion.getEstado()!=1){
+        if (evt.isPopupTrigger()) {
+            if (selPath != null) {
+                Object nodo = selPath.getLastPathComponent();
+                if (((DefaultMutableTreeNode) nodo).getUserObject() instanceof HcuEvolucion) {
+                    HcuEvolucion evolucion = (HcuEvolucion) ((DefaultMutableTreeNode) nodo).getUserObject();
+                    if (evolucion.getEstado() != 0 && evolucion.getEstado() != 1) {
                         jMenuItem1.setEnabled(false);
-                    }else{
+                    } else {
                         jMenuItem1.setEnabled(true);
-                    }                    
-                    jPopupMenu1.show(evt.getComponent(),evt.getX(),evt.getY());
-                    evoSeleccion = evolucion;               
-                }                
+                    }
+                    jPopupMenu1.show(evt.getComponent(), evt.getX(), evt.getY());
+                    evoSeleccion = evolucion;
+                }
             }
         }
     }//GEN-LAST:event_jTree1MouseReleased
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         TreePath selPath = jTree1.getSelectionPath();
-        if(selPath!=null){
-            Object nodo = selPath. getLastPathComponent();
-            if(((DefaultMutableTreeNode)nodo).getUserObject() instanceof HcuEvolucion){
-                HcuEvolucion evolucion = (HcuEvolucion)((DefaultMutableTreeNode)nodo).getUserObject(); 
+        if (selPath != null) {
+            Object nodo = selPath.getLastPathComponent();
+            if (((DefaultMutableTreeNode) nodo).getUserObject() instanceof HcuEvolucion) {
+                HcuEvolucion evolucion = (HcuEvolucion) ((DefaultMutableTreeNode) nodo).getUserObject();
                 String mensaje;
                 int entrada;
-                if(evolucion.getEstado()==3){
-                    mensaje = "Desea anular la Nota de Egreso "+MyDate.yyyyMMddHHmm.format(evolucion.getFechaEvo());
-                    entrada = JOptionPane.showConfirmDialog(null, mensaje,"Anular Nota de Egreso",JOptionPane.YES_NO_OPTION);
-                }else{
-                    mensaje = "Desea anular la Evolución "+MyDate.yyyyMMddHHmm.format(evolucion.getFechaEvo());
-                    entrada = JOptionPane.showConfirmDialog(null, mensaje,"Anular Evolución",JOptionPane.YES_NO_OPTION);
+                if (evolucion.getEstado() == 3) {
+                    mensaje = "Desea anular la Nota de Egreso " + MyDate.yyyyMMddHHmm.format(evolucion.getFechaEvo());
+                    entrada = JOptionPane.showConfirmDialog(null, mensaje, "Anular Nota de Egreso", JOptionPane.YES_NO_OPTION);
+                } else {
+                    mensaje = "Desea anular la Evolución " + MyDate.yyyyMMddHHmm.format(evolucion.getFechaEvo());
+                    entrada = JOptionPane.showConfirmDialog(null, mensaje, "Anular Evolución", JOptionPane.YES_NO_OPTION);
                 }
-                if(entrada==0){
-                    if(hcuEvolucionJpaController==null) hcuEvolucionJpaController=new HcuEvolucionJpaController(factory);
+                if (entrada == 0) {
+                    if (hcuEvolucionJpaController == null) {
+                        hcuEvolucionJpaController = new HcuEvolucionJpaController(factory);
+                    }
                     try {
-                        if(evolucion.getId()!=null){
+                        if (evolucion.getId() != null) {
                             evolucion.setEstado(0);
-                            hcuEvolucionJpaController.edit(evolucion);                            
+                            hcuEvolucionJpaController.edit(evolucion);
                             jTree1.removeSelectionPath(selPath);
-                            if(jLabel65.getText().equals(MyDate.yyyyMMddHHmm2.format(evolucion.getFechaEvo()))){
+                            if (jLabel65.getText().equals(MyDate.yyyyMMddHHmm2.format(evolucion.getFechaEvo()))) {
                                 jTabbedPane6.removeAll();
                                 jButton8.setVisible(true);
                                 jButton8.setEnabled(false);
@@ -5451,8 +5449,8 @@ public class Evo extends javax.swing.JPanel {
                                 jButton14.setEnabled(true);
                             }
                         }
-                    }catch (Exception ex) {
-                        JOptionPane.showMessageDialog(null, "10131:\n"+ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "10131:\n" + ex.getMessage(), Evo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
                     }
                 }
             }
@@ -5477,32 +5475,31 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jTree1ValueChanged
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        if(evoSeleccion.getEstado()==2){
+        if (evoSeleccion.getEstado() == 2) {
             this.activarComponentes(evoSeleccion);
             this.jButton13.setEnabled(false);
             this.jButton12.setEnabled(false);
-            if(est == 1){
+            if (est == 1) {
                 this.jButton14.setEnabled(false);
             }
-        }else{
-            if(evoSeleccion.getEstado()>=3){
-            this.activarComponentesEgreso(evoSeleccion); 
-            this.jButton14.setEnabled(false);
-            this.jButton1.setEnabled(false);
-            if(evoSeleccion.getEstado()==4){
-                this.jButton13.setEnabled(false);
+        } else {
+            if (evoSeleccion.getEstado() >= 3) {
+                this.activarComponentesEgreso(evoSeleccion);
+                this.jButton14.setEnabled(false);
                 this.jButton1.setEnabled(false);
-                this.jButton14.setEnabled(false);
-                this.jButton12.setEnabled(false);
+                if (evoSeleccion.getEstado() == 4) {
+                    this.jButton13.setEnabled(false);
+                    this.jButton1.setEnabled(false);
+                    this.jButton14.setEnabled(false);
+                    this.jButton12.setEnabled(false);
+                }
+            } else {
+                this.activarComponentes(evoSeleccion);
             }
-        }else{
-            this.activarComponentes(evoSeleccion);
-        }
         }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     // </editor-fold>
-    
     // <editor-fold desc="Variables declaration - do not modify"> 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
