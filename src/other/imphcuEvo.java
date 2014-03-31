@@ -6,7 +6,6 @@ import Documentos.ImprimirEvolucion;
 import Documentos.ImprimirNotaegreso;
 import Documentos.Imprimirautorizacionlaboratorio;
 import Documentos.Imprimirautorizacionrx;
-import Documentos.ImprimirNotaegresoFull;
 import Documentos.ImprimirautorizacionlaboratorioFinal;
 import Documentos.ImprimirautorizacionrxFinal;
 import atencionurgencia.AtencionUrgencia;
