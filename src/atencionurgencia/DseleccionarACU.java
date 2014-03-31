@@ -10,7 +10,7 @@ import tools.Funciones;
 
 /**
  *
- * @author Administrador
+ * @author Alvaro Monsalve
  */
 public class DseleccionarACU extends javax.swing.JDialog {
     private DefaultTableModel modelo;
