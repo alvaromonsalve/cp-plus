@@ -73,7 +73,6 @@ public class JDdateEvo extends javax.swing.JDialog {
         setFocusable(false);
         setMinimumSize(new java.awt.Dimension(282, 100));
         setResizable(false);
-        setType(java.awt.Window.Type.UTILITY);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setMaximumSize(new java.awt.Dimension(282, 100));
