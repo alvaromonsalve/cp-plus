@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package atencionurgencia.ingreso;
 
 import atencionurgencia.AtencionUrgencia;
@@ -102,7 +99,7 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
         boolean existe=false;
         if(cc!=null){
             for(int i=0;i<ModeloTabla.getRowCount();i++){
-                if(cc.getId() == ((ConfigCups)ModeloTabla.getValueAt(i, 0)).getId()){
+                if(cc.getId().equals(((ConfigCups)ModeloTabla.getValueAt(i, 0)).getId())){
                     existe = true;
                     break;
                 }
@@ -128,7 +125,7 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
         int rowIndex = ModeloTabla.getRowCount();
         boolean existe=false;
         for(int i=0;i<ModeloTabla.getRowCount();i++){
-            if(cc.getId() == ((ConfigCups)ModeloTabla.getValueAt(i, 0)).getId()){
+            if(cc.getId().equals(((ConfigCups)ModeloTabla.getValueAt(i, 0)).getId())){
                 existe = true;
                 break;
             }
@@ -151,10 +148,10 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
         for(int i=0;i<ModeloTabla.getRowCount();i++){
             InfoProcedimientoHcu procedimientoHcu=null;
             boolean exist=false;
-            for(int a=0;a<listInfoProcedimientoHcu.size();a++){
-                if(((ConfigCups)ModeloTabla.getValueAt(i, 0)).getId()==listInfoProcedimientoHcu.get(a).getIdCups()){
+            for (InfoProcedimientoHcu listInfoProcedimientoHcu1 : listInfoProcedimientoHcu) {
+                if (((ConfigCups)ModeloTabla.getValueAt(i, 0)).getId() == listInfoProcedimientoHcu1.getIdCups()) {
                     exist=true;
-                    procedimientoHcu=listInfoProcedimientoHcu.get(a);
+                    procedimientoHcu = listInfoProcedimientoHcu1;
                     break;
                 }
             }
@@ -180,23 +177,23 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
                 }
             }
         }
-        for(int i=0;i<listInfoProcedimientoHcu.size();i++){
+        for (InfoProcedimientoHcu listInfoProcedimientoHcu1 : listInfoProcedimientoHcu) {
             if(cupsJpaController==null){
                 cupsJpaController=new ConfigCupsJpaController(factory);
             }
-            ConfigCups cups = cupsJpaController.findConfigCups(listInfoProcedimientoHcu.get(i).getIdCups());
-            if(cups.getIdEstructuraCups().getId() >17 && cups.getIdEstructuraCups().getId() <30){
+            ConfigCups cups = cupsJpaController.findConfigCups(listInfoProcedimientoHcu1.getIdCups());
+            if (cups.getIdEstructuraCups().getId() >17 && cups.getIdEstructuraCups().getId() <30) {
                 boolean exist=false;
-                for(int a=0;a<ModeloTabla.getRowCount();a++){
-                    if(listInfoProcedimientoHcu.get(i).getIdCups()==((ConfigCups)ModeloTabla.getValueAt(a, 0)).getId()){
+                for (int a = 0; a<ModeloTabla.getRowCount(); a++) {
+                    if (listInfoProcedimientoHcu1.getIdCups() == ((ConfigCups)ModeloTabla.getValueAt(a, 0)).getId()) {
                         exist=true;
                         break;
                     }
                 }
-                if(!exist){
+                if (!exist) {
                     try {
-                        infoProcedimientoHcuJPA.destroy(listInfoProcedimientoHcu.get(i).getId());
-                    } catch (NonexistentEntityException ex) {
+                        infoProcedimientoHcuJPA.destroy(listInfoProcedimientoHcu1.getId());
+                    }catch (NonexistentEntityException ex) {
                         JOptionPane.showMessageDialog(null, "10093:\n"+ex.getMessage(), pTratMasProcedimientos.class.getName(), JOptionPane.INFORMATION_MESSAGE);
                     }
                 }
@@ -211,9 +208,9 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
         for(int i=0;i<ModeloTabla.getRowCount();i++){            
             HcuEvoProcedimiento hcuEvoProcedimiento=null;
             boolean exist=false;
-            for(int a=0;a<listInfoProcedimientoEvo.size();a++){         
-                hcuEvoProcedimiento=listInfoProcedimientoEvo.get(a);
-                if(((ConfigCups)ModeloTabla.getValueAt(i, 0)).equals(listInfoProcedimientoEvo.get(a).getIdConfigCups())){
+            for (HcuEvoProcedimiento listInfoProcedimientoEvo1 : listInfoProcedimientoEvo) {
+                hcuEvoProcedimiento = listInfoProcedimientoEvo1;
+                if (((ConfigCups)ModeloTabla.getValueAt(i, 0)).equals(listInfoProcedimientoEvo1.getIdConfigCups())) {
                     exist=true;
                     break;
                 }
@@ -241,11 +238,10 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
                 }
             }
         }
-        for(int i=0;i<listInfoProcedimientoEvo.size();i++){
-            HcuEvoProcedimiento hcuEvoProcedimiento=listInfoProcedimientoEvo.get(i);            
+        for (HcuEvoProcedimiento hcuEvoProcedimiento : listInfoProcedimientoEvo) {            
             boolean exist=false;
-            for(int a=0;a<ModeloTabla.getRowCount();a++){
-                if(listInfoProcedimientoEvo.get(i).getIdConfigCups().equals((ConfigCups)ModeloTabla.getValueAt(a, 0))){
+            for (int a = 0; a<ModeloTabla.getRowCount(); a++) {
+                if (hcuEvoProcedimiento.getIdConfigCups().equals((ConfigCups)ModeloTabla.getValueAt(a, 0))) {
                     exist=true;
                     break;                    
                 }
@@ -283,9 +279,9 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
         if(cupsJpaController==null)
             cupsJpaController=new ConfigCupsJpaController(factory);        
         listInfoProcedimientoEvo = hcuEvoProcedimientoJpa.ListFindInfoProcedimientoEvo(evol);
-        for(int i=0;i<listInfoProcedimientoEvo.size();i++){
-            ConfigCups cups = cupsJpaController.findConfigCups(listInfoProcedimientoEvo.get(i).getIdConfigCups().getId());
-            this.cargaDatoSeleccionado(cups,listInfoProcedimientoEvo.get(i).getObservacion());
+        for (HcuEvoProcedimiento listInfoProcedimientoEvo1 : listInfoProcedimientoEvo) {
+            ConfigCups cups = cupsJpaController.findConfigCups(listInfoProcedimientoEvo1.getIdConfigCups().getId());
+            this.cargaDatoSeleccionado(cups, listInfoProcedimientoEvo1.getObservacion());
         }
         /* Comprobamos que la evolucion no contiene procedimientos */
         if(listInfoProcedimientoEvo.isEmpty()){
@@ -359,11 +355,15 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
         dProcedimiento = new dSelectProcedimiento(null,true,tipo,evo);//0
         dProcedimiento.setVisible(true);
     }
+    
     /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
+     * Retorna el estado sobre los registros de las tablas
+     * @return true si alguna de las tablas tienen registros y false si las dos tablas estan vacias
+     */  
+    public boolean estadoTablas(){
+        return ModeloTabla.getRowCount()>0;   
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
