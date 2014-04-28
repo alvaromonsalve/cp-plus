@@ -418,9 +418,7 @@ public class pTratMedic extends javax.swing.JPanel {
               }
           }
       }
-      
-      
-      
+
       public void showListExistentes(EntityManagerFactory factory,InfoHistoriac ihc){
           if(infoPosologiaHcuJPA==null){
               infoPosologiaHcuJPA=new InfoPosologiaHcuJpaController(factory);
@@ -672,7 +670,13 @@ public class pTratMedic extends javax.swing.JPanel {
           }
       }
      
-    
+    /**
+     * Retorna el estado sobre los registros de las tablas de medicamentos y mezclas
+     * @return true si alguna de las tablas tienen registros y false si las dos tablas estan vacias
+     */  
+    public boolean estadoTablas(){
+        return ModeloTabla.getRowCount()>0 || MTMezcla.getRowCount()>0;   
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

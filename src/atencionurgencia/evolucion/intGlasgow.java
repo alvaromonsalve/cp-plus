@@ -40,7 +40,6 @@ public class intGlasgow extends javax.swing.JDialog {
         setMaximumSize(new java.awt.Dimension(411, 240));
         setMinimumSize(new java.awt.Dimension(411, 240));
         setResizable(false);
-        setType(java.awt.Window.Type.UTILITY);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 9)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
