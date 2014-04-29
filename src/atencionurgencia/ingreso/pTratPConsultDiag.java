@@ -77,7 +77,7 @@ public class pTratPConsultDiag extends javax.swing.JPanel {
         int rowIndex = ModeloTabla.getRowCount();
         boolean existe=false;
         for(int i=0;i<ModeloTabla.getRowCount();i++){
-            if(cc.getId() == ((ConfigCups)ModeloTabla.getValueAt(i, 0)).getId()){
+            if(cc.getId().equals(((ConfigCups)ModeloTabla.getValueAt(i, 0)).getId())){
                 existe = true;
                 break;
             }
