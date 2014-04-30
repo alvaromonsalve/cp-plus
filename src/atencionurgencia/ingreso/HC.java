@@ -704,12 +704,12 @@ public class HC extends javax.swing.JPanel {
             retorno=true;
         }
         if(getValidPanels(pMedic)==false && getValidPanels(pConsultDiag)==false 
-                && getValidPanels(pImagenologia)==false && getValidPanels(pLaboratorio)
-                && getValidPanels(pQuirurgico)==false && getValidPanels(pProcedimientos) 
-                && getValidPanels(pOtrasInterconsultas) && getValidPanels(pInterconsulta0)== false
+                && getValidPanels(pImagenologia)==false && getValidPanels(pLaboratorio)==false
+                && getValidPanels(pQuirurgico)==false && getValidPanels(pProcedimientos)==false 
+                && getValidPanels(pOtrasInterconsultas)==false && getValidPanels(pInterconsulta0)== false
                 && getValidPanels(pInterconsulta1)== false && getValidPanels(pInterconsulta2)== false
                 && getValidPanels(pInterconsulta3)== false && getValidPanels(pInterconsulta4)== false
-                && getValidPanels(pMedidaGeneral)){
+                && getValidPanels(pMedidaGeneral)==false){
             mensaje.add("*Tratamientos e Indicaciones*");
             retorno=true;
         }
