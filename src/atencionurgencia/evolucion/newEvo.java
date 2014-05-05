@@ -7,6 +7,8 @@ package atencionurgencia.evolucion;
 import atencionurgencia.AtencionUrgencia;
 import entidades.HcuEvolucion;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -268,6 +270,38 @@ public class newEvo extends javax.swing.JPanel {
         }
         return sigue;
     }
+    
+    public List<String> estadoTablasVal(){
+        List<String> mensaje = new ArrayList<String>();
+        if(jComboBox1.getSelectedIndex()==-1){
+            mensaje.add("*Estado de Conciencia*");
+        }
+        if(jComboBox2.getSelectedIndex()==-1 || jComboBox3.getSelectedIndex()==-1 || jComboBox3.getSelectedIndex()==-1 ){
+            mensaje.add("*Glasgow*");
+        }
+        if(jTextField1.getText().isEmpty()){
+            mensaje.add("*Saturación de Oxígeno*");
+        }
+        if(jTextField8.getText().isEmpty()){
+            mensaje.add("*Temperatura*");
+        }
+        if(jTextField3.getText().isEmpty()){
+            mensaje.add("*Frecuencia Cardíaca*");
+        }
+        if(jTextField4.getText().isEmpty()){
+            mensaje.add("*Frecuencia Respiratoria*");
+        }
+        if(jTextField6.getText().isEmpty() || jTextField7.getText().isEmpty()){
+            mensaje.add("*Tensión Arterial*");
+        }        
+        return mensaje;
+    }
+    
+    public boolean estadoTablas(){
+        return estadoTablasVal().isEmpty();
+    }
+    
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
