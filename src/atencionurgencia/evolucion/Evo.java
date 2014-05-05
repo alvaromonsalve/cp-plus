@@ -5213,21 +5213,21 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-//        if (evoSeleccion.getEstado() != 0) {
-//            imphcuEvo imEvo = new imphcuEvo(null, true);
-//            imEvo.setLocationRelativeTo(null);
-//            imEvo.setEvolucion(evoSeleccion);
-//            System.out.println(evoSeleccion);
-//            if (evoSeleccion.getEstado() == 1 || evoSeleccion.getEstado() == 3) {
-//                imEvo.setNoValido(true);
-//            } else {
-//                imEvo.setNoValido(false);
-//            }
-//            imEvo.activeChec();
-//            imEvo.setVisible(true);
-//        } else {
-//            JOptionPane.showMessageDialog(null, "No puede imprimir una nota borrador");
-//        }
+        if (evoSeleccion.getEstado() != 0) {
+            imphcuEvo imEvo = new imphcuEvo(null, true);
+            imEvo.setLocationRelativeTo(null);
+            imEvo.setEvolucion(evoSeleccion);
+            System.out.println(evoSeleccion);
+            if (evoSeleccion.getEstado() == 1 || evoSeleccion.getEstado() == 3) {
+                imEvo.setNoValido(true);
+            } else {
+                imEvo.setNoValido(false);
+            }
+            imEvo.activeChec();
+            imEvo.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(null, "No puede imprimir una nota borrador");
+        }
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton12MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton12MouseExited
@@ -5327,60 +5327,60 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
-//        if (hcuEvolucionJpaController == null) {
-//            hcuEvolucionJpaController = new HcuEvolucionJpaController(factory);
-//        }
-//        HcuEvolucion he = null;
-//        imphcuEvo imp = new imphcuEvo(null, true);
-//        try {
-//            he = evoSeleccion;
-//            if (he.getEstado() == 1) {
-//                String mensaje = "¿Si finaliza la nota de Evolución no podra modificarla posteriormente? ";
-//                int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar finalizacion", JOptionPane.YES_NO_OPTION);
-//                if (entrada == 0) {
-//                    he.setEstado(2);
-//                    hcuEvolucionJpaController.edit(he);
-//
-//                    //                    setJTreeEvo(); 
-//                    imp.setNoValido(false);
-//                    imp.setEvolucion(he);
-//                    imp.imprimir();
-//                    jButton13.setEnabled(false);
-//                    jButton12.setEnabled(false);
-//                    if (est == 1) {
-//                        jButton14.setEnabled(false);
-//                    }
-//                }
-//            } else if (he.getEstado() == 0) {
-//                JOptionPane.showMessageDialog(null, "No se puede finalizar Notas en estado Borrador");
-//            } else if (he.getEstado() == 3) {
-//                System.out.println("1");
-//                if (he.getHcuEvoEgreso().size() > 0) {
-//                    String mensaje = "¿Si finaliza la nota de Egreso no podra modificarla posteriormente? ";
-//                    int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar Finalizacion", JOptionPane.YES_NO_OPTION);
-//                    if (entrada == 0) {
-//                        he.setEstado(4);
-//                        hcuEvolucionJpaController.edit(he);
-//                        //                    setJTreeEvo(); 
-//                        imp.setNoValido(false);
-//                        imp.setEvolucion(he);
-//                        imp.imprimir();
-//                        jButton13.setEnabled(false);
-//                        jButton12.setEnabled(false);
-//                        if (est == 1) {
-//                            jButton14.setEnabled(false);
-//                        }
-//                    }
-//                } else {
-//                    JOptionPane.showMessageDialog(null, "No existe destino del paciente relacionado al egreso");
-//                }
-//            } else if (he.getEstado() > 1) {
-//                JOptionPane.showMessageDialog(null, "Esta Nota ya se encuentra finalizada");
-//            }
-//        } catch (Exception ex) {
-//            JOptionPane.showMessageDialog(null, "No puede finalizar la nota de Evolución sin haber guardado");
-////            JOptionPane.showMessageDialog(null,  ex.getMessage());
-//        }
+        if (hcuEvolucionJpaController == null) {
+            hcuEvolucionJpaController = new HcuEvolucionJpaController(factory);
+        }
+        HcuEvolucion he = null;
+        imphcuEvo imp = new imphcuEvo(null, true);
+        try {
+            he = evoSeleccion;
+            if (he.getEstado() == 1) {
+                String mensaje = "¿Si finaliza la nota de Evolución no podra modificarla posteriormente? ";
+                int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar finalizacion", JOptionPane.YES_NO_OPTION);
+                if (entrada == 0) {
+                    he.setEstado(2);
+                    hcuEvolucionJpaController.edit(he);
+
+                    //                    setJTreeEvo(); 
+                    imp.setNoValido(false);
+                    imp.setEvolucion(he);
+                    imp.imprimir();
+                    jButton13.setEnabled(false);
+                    jButton12.setEnabled(false);
+                    if (est == 1) {
+                        jButton14.setEnabled(false);
+                    }
+                }
+            } else if (he.getEstado() == 0) {
+                JOptionPane.showMessageDialog(null, "No se puede finalizar Notas en estado Borrador");
+            } else if (he.getEstado() == 3) {
+                System.out.println("1");
+                if (he.getHcuEvoEgreso().size() > 0) {
+                    String mensaje = "¿Si finaliza la nota de Egreso no podra modificarla posteriormente? ";
+                    int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar Finalizacion", JOptionPane.YES_NO_OPTION);
+                    if (entrada == 0) {
+                        he.setEstado(4);
+                        hcuEvolucionJpaController.edit(he);
+                        //                    setJTreeEvo(); 
+                        imp.setNoValido(false);
+                        imp.setEvolucion(he);
+                        imp.imprimir();
+                        jButton13.setEnabled(false);
+                        jButton12.setEnabled(false);
+                        if (est == 1) {
+                            jButton14.setEnabled(false);
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "No existe destino del paciente relacionado al egreso");
+                }
+            } else if (he.getEstado() > 1) {
+                JOptionPane.showMessageDialog(null, "Esta Nota ya se encuentra finalizada");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "No puede finalizar la nota de Evolución sin haber guardado");
+//            JOptionPane.showMessageDialog(null,  ex.getMessage());
+        }
     }//GEN-LAST:event_jButton13ActionPerformed
 
     private void jTree1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseReleased
