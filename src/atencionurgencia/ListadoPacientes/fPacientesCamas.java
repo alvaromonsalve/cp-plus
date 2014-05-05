@@ -129,27 +129,25 @@ public class fPacientesCamas extends javax.swing.JFrame {
             }
             int siteRegInTable = 0;
             int siteRegInTable2 = 0;
-            for(int i=0;i<infocamasList.size();i++){
-                if(infocamasList.get(i).getIdConfigCamas().getServicio().getDescripcion().equals("URGENCIAS") && 
-                        infocamasList.get(i).getIdConfigCamas().getId() != 1){
-                    if(siteRegInTable==0){
+            for (InfoCamas infocamasList1 : infocamasList) {
+                if (infocamasList1.getIdConfigCamas().getServicio().getDescripcion().equals("URGENCIAS") && infocamasList1.getIdConfigCamas().getId() != 1) {
+                    if (siteRegInTable==0) {
                         Object dato[] = null;
                         modeloC.addRow(dato);
-                        pacientesCamasOfTable(infocamasList.get(i),modeloC.getRowCount()-1,siteRegInTable);
+                        pacientesCamasOfTable(infocamasList1, modeloC.getRowCount()-1, siteRegInTable);
                         siteRegInTable=1;
-                    }else{
-                        pacientesCamasOfTable(infocamasList.get(i),modeloC.getRowCount()-1,siteRegInTable);
+                    } else {
+                        pacientesCamasOfTable(infocamasList1, modeloC.getRowCount()-1, siteRegInTable);
                         siteRegInTable=0;
                     }
-                }else if(infocamasList.get(i).getIdConfigCamas().getServicio().getDescripcion().equals("URGENCIAS") &&
-                        infocamasList.get(i).getIdConfigCamas().getId() == 1){
-                    if(siteRegInTable2==0){
+                } else if (infocamasList1.getIdConfigCamas().getServicio().getDescripcion().equals("URGENCIAS") && infocamasList1.getIdConfigCamas().getId() == 1) {
+                    if (siteRegInTable2==0) {
                         Object dato[] = null;
                         modeloS.addRow(dato);
-                        pacientesSillasOfTable(infocamasList.get(i),modeloS.getRowCount()-1,siteRegInTable2);
+                        pacientesSillasOfTable(infocamasList1, modeloS.getRowCount()-1, siteRegInTable2);
                         siteRegInTable2=1;
-                    }else{
-                        pacientesSillasOfTable(infocamasList.get(i),modeloS.getRowCount()-1,siteRegInTable2);
+                    } else {
+                        pacientesSillasOfTable(infocamasList1, modeloS.getRowCount()-1, siteRegInTable2);
                         siteRegInTable2=0;
                     }
                 }
