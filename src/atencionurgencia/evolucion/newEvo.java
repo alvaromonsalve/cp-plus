@@ -301,8 +301,6 @@ public class newEvo extends javax.swing.JPanel {
         return estadoTablasVal().isEmpty();
     }
     
-    
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
