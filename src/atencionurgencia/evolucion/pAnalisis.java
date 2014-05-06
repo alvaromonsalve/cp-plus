@@ -1,12 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package atencionurgencia.evolucion;
 
 import entidades.HcuEvolucion;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.swing.JOptionPane;
 import jpa.HcuEvolucionJpaController;
@@ -15,7 +12,7 @@ import other.cie10;
 
 /**
  *
- * @author Administrador
+ * @author Alvaro Monsalve
  */
 public class pAnalisis extends javax.swing.JPanel {
     private HcuEvolucionJpaController jpaController=null;
@@ -89,6 +86,22 @@ public class pAnalisis extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, "10132:\n"+ex.getMessage(), pAnalisis.class.getName(), JOptionPane.INFORMATION_MESSAGE);
         }
     }
+    
+    public List<String> estadoTablasVal(){
+        List<String> mensaje = new ArrayList<String>();
+        if(jTextPane1.getText().isEmpty() == true){
+            mensaje.add("*Analisis*");
+        }        
+        if(jTextField1.getText().isEmpty()){
+            mensaje.add("*DX Principal*");
+        }        
+        return mensaje;
+    }
+    
+    public boolean estadoTablas(){
+        return estadoTablasVal().isEmpty();
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
