@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package atencionurgencia.evolucion;
 
@@ -17,7 +12,7 @@ import jpa.HcuEvoEgresoJpaController;
 
 /**
  *
- * @author Administrador
+ * @author Alvaro Monsalve
  */
 public class evoDestino extends javax.swing.JPanel {
     private HcuEvoEgresoJpaController jpaController=null;
@@ -68,6 +63,10 @@ public class evoDestino extends javax.swing.JPanel {
                 jTextArea26.setText(egreso.getObservaciones());
             }
         }
+    }
+    
+    public boolean estadoTablas(){
+        return jComboBox1.getSelectedIndex()==-1 && jTextArea26.getText().isEmpty();
     }
 
     @SuppressWarnings("unchecked")
