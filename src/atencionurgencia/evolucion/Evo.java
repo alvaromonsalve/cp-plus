@@ -326,7 +326,6 @@ public class Evo extends javax.swing.JPanel {
                 jButton1.setEnabled(false);
                 jButton14.setEnabled(false);
                 est = 1;
-//                   }
             } else {
                 jButton1.setVisible(true);
                 jButton14.setVisible(true);
