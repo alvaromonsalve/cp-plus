@@ -62,11 +62,11 @@ public class pPlan extends javax.swing.JPanel {
     }
     
     public boolean estadoTablas(){
-        return getValidPanels(pMedidaGeneral)==false && getValidPanels(pMedic)==false 
+        return !(getValidPanels(pMedidaGeneral)==false && getValidPanels(pMedic)==false 
                 && getValidPanels(pInterconsulta0)==false && getValidPanels(pInterconsulta1)==false
                 && getValidPanels(pInterconsulta2)==false && getValidPanels(pInterconsulta3)==false
                 && getValidPanels(pInterconsulta4)==false && getValidPanels(pOtrasInterconsultas)==false
-                && getValidPanels(pProcedimientos)==false & getValidPanels(destino)==false;
+                && getValidPanels(pProcedimientos)==false & getValidPanels(destino)==false);
     }
     
     private boolean getValidPanels(JPanel jp){
@@ -96,7 +96,6 @@ public class pPlan extends javax.swing.JPanel {
                     return true;
                 }
             }
-            
         }
         return false;
     }
