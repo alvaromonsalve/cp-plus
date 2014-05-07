@@ -243,7 +243,7 @@ public class newEvo extends javax.swing.JPanel {
         HcuEvolucion editEvolucion = hcuEvolucion;
         if(validAll() && editEvolucion.getEstado()!=2){            
             if(jComboBox1.getSelectedIndex()>-1) editEvolucion.setConciencia((short) jComboBox1.getSelectedIndex());
-            if(jComboBox2.getSelectedIndex()>-1) editEvolucion.setAperturaOcular((short)jComboBox2.getSelectedIndex());
+            if(jComboBox2.getSelectedIndex()>-1) editEvolucion.setAperturaOcular((short)(jComboBox2.getSelectedIndex()));
             if(jComboBox3.getSelectedIndex()>-1) editEvolucion.setRespuestaVerbal((short)jComboBox3.getSelectedIndex());
             if(jComboBox4.getSelectedIndex()>-1) editEvolucion.setRespuestaMotora((short)jComboBox4.getSelectedIndex());
             if(!jTextField1.getText().isEmpty()) editEvolucion.setSao2(Short.parseShort(jTextField1.getText().toString()));
