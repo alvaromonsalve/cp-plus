@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package atencionurgencia.evolucion;
 
 import atencionurgencia.AtencionUrgencia;
@@ -87,17 +84,6 @@ public class newEvo extends javax.swing.JPanel {
     
     private boolean validAll(){
         boolean retorno=true;
-//        if(glasgow1==0 && glasgow2==0 && glasgow2==0 && retorno==true){//glasgow
-//            JOptionPane.showMessageDialog(this, "El valor de la escala Glasgow es mas bajo que 3");
-//            ((JTabbedPane)this.getParent()).setSelectedComponent(this);
-//            this.jComboBox2.requestFocus();
-//            retorno = false;
-//        }
-//        if(jComboBox1.getSelectedIndex()<0 && retorno==true){
-//            JOptionPane.showMessageDialog(this, "El estado de conciencia no es valido");
-//            ((JTabbedPane)this.getParent()).setSelectedComponent(this);
-//            jComboBox1.requestFocus();
-//        }
         if(!jTextField1.getText().equals("") && retorno==true){//SatO2
             try {   
                 Integer.parseInt(jTextField1.getText());
