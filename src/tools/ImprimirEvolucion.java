@@ -1,18 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package tools;
 import com.itextpdf.text.pdf.PdfReader;
-import java.io.File;
-import java.io.IOException;
 import com.mysql.jdbc.Connection;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JOptionPane;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -31,7 +24,7 @@ public class ImprimirEvolucion {
             parametro.put("NameReport",""+getNombrereport());
             parametro.put("codigo", ""+getCodigoReport());
             parametro.put("servicio",""+getServicioreport());
-            parametro.put("version",""+getVersionreport());         
+            parametro.put("version",""+getVersionreport());
             JasperPrint informe = JasperFillManager.fillReport(System.getProperty("user.dir")+"/Reportes/Evolucion.jasper", parametro, getConnection());
             JRExporter exporter = new JRPdfExporter();
             exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
@@ -39,13 +32,10 @@ public class ImprimirEvolucion {
             exporter.setParameter(JRExporterParameter.OUTPUT_FILE,tempFile);
             exporter.exportReport();
             return new PdfReader(tempFile.getAbsolutePath());
-        }catch (IOException e) {
-            JOptionPane.showMessageDialog(null,"Error General Lanzando Reporte Descripcion: Ex00026" +e.getMessage());
+        }catch (Exception e) {
+            JOptionPane.showMessageDialog(null,"Error: " +e.getMessage());
             return null;
-        } catch (JRException e) {
-            JOptionPane.showMessageDialog(null,"Error General Lanzando Reporte Descripcion: Ex00026" +e.getMessage());
-            return null;
-         }
+        }
      }
 
     public void setConnection(Connection conexion){
