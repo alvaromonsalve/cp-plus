@@ -204,7 +204,8 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
     public void saveChanges(EntityManagerFactory factory,HcuEvolucion evo){
         if(hcuEvoProcedimientoJpa==null)
             hcuEvoProcedimientoJpa=new HcuEvoProcedimientoJpaController(factory);
-        listInfoProcedimientoEvo = hcuEvoProcedimientoJpa.ListFindInfoProcedimientoEvo(evo);
+//        listInfoProcedimientoEvo = hcuEvoProcedimientoJpa.ListFindInfoProcedimientoEvo(evo);
+        listInfoProcedimientoEvo = evo.getHcuEvoProcedimientos();
         for(int i=0;i<ModeloTabla.getRowCount();i++){            
             HcuEvoProcedimiento hcuEvoProcedimiento=null;
             boolean exist=false;
@@ -224,8 +225,7 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
                 hcuEvoProcedimiento.setEstado(1);//estado activo                
                 hcuEvoProcedimientoJpa.create(hcuEvoProcedimiento);
                 listInfoProcedimientoEvo.add(hcuEvoProcedimiento);
-                evo.setHcuEvoProcedimientos(listInfoProcedimientoEvo);
-                
+                evo.setHcuEvoProcedimientos(listInfoProcedimientoEvo);    
             }else{
                 if(hcuEvoProcedimiento!=null){
                     try {                        
@@ -502,6 +502,7 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
 
     private void buttonSeven7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven7ActionPerformed
         if(ModeloTabla.getRowCount()>0 && jTable1.getSelectedRow()>-1){
+            ModeloTabla = (DefaultTableModel) jTable1.getModel();
             ModeloTabla.removeRow(jTable1.getSelectedRow());
         }
     }//GEN-LAST:event_buttonSeven7ActionPerformed
