@@ -226,32 +226,33 @@ public class newEvo extends javax.swing.JPanel {
     public boolean saveChanged(EntityManagerFactory factory, HcuEvolucion hcuEvolucion){
         boolean sigue=false;
         if(jpaController==null) jpaController = new HcuEvolucionJpaController(factory);
-        HcuEvolucion editEvolucion = hcuEvolucion;
-        if(validAll() && editEvolucion.getEstado()!=2){            
-            if(jComboBox1.getSelectedIndex()>-1) editEvolucion.setConciencia((short) jComboBox1.getSelectedIndex());
-            if(jComboBox2.getSelectedIndex()>-1) editEvolucion.setAperturaOcular((short)(jComboBox2.getSelectedIndex()));
-            if(jComboBox3.getSelectedIndex()>-1) editEvolucion.setRespuestaVerbal((short)jComboBox3.getSelectedIndex());
-            if(jComboBox4.getSelectedIndex()>-1) editEvolucion.setRespuestaMotora((short)jComboBox4.getSelectedIndex());
-            if(!jTextField1.getText().isEmpty()) editEvolucion.setSao2(Short.parseShort(jTextField1.getText().toString()));
-            if(!jTextField3.getText().isEmpty()) editEvolucion.setFc(Short.parseShort(jTextField3.getText().toString()));
-            if(!jTextField8.getText().isEmpty()) editEvolucion.setTemperatura(Float.parseFloat(jTextField8.getText().toString().replace(",", ".")));
-            if(!jTextField4.getText().isEmpty()) editEvolucion.setFr(Float.parseFloat(jTextField4.getText().toString().replace(",", ".")));
-            if(!jTextField7.getText().isEmpty()) editEvolucion.setTas(Short.parseShort(jTextField7.getText().toString()));
-            if(!jTextField6.getText().isEmpty()) editEvolucion.setTad(Short.parseShort(jTextField6.getText().toString()));
-            if(!jTextArea2.getText().isEmpty()) editEvolucion.setOtrossignos(jTextArea2.getText().toUpperCase());
-            editEvolucion.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+//        HcuEvolucion editEvolucion = hcuEvolucion;
+        if(validAll() && hcuEvolucion.getEstado()!=2){            
+            if(jComboBox1.getSelectedIndex()>-1) hcuEvolucion.setConciencia((short) jComboBox1.getSelectedIndex());
+            if(jComboBox2.getSelectedIndex()>-1) hcuEvolucion.setAperturaOcular((short)(jComboBox2.getSelectedIndex()));
+            if(jComboBox3.getSelectedIndex()>-1) hcuEvolucion.setRespuestaVerbal((short)jComboBox3.getSelectedIndex());
+            if(jComboBox4.getSelectedIndex()>-1) hcuEvolucion.setRespuestaMotora((short)jComboBox4.getSelectedIndex());
+            if(!jTextField1.getText().isEmpty()) hcuEvolucion.setSao2(Short.parseShort(jTextField1.getText().toString()));
+            if(!jTextField3.getText().isEmpty()) hcuEvolucion.setFc(Short.parseShort(jTextField3.getText().toString()));
+            if(!jTextField8.getText().isEmpty()) hcuEvolucion.setTemperatura(Float.parseFloat(jTextField8.getText().toString().replace(",", ".")));
+            if(!jTextField4.getText().isEmpty()) hcuEvolucion.setFr(Float.parseFloat(jTextField4.getText().toString().replace(",", ".")));
+            if(!jTextField7.getText().isEmpty()) hcuEvolucion.setTas(Short.parseShort(jTextField7.getText().toString()));
+            if(!jTextField6.getText().isEmpty()) hcuEvolucion.setTad(Short.parseShort(jTextField6.getText().toString()));
+            if(!jTextArea2.getText().isEmpty()) hcuEvolucion.setOtrossignos(jTextArea2.getText().toUpperCase());
+            hcuEvolucion.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
             try {
-                if(editEvolucion.getId()==null){
-                    jpaController.create(editEvolucion);
+                if(hcuEvolucion.getId()==null){
+                    jpaController.create(hcuEvolucion);
                     sigue =true;
                 }else{
-                    jpaController.edit(editEvolucion);
+                    System.out.println("lol");
+                    jpaController.edit(hcuEvolucion);
                     sigue = true;
                 }            
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "10130:\n"+ex.getMessage(), newEvo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
             }
-         }else if(editEvolucion.getEstado()==2){
+         }else if(hcuEvolucion.getEstado()==2){
             JOptionPane.showMessageDialog(this, "La Evolución fue finalizada y no puede ser modificada");
         }
         return sigue;
