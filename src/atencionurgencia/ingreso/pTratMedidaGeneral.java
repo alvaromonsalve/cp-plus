@@ -152,18 +152,17 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
         if(hcuEvoMedidasgJpa==null){
             hcuEvoMedidasgJpa=new HcuEvoMedidasgJpaController(factory);
         }
-        evoMedidasgs = hcuEvoMedidasgJpa.ListFindHcuEvoMedidasG(evol);
+//        evoMedidasgs = hcuEvoMedidasgJpa.ListFindHcuEvoMedidasG(evol);
+        evoMedidasgs = evol.getHcuEvoMedidasgs();
         for (int i = 0; i < ModeloTabla.getRowCount(); i++) {
             HcuEvoMedidasg hem=null;
             boolean existe=false;
-            int a=0;
             for(HcuEvoMedidasg hem1:evoMedidasgs){
                 hem=hem1;
                 if(((String)ModeloTabla.getValueAt(i, 0)).equals(hem1.getMedidag())){
                     existe=true;                    
                     break;
                 }
-                a++;
             }
             if(!existe){
                 hem=new HcuEvoMedidasg();
