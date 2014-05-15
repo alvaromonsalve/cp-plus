@@ -17,6 +17,7 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfCopyFields;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
+import entidades.ConfigCups;
 import entidades.InfoHistoriac;
 import entidades.InfoInterconsultaHcu;
 import entidades.InfoPosologiaHcu;
@@ -26,6 +27,7 @@ import java.awt.Frame;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,7 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.JOptionPane;
+import jpa.ConfigCupsJpaController;
 import jpa.InfoInterconsultaHcuJpaController;
 import jpa.InfoPosologiaHcuJpaController;
 import jpa.InfoProcedimientoHcuJpaController;
@@ -56,6 +59,7 @@ public class impresionesHC extends javax.swing.JFrame {
     private EntityManagerFactory factory;
     private InfoProcedimientoHcuJpaController infoProcedimientoHcuJPA=null;
     private InfoInterconsultaHcuJpaController infoInterconsultaHcuJPA=null;
+    private ConfigCupsJpaController ccjc=null;
     private Boolean noValido;
 
     /**
@@ -107,15 +111,21 @@ public class impresionesHC extends javax.swing.JFrame {
             try {
                 PdfReader reader1 = null,reader2 = null,reader3 = null,reader4=null,reader5=null,reader6=null;
                 File archivoTemporal = File.createTempFile("Historia_Urgencia",".pdf");
-                
-                
+                if(infoProcedimientoHcuJPA==null){
+                    factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
+                    infoProcedimientoHcuJPA = new InfoProcedimientoHcuJpaController(factory);
+                    ccjc = new ConfigCupsJpaController(factory);
+                }
+                List<InfoProcedimientoHcu> listInfoProcedimientoHcufilter = new ArrayList<InfoProcedimientoHcu>();
+                List<InfoProcedimientoHcu> listInfoProcedimientoHcu = infoProcedimientoHcuJPA.ListFindInfoProcedimientoHcu(idHC);
                 if(jCheckBox2.isSelected()){//otros procedimientos
-                    if(infoProcedimientoHcuJPA==null){
-                        factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
-                        infoProcedimientoHcuJPA = new InfoProcedimientoHcuJpaController(factory);
+                    for(InfoProcedimientoHcu iph:listInfoProcedimientoHcu){
+                        ConfigCups cc = ccjc.findConfigCups(iph.getIdCups());
+                        if(cc.getIdEstructuraCups().getId() != 17 && cc.getIdEstructuraCups().getId() != 15){
+                            listInfoProcedimientoHcufilter.add(iph);
+                        }
                     }
-                    List<InfoProcedimientoHcu> listInfoProcedimientoHcu = infoProcedimientoHcuJPA.ListFindInfoProcedimientoHcu(idHC);
-                    if(listInfoProcedimientoHcu.size()>0){
+                    if(listInfoProcedimientoHcufilter!=null & listInfoProcedimientoHcufilter.size()>0){
                         String master = System.getProperty("user.dir")+"/reportes/solPorcedimientos.jasper";
                         if(master!=null){
                             oldConnection.Database db = new Database(AtencionUrgencia.props);
@@ -139,13 +149,15 @@ public class impresionesHC extends javax.swing.JFrame {
                         }
                     }
                 }
-                if(jCheckBox5.isSelected()){//Laboratorios
-                    if(infoProcedimientoHcuJPA==null){
-                        factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
-                        infoProcedimientoHcuJPA = new InfoProcedimientoHcuJpaController(factory);
+                if(jCheckBox5.isSelected()){//Laboratorios                    
+                    listInfoProcedimientoHcufilter.clear();
+                    for(InfoProcedimientoHcu iph:listInfoProcedimientoHcu){
+                        ConfigCups cc = ccjc.findConfigCups(iph.getIdCups());
+                        if(cc.getIdEstructuraCups().getId() == 17){
+                            listInfoProcedimientoHcufilter.add(iph);
+                        }
                     }
-                    List<InfoProcedimientoHcu> listInfoProcedimientoHcu = infoProcedimientoHcuJPA.ListFindInfoProcedimientoHcu(idHC,17);
-                    if(listInfoProcedimientoHcu.size()>0){
+                    if(listInfoProcedimientoHcufilter!=null & listInfoProcedimientoHcufilter.size()>0){                        
                         String master = System.getProperty("user.dir")+"/reportes/solPorcedimientosLaboratorio.jasper";
                         if(master!=null){
                             oldConnection.Database db = new Database(AtencionUrgencia.props);
@@ -170,12 +182,14 @@ public class impresionesHC extends javax.swing.JFrame {
                     }
                 }
                 if(jCheckBox6.isSelected()){//IMAGENOLOGIA
-                    if(infoProcedimientoHcuJPA==null){
-                        factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
-                        infoProcedimientoHcuJPA = new InfoProcedimientoHcuJpaController(factory);
+                    listInfoProcedimientoHcufilter.clear();//15
+                    for(InfoProcedimientoHcu iph:listInfoProcedimientoHcu){
+                        ConfigCups cc = ccjc.findConfigCups(iph.getIdCups());
+                        if(cc.getIdEstructuraCups().getId() == 15){
+                            listInfoProcedimientoHcufilter.add(iph);
+                        }
                     }
-                    List<InfoProcedimientoHcu> listInfoProcedimientoHcu = infoProcedimientoHcuJPA.ListFindInfoProcedimientoHcu(idHC,15);
-                    if(listInfoProcedimientoHcu.size()>0){
+                    if(listInfoProcedimientoHcufilter!=null & listInfoProcedimientoHcufilter.size()>0){
                         String master = System.getProperty("user.dir")+"/reportes/solPorcedimientosImagenologia.jasper";
                         if(master!=null){
                             oldConnection.Database db = new Database(AtencionUrgencia.props);
@@ -311,13 +325,13 @@ public class impresionesHC extends javax.swing.JFrame {
                 }
                 archivoTemporal.deleteOnExit();
             } catch (JRException ex) {
-                JOptionPane.showMessageDialog(null, "10075:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "10076:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
             }
             if(!noValido){
                 AtencionUrgencia.panelindex.FramEnable(true);
-                AtencionUrgencia.panelindex.hc.cerrarPanel();
+                if(AtencionUrgencia.panelindex.hc.isVisible()) AtencionUrgencia.panelindex.hc.cerrarPanel();
             }
             ((impresionesHC)form).jLabel1.setVisible(false);
             ((impresionesHC)form).jButton1.setEnabled(true);
@@ -355,10 +369,8 @@ public class impresionesHC extends javax.swing.JFrame {
             pdfStamper.close();
             Desktop.getDesktop().open(archivoTemporal);
             archivoTemporal.deleteOnExit();
-        } catch (IOException ex) {
-            Logger.getLogger(impresionesHC.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (DocumentException ex) {
-            Logger.getLogger(impresionesHC.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "10075:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
         }
     }
     
