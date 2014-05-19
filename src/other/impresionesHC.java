@@ -6,7 +6,6 @@ package other;
 
 import atencionurgencia.AtencionUrgencia;
 import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
@@ -26,13 +25,10 @@ import java.awt.Desktop;
 import java.awt.Frame;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.JOptionPane;
@@ -40,7 +36,6 @@ import jpa.ConfigCupsJpaController;
 import jpa.InfoInterconsultaHcuJpaController;
 import jpa.InfoPosologiaHcuJpaController;
 import jpa.InfoProcedimientoHcuJpaController;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -53,13 +48,14 @@ import oldConnection.Database;
  * @author Alvaro Monsalve
  */
 public class impresionesHC extends javax.swing.JFrame {
+
     private InfoHistoriac idHC = null;
-    private String destinoHc=null;
-    private InfoPosologiaHcuJpaController infoPosologiaHcuJPA=null;
+    private String destinoHc = null;
+    private InfoPosologiaHcuJpaController infoPosologiaHcuJPA = null;
     private EntityManagerFactory factory;
-    private InfoProcedimientoHcuJpaController infoProcedimientoHcuJPA=null;
-    private InfoInterconsultaHcuJpaController infoInterconsultaHcuJPA=null;
-    private ConfigCupsJpaController ccjc=null;
+    private InfoProcedimientoHcuJpaController infoProcedimientoHcuJPA = null;
+    private InfoInterconsultaHcuJpaController infoInterconsultaHcuJPA = null;
+    private ConfigCupsJpaController ccjc = null;
     private Boolean noValido;
 
     /**
@@ -69,79 +65,85 @@ public class impresionesHC extends javax.swing.JFrame {
         initComponents();
         jLabel1.setVisible(false);
     }
-    
-    public void setidHC(InfoHistoriac idHC){
+
+    public void setidHC(InfoHistoriac idHC) {
         this.idHC = idHC;
     }
-    
-    public void setdestinoHc(String destino){
-        this.destinoHc=destino;
+
+    public void setdestinoHc(String destino) {
+        this.destinoHc = destino;
     }
-    
-    public void setNoValido(boolean val){
+
+    public void setNoValido(boolean val) {
         this.noValido = val;
     }
-    
-    public String setValueValidoInt(boolean var){
-        if(var){
+
+    public String setValueValidoInt(boolean var) {
+        if (var) {
             return "0";
-        }else{
+        } else {
             return "1";
-        }        
-    }
-    
-    /**
-     * 
-     * Genera el reporte de receta medica.
-     * El reporte utiliza un procedimiento almacenado que crea el consecutivo del mismo
-     * y guarda toda la informacion de este en un registro de log
-     */
-    
-    private class hiloReporte extends Thread{
-        Frame form=null;
-        
-        public hiloReporte(Frame form){
-            this.form =form;
         }
-        
+    }
+
+    /**
+     *
+     * Genera el reporte de receta medica. El reporte utiliza un procedimiento
+     * almacenado que crea el consecutivo del mismo y guarda toda la informacion
+     * de este en un registro de log
+     */
+    private class hiloReporte extends Thread {
+
+        Frame form = null;
+
+        public hiloReporte(Frame form) {
+            this.form = form;
+        }
+
         @Override
-        public void run(){
-            ((impresionesHC)form).jLabel1.setVisible(true);
-            ((impresionesHC)form).jButton1.setEnabled(false);
+        public void run() {
+            ((impresionesHC) form).jLabel1.setVisible(true);
+            ((impresionesHC) form).jButton1.setEnabled(false);
             try {
-                PdfReader reader1 = null,reader2 = null,reader3 = null,reader4=null,reader5=null,reader6=null;
-                File archivoTemporal = File.createTempFile("Historia_Urgencia",".pdf");
-                if(infoProcedimientoHcuJPA==null){
-                    factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
+                PdfReader reader1 = null, reader2 = null, reader3 = null, reader4 = null, reader5 = null, reader6 = null;
+                File archivoTemporal = File.createTempFile("Historia_Urgencia", ".pdf");
+                if (infoProcedimientoHcuJPA == null) {
+                    factory = Persistence.createEntityManagerFactory("ClipaEJBPU", AtencionUrgencia.props);
                     infoProcedimientoHcuJPA = new InfoProcedimientoHcuJpaController(factory);
                     ccjc = new ConfigCupsJpaController(factory);
                 }
                 List<InfoProcedimientoHcu> listInfoProcedimientoHcufilter = new ArrayList<InfoProcedimientoHcu>();
                 List<InfoProcedimientoHcu> listInfoProcedimientoHcu = infoProcedimientoHcuJPA.ListFindInfoProcedimientoHcu(idHC);
-                if(jCheckBox2.isSelected()){//otros procedimientos
-                    for(InfoProcedimientoHcu iph:listInfoProcedimientoHcu){
+                if (jCheckBox2.isSelected()) {//otros procedimientos
+                    for (InfoProcedimientoHcu iph : listInfoProcedimientoHcu) {
                         ConfigCups cc = ccjc.findConfigCups(iph.getIdCups());
-                        if(cc.getIdEstructuraCups().getId() != 17 && cc.getIdEstructuraCups().getId() != 15){
+                        if (cc.getIdEstructuraCups().getId() != 17 && cc.getIdEstructuraCups().getId() != 15) {
                             listInfoProcedimientoHcufilter.add(iph);
                         }
                     }
-                    if(listInfoProcedimientoHcufilter!=null & listInfoProcedimientoHcufilter.size()>0){
-                        String master = System.getProperty("user.dir")+"/reportes/solPorcedimientos.jasper";
-                        if(master!=null){
+                    if (listInfoProcedimientoHcufilter != null & listInfoProcedimientoHcufilter.size() > 0) {
+                        String master=null;
+                        if(idHC.getEstado()==1){
+                            //reporte que no genera consecutivo
+                            master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientos.jasper";
+                        }else{
+                            master = System.getProperty("user.dir") + "/reportes/solPorcedimientos.jasper";
+                        }
+                        if (master != null) {
                             oldConnection.Database db = new Database(AtencionUrgencia.props);
                             db.Conectar();
                             Map param = new HashMap();
-                            param.put("id_hc",idHC.getId());
-                            param.put("NombreReport","SOLICITUD DE PROCEDIMIENTOS");
-                            param.put("version","1.0");
-                            param.put("codigo","R-FA-005");
-                            param.put("servicio","URGENCIAS");
-                            param.put("novalido",setValueValidoInt(noValido));
-                            JasperPrint informe = JasperFillManager.fillReport(master, param,db.conexion);
+                            param.put("id_hc", idHC.getId());
+                            param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS");
+                            param.put("version", "1.0");
+                            param.put("codigo", "R-FA-005");
+                            param.put("servicio", "URGENCIAS");
+                            param.put("novalido", setValueValidoInt(noValido));
+                            JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
                             JRExporter exporter = new JRPdfExporter();
                             exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
-                            File tempFile = File.createTempFile("Solicitud_de_Procedimientos",".pdf");
-                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE,tempFile);
+                            File tempFile = File.createTempFile("Solicitud_de_Procedimientos", ".pdf");
+                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE, tempFile);
                             exporter.exportReport();
                             reader1 = new PdfReader(tempFile.getAbsolutePath());
                             db.DesconectarBasedeDatos();
@@ -149,31 +151,37 @@ public class impresionesHC extends javax.swing.JFrame {
                         }
                     }
                 }
-                if(jCheckBox5.isSelected()){//Laboratorios                    
+                if (jCheckBox5.isSelected()) {//Laboratorios                    
                     listInfoProcedimientoHcufilter.clear();
-                    for(InfoProcedimientoHcu iph:listInfoProcedimientoHcu){
+                    for (InfoProcedimientoHcu iph : listInfoProcedimientoHcu) {
                         ConfigCups cc = ccjc.findConfigCups(iph.getIdCups());
-                        if(cc.getIdEstructuraCups().getId() == 17){
+                        if (cc.getIdEstructuraCups().getId() == 17) {
                             listInfoProcedimientoHcufilter.add(iph);
                         }
                     }
-                    if(listInfoProcedimientoHcufilter!=null & listInfoProcedimientoHcufilter.size()>0){                        
-                        String master = System.getProperty("user.dir")+"/reportes/solPorcedimientosLaboratorio.jasper";
-                        if(master!=null){
+                    if (listInfoProcedimientoHcufilter != null & listInfoProcedimientoHcufilter.size() > 0) {
+                        String master=null;
+                        if(idHC.getEstado()==1){
+                            //reporte que no genera consecutivo
+                            master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientolabposthcu.jasper";
+                        }else{
+                            master = System.getProperty("user.dir") + "/reportes/solPorcedimientosLaboratorio.jasper";
+                        }
+                        if (master != null) {
                             oldConnection.Database db = new Database(AtencionUrgencia.props);
                             db.Conectar();
                             Map param = new HashMap();
-                            param.put("id_hc",idHC.getId());
-                            param.put("NombreReport","SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
-                            param.put("version","1.0");
-                            param.put("codigo","R-FA-006");
-                            param.put("servicio","URGENCIAS");
-                            param.put("novalido",setValueValidoInt(noValido));
-                            JasperPrint informe = JasperFillManager.fillReport(master, param,db.conexion);
+                            param.put("id_hc", idHC.getId().toString());
+                            param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
+                            param.put("version", "1.0");
+                            param.put("codigo", "R-FA-006");
+                            param.put("servicio", "URGENCIAS");
+                            param.put("novalido", setValueValidoInt(noValido));
+                            JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
                             JRExporter exporter = new JRPdfExporter();
                             exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
-                            File tempFile = File.createTempFile("Solicitud_de_Procedimientos",".pdf");
-                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE,tempFile);
+                            File tempFile = File.createTempFile("Solicitud_de_Procedimientos", ".pdf");
+                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE, tempFile);
                             exporter.exportReport();
                             reader5 = new PdfReader(tempFile.getAbsolutePath());
                             db.DesconectarBasedeDatos();
@@ -181,31 +189,37 @@ public class impresionesHC extends javax.swing.JFrame {
                         }
                     }
                 }
-                if(jCheckBox6.isSelected()){//IMAGENOLOGIA
+                if (jCheckBox6.isSelected()) {//IMAGENOLOGIA
                     listInfoProcedimientoHcufilter.clear();//15
-                    for(InfoProcedimientoHcu iph:listInfoProcedimientoHcu){
+                    for (InfoProcedimientoHcu iph : listInfoProcedimientoHcu) {
                         ConfigCups cc = ccjc.findConfigCups(iph.getIdCups());
-                        if(cc.getIdEstructuraCups().getId() == 15){
+                        if (cc.getIdEstructuraCups().getId() == 15) {
                             listInfoProcedimientoHcufilter.add(iph);
                         }
                     }
-                    if(listInfoProcedimientoHcufilter!=null & listInfoProcedimientoHcufilter.size()>0){
-                        String master = System.getProperty("user.dir")+"/reportes/solPorcedimientosImagenologia.jasper";
-                        if(master!=null){
+                    if (listInfoProcedimientoHcufilter != null & listInfoProcedimientoHcufilter.size() > 0) {
+                        String master=null;
+                        if(idHC.getEstado()==1){
+                            //reporte que no genera consecutivo
+                            master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientorxposthcu.jasper";
+                        }else{
+                            master = System.getProperty("user.dir") + "/reportes/solPorcedimientosImagenologia.jasper";
+                        }                        
+                        if (master != null) {
                             oldConnection.Database db = new Database(AtencionUrgencia.props);
                             db.Conectar();
                             Map param = new HashMap();
-                            param.put("id_hc",idHC.getId());
-                            param.put("NombreReport","SOLICITUD DE PROCEDIMIENTOS DE IMAGENOLOGIA");
-                            param.put("version","1.0");
-                            param.put("codigo","R-FA-007");
-                            param.put("servicio","URGENCIAS");
-                            param.put("novalido",setValueValidoInt(noValido));
-                            JasperPrint informe = JasperFillManager.fillReport(master, param,db.conexion);
+                            param.put("id_hc", idHC.getId().toString());
+                            param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS DE IMAGENOLOGIA");
+                            param.put("version", "1.0");
+                            param.put("codigo", "R-FA-007");
+                            param.put("servicio", "URGENCIAS");
+                            param.put("novalido", setValueValidoInt(noValido));
+                            JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
                             JRExporter exporter = new JRPdfExporter();
                             exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
-                            File tempFile = File.createTempFile("Solicitud_de_Procedimientos",".pdf");
-                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE,tempFile);
+                            File tempFile = File.createTempFile("Solicitud_de_Procedimientos", ".pdf");
+                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE, tempFile);
                             exporter.exportReport();
                             reader6 = new PdfReader(tempFile.getAbsolutePath());
                             db.DesconectarBasedeDatos();
@@ -213,167 +227,184 @@ public class impresionesHC extends javax.swing.JFrame {
                         }
                     }
                 }
-                if(jCheckBox1.isSelected()){
-                    if(infoPosologiaHcuJPA == null){
-                        factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
+                if (jCheckBox1.isSelected()) {
+                    if (infoPosologiaHcuJPA == null) {
                         infoPosologiaHcuJPA = new InfoPosologiaHcuJpaController(factory);
                     }
                     List<InfoPosologiaHcu> listInfoPosologiaHcu = infoPosologiaHcuJPA.ListFindInfoPosologia(idHC);
-                    if(listInfoPosologiaHcu.size()>0){  
-                        String master = System.getProperty("user.dir")+"/reportes/resetaMedica.jasper";
-                        if(master!=null){
+                    if (listInfoPosologiaHcu.size() > 0) {
+                        String master=null;
+                        if(idHC.getEstado()==1){
+                            //reporte que no genera consecutivomaster = System.getProperty("user.dir") + "/reportes/resetaMedica.jasper";
+                            master = System.getProperty("user.dir") + "/reportes/solicitudmedicamentos.jasper";
+                        }else{
+                            master = System.getProperty("user.dir") + "/reportes/resetaMedica.jasper";
+                        }
+                        if (master != null) {
                             oldConnection.Database db = new Database(AtencionUrgencia.props);
                             db.Conectar();
                             Map param = new HashMap();
-                            param.put("id_hc",idHC.getId().toString());
-                            param.put("NombreReport","PRESCRIPCION MEDICA");
-                            param.put("version","1.0");
-                            param.put("codigo","R-FA-003");
-                            param.put("servicio","URGENCIAS");
-                            JasperPrint informe = JasperFillManager.fillReport(master, param,db.conexion);
+                            param.put("id_hc", idHC.getId().toString());
+                            param.put("NombreReport", "PRESCRIPCION MEDICA");
+                            param.put("version", "1.0");
+                            param.put("codigo", "R-FA-003");
+                            param.put("servicio", "URGENCIAS");
+                            JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
                             JRExporter exporter = new JRPdfExporter();
                             exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
-                            File tempFile = File.createTempFile("Prescripcion_Medica",".pdf");
-                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE,tempFile);
+                            File tempFile = File.createTempFile("Prescripcion_Medica", ".pdf");
+                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE, tempFile);
                             exporter.exportReport();
                             reader2 = new PdfReader(tempFile.getAbsolutePath());
                             db.DesconectarBasedeDatos();
                             tempFile.deleteOnExit();
-                        }                        
+                        }
                     }
                 }
-                if(jCheckBox3.isSelected()){
-                    if(infoInterconsultaHcuJPA==null){
-                        factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
-                        infoInterconsultaHcuJPA=new InfoInterconsultaHcuJpaController(factory);
+                if (jCheckBox3.isSelected()) {
+                    if (infoInterconsultaHcuJPA == null) {
+                        factory = Persistence.createEntityManagerFactory("ClipaEJBPU", AtencionUrgencia.props);
+                        infoInterconsultaHcuJPA = new InfoInterconsultaHcuJpaController(factory);
                     }
-                    List<InfoInterconsultaHcu> listInfoInterconsultaHcu=infoInterconsultaHcuJPA.listInterconsultaHcu(idHC);
-                    if(listInfoInterconsultaHcu.size()>0){
-                        String master = System.getProperty("user.dir")+"/reportes/solValoracion.jasper";
-                        if(master!=null){
+                    List<InfoInterconsultaHcu> listInfoInterconsultaHcu = infoInterconsultaHcuJPA.listInterconsultaHcu(idHC);
+                    if (listInfoInterconsultaHcu.size() > 0) {
+                        String master = System.getProperty("user.dir") + "/reportes/solValoracion.jasper";
+                        if (master != null) {
                             oldConnection.Database db = new Database(AtencionUrgencia.props);
                             db.Conectar();
                             Map param = new HashMap();
-                            param.put("id_hc",idHC.getId());                            
-                            param.put("NombreReport","SOLICITUD DE VALORACION POR ESPECIALISTA");
-                            param.put("version","1.0");
-                            param.put("codigo","R-FA-004");
-                            param.put("servicio","URGENCIAS");
-                            JasperPrint informe = JasperFillManager.fillReport(master, param,db.conexion);
+                            param.put("id_hc", idHC.getId());
+                            param.put("NombreReport", "SOLICITUD DE VALORACION POR ESPECIALISTA");
+                            param.put("version", "1.0");
+                            param.put("codigo", "R-FA-004");
+                            param.put("servicio", "URGENCIAS");
+                            JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
                             JRExporter exporter = new JRPdfExporter();
                             exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
-                            File tempFile = File.createTempFile("Solicitud_de_Valoracion",".pdf");
-                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE,tempFile);
+                            File tempFile = File.createTempFile("Solicitud_de_Valoracion", ".pdf");
+                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE, tempFile);
                             exporter.exportReport();
                             reader3 = new PdfReader(tempFile.getAbsolutePath());
                             db.DesconectarBasedeDatos();
                             tempFile.deleteOnExit();
                         }
                     }
-                }            
-                if(jCheckBox4.isSelected()){
-                    String master = System.getProperty("user.dir")+"/reportes/HClinica.jasper";
-                        if(master!=null){
-                            oldConnection.Database db = new Database(AtencionUrgencia.props);
-                            db.Conectar();
-                            Map param = new HashMap();
-                            param.put("idHC",idHC.getId());
-                            param.put("NameReport","HISTORIA CLINICA DE INGRESO");
-                            param.put("version","1.0");
-                            param.put("codigo","R-FA-002");
-                            param.put("servicio","URGENCIAS");
-                            param.put("DestinoHC",destinoHc);
-                            JasperPrint informe = JasperFillManager.fillReport(master, param,db.conexion);
-                            JRExporter exporter = new JRPdfExporter();
-                            exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
-                            File tempFile = File.createTempFile("historia_urgencia",".pdf");
-                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE,tempFile);
-                            exporter.exportReport();
-                            reader4 = new PdfReader(tempFile.getAbsolutePath());
-                            db.DesconectarBasedeDatos();
-                            tempFile.deleteOnExit();
-                        }
+                }
+                if (jCheckBox4.isSelected()) {
+                    String master = System.getProperty("user.dir") + "/reportes/HClinica.jasper";
+                    if (master != null) {
+                        oldConnection.Database db = new Database(AtencionUrgencia.props);
+                        db.Conectar();
+                        Map param = new HashMap();
+                        param.put("idHC", idHC.getId());
+                        param.put("NameReport", "HISTORIA CLINICA DE INGRESO");
+                        param.put("version", "1.0");
+                        param.put("codigo", "R-FA-002");
+                        param.put("servicio", "URGENCIAS");
+                        param.put("DestinoHC", destinoHc);
+                        JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
+                        JRExporter exporter = new JRPdfExporter();
+                        exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
+                        File tempFile = File.createTempFile("historia_urgencia", ".pdf");
+                        exporter.setParameter(JRExporterParameter.OUTPUT_FILE, tempFile);
+                        exporter.exportReport();
+                        reader4 = new PdfReader(tempFile.getAbsolutePath());
+                        db.DesconectarBasedeDatos();
+                        tempFile.deleteOnExit();
+                    }
                 }
                 PdfCopyFields copy = new PdfCopyFields(new FileOutputStream(archivoTemporal));
-                if(jCheckBox2.isSelected()){
-                    if(reader1!=null) copy.addDocument(reader1);
-                }                
-                if(jCheckBox1.isSelected()){
-                    if(reader2!=null) copy.addDocument(reader2);
+                if (jCheckBox2.isSelected()) {
+                    if (reader1 != null) {
+                        copy.addDocument(reader1);
+                    }
                 }
-                if(jCheckBox5.isSelected()){
-                    if(reader5!=null) copy.addDocument(reader5);
+                if (jCheckBox1.isSelected()) {
+                    if (reader2 != null) {
+                        copy.addDocument(reader2);
+                    }
                 }
-                if(jCheckBox6.isSelected()){
-                    if(reader6!=null) copy.addDocument(reader6);
+                if (jCheckBox5.isSelected()) {
+                    if (reader5 != null) {
+                        copy.addDocument(reader5);
+                    }
                 }
-                if(jCheckBox3.isSelected()){
-                    if(reader3!=null) copy.addDocument(reader3);
+                if (jCheckBox6.isSelected()) {
+                    if (reader6 != null) {
+                        copy.addDocument(reader6);
+                    }
                 }
-                if(jCheckBox4.isSelected()){
-                    if(reader4!=null) copy.addDocument(reader4);
+                if (jCheckBox3.isSelected()) {
+                    if (reader3 != null) {
+                        copy.addDocument(reader3);
+                    }
                 }
-                try{
+                if (jCheckBox4.isSelected()) {
+                    if (reader4 != null) {
+                        copy.addDocument(reader4);
+                    }
+                }
+                try {
                     copy.close();
-                    if(noValido){
+                    if (noValido) {
                         marcaAguaPDF(archivoTemporal);
-                    }else{
+                    } else {
                         Desktop.getDesktop().open(archivoTemporal);
                     }
-                }catch (Exception ex){
-                    JOptionPane.showMessageDialog(null,"El documento no contiene paginas", "Clipa+", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "El documento no contiene paginas", "Clipa+", JOptionPane.INFORMATION_MESSAGE);
                 }
                 archivoTemporal.deleteOnExit();
-            } catch (JRException ex) {
-                
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "10076:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "10076:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
             }
-            if(!noValido){
+            if (!noValido) {
                 AtencionUrgencia.panelindex.FramEnable(true);
-                if(AtencionUrgencia.panelindex.hc.isVisible()) AtencionUrgencia.panelindex.hc.cerrarPanel();
+                if (AtencionUrgencia.panelindex.hc != null) {
+                    AtencionUrgencia.panelindex.hc.cerrarPanel();
+                }
             }
-            ((impresionesHC)form).jLabel1.setVisible(false);
-            ((impresionesHC)form).jButton1.setEnabled(true);
-            ((impresionesHC)form).dispose();
+            ((impresionesHC) form).jLabel1.setVisible(false);
+            ((impresionesHC) form).jButton1.setEnabled(true);
+            ((impresionesHC) form).dispose();
         }
     }
-    
-    private void marcaAguaPDF(File archivo_entrada){
+
+    private void marcaAguaPDF(File archivo_entrada) {
         try {
-            File archivoTemporal = File.createTempFile("Historia_Urgencia",".pdf");
+            File archivoTemporal = File.createTempFile("Historia_Urgencia", ".pdf");
             FileOutputStream fop = new FileOutputStream(archivoTemporal);
             PdfReader pdfReader = new PdfReader(archivo_entrada.getPath());
             PdfStamper pdfStamper = new PdfStamper(pdfReader, fop);
             float alto_pagina = 0;
             float ancho_pagina = 0;
-            float angulo_marca_agua=0;
-            for(int i=1; i<= pdfReader.getNumberOfPages(); i++){
+            float angulo_marca_agua = 0;
+            for (int i = 1; i <= pdfReader.getNumberOfPages(); i++) {
                 PdfContentByte content_fondo = pdfStamper.getUnderContent(i);
-                if((pdfReader.getPageRotation(i)==0)||(pdfReader.getPageRotation(i)==180)){
+                if ((pdfReader.getPageRotation(i) == 0) || (pdfReader.getPageRotation(i) == 180)) {
                     alto_pagina = pdfReader.getPageSize(i).getHeight();
                     ancho_pagina = pdfReader.getPageSize(i).getWidth();
                     angulo_marca_agua = 60;
-                }else{
+                } else {
                     alto_pagina = pdfReader.getPageSize(i).getWidth();
                     ancho_pagina = pdfReader.getPageSize(i).getHeight();
                     angulo_marca_agua = 30;
                 }
-                String marca_agua= "NO VALIDO";
-                Phrase frase_marca_agua= new Phrase(marca_agua, FontFactory.getFont(BaseFont.HELVETICA, 85, Font.BOLD));
+                String marca_agua = "NO VALIDO";
+                Phrase frase_marca_agua = new Phrase(marca_agua, FontFactory.getFont(BaseFont.HELVETICA, 85, Font.BOLD));
                 content_fondo.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL_STROKE);
-                content_fondo.setColorStroke(new BaseColor(0xD7,0xD7,0xD7));
+                content_fondo.setColorStroke(new BaseColor(0xD7, 0xD7, 0xD7));
                 content_fondo.setColorFill(BaseColor.WHITE);
-                ColumnText.showTextAligned(content_fondo, Element.ALIGN_CENTER, frase_marca_agua,ancho_pagina/2 , alto_pagina/2, angulo_marca_agua);
+                ColumnText.showTextAligned(content_fondo, Element.ALIGN_CENTER, frase_marca_agua, ancho_pagina / 2, alto_pagina / 2, angulo_marca_agua);
             }
             pdfStamper.close();
             Desktop.getDesktop().open(archivoTemporal);
             archivoTemporal.deleteOnExit();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "10075:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "10075:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -535,20 +566,20 @@ public class impresionesHC extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        if(!noValido){
+        if (!noValido) {
             atencionurgencia.AtencionUrgencia.panelindex.FramEnable(false);
-        }        
+        }
     }//GEN-LAST:event_formWindowOpened
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        if(!noValido){
+        if (!noValido) {
             atencionurgencia.AtencionUrgencia.panelindex.FramEnable(true);
         }
         this.dispose();
     }//GEN-LAST:event_formWindowClosing
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if(!noValido){
+        if (!noValido) {
             AtencionUrgencia.panelindex.FramEnable(true);
             AtencionUrgencia.panelindex.hc.cerrarPanel();
         }
@@ -556,9 +587,9 @@ public class impresionesHC extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       hiloReporte ut = new hiloReporte(this);
-       Thread thread = new Thread(ut);
-       thread.start();
+        hiloReporte ut = new hiloReporte(this);
+        Thread thread = new Thread(ut);
+        thread.start();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
