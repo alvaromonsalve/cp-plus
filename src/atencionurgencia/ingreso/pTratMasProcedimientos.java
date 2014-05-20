@@ -204,7 +204,6 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
     public void saveChanges(EntityManagerFactory factory,HcuEvolucion evo){
         if(hcuEvoProcedimientoJpa==null)
             hcuEvoProcedimientoJpa=new HcuEvoProcedimientoJpaController(factory);
-//        listInfoProcedimientoEvo = hcuEvoProcedimientoJpa.ListFindInfoProcedimientoEvo(evo);
         listInfoProcedimientoEvo = evo.getHcuEvoProcedimientos();
         for(int i=0;i<ModeloTabla.getRowCount();i++){            
             HcuEvoProcedimiento hcuEvoProcedimiento=null;
