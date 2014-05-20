@@ -32,7 +32,7 @@ public class evoDestino extends javax.swing.JPanel {
         if(evoEgresos.isEmpty()){
             HcuEvoEgreso egreso = new HcuEvoEgreso();
             egreso.setIdHcuEvolucion(evol);
-            egreso.setDestino(jComboBox1.getSelectedIndex());
+            if(jComboBox1.getSelectedIndex()!=-1) egreso.setDestino(jComboBox1.getSelectedIndex());
             egreso.setUsuario(AtencionUrgencia.idUsuario);
             egreso.setObservaciones(jTextArea26.getText().toUpperCase());
             egreso.setEstado(1);
@@ -66,7 +66,7 @@ public class evoDestino extends javax.swing.JPanel {
     }
     
     public boolean estadoTablas(){
-        return jComboBox1.getSelectedIndex()==-1 && jTextArea26.getText().isEmpty();
+        return jComboBox1.getSelectedIndex()>-1;
     }
 
     @SuppressWarnings("unchecked")
