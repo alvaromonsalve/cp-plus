@@ -935,7 +935,6 @@ public class Evo extends javax.swing.JPanel {
             evoSeleccion = pplan.saveChanged(factory, evoSeleccion);
             jTree1.repaint();
             jTree1.validate();
-//                setJTreeEvo();
         }
     }
 
@@ -956,7 +955,12 @@ public class Evo extends javax.swing.JPanel {
             retorno = true;
         }
         if (getValidPanels(objetivo) == false) {
-            mensaje.add("*Nota Objetiva*");
+            // objetivo.jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "SÍNTESIS", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.ABOVE_TOP, new java.awt.Font("Tahoma", 1, 11)));
+            if(evoSeleccion.getEstado()==3){
+                mensaje.add("*Síntesis*");
+            }else{
+                mensaje.add("*Nota Objetiva*");
+            }            
             retorno = true;
         }
         if (getValidPanels(analisis) == false) {
@@ -5140,7 +5144,7 @@ public class Evo extends javax.swing.JPanel {
             imp.setidHC(this.infohistoriac);
             imp.setdestinoHc("OBSERVACION DE URGENCIAS");
             imp.setLocationRelativeTo(null);
-            imp.setNoValido(true);
+            imp.setNoValido(false);
             imp.setVisible(true);
         }
     }//GEN-LAST:event_jButton11ActionPerformed
@@ -5288,7 +5292,6 @@ public class Evo extends javax.swing.JPanel {
             imphcuEvo imEvo = new imphcuEvo(null, true);
             imEvo.setLocationRelativeTo(null);
             imEvo.setEvolucion(evoSeleccion);
-            System.out.println(evoSeleccion);
             if (evoSeleccion.getEstado() == 1 || evoSeleccion.getEstado() == 3) {
                 imEvo.setNoValido(true);
             } else {
@@ -5406,14 +5409,13 @@ public class Evo extends javax.swing.JPanel {
             imphcuEvo imp = new imphcuEvo(null, true);
             try {
                 he = evoSeleccion;
+                saveEvolucion();
                 if (he.getEstado() == 1) {
                     String mensaje = "¿Si finaliza la nota de Evolución no podra modificarla posteriormente? ";
                     int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar finalizacion", JOptionPane.YES_NO_OPTION);
-                    if (entrada == 0) {
+                    if (entrada == 0) {           
                         he.setEstado(2);
                         hcuEvolucionJpaController.edit(he);
-
-                        //                    setJTreeEvo(); 
                         imp.setNoValido(false);
                         imp.setEvolucion(he);
                         imp.imprimir();
@@ -5426,7 +5428,6 @@ public class Evo extends javax.swing.JPanel {
                 } else if (he.getEstado() == 0) {
                     JOptionPane.showMessageDialog(null, "No se puede finalizar Notas en estado Borrador");
                 } else if (he.getEstado() == 3) {
-                    System.out.println("1");
                     if (he.getHcuEvoEgreso().size() > 0) {
                         String mensaje = "¿Si finaliza la nota de Egreso no podra modificarla posteriormente? ";
                         int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar Finalizacion", JOptionPane.YES_NO_OPTION);
@@ -5450,7 +5451,7 @@ public class Evo extends javax.swing.JPanel {
                     JOptionPane.showMessageDialog(null, "Esta Nota ya se encuentra finalizada");
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "No puede finalizar la nota de Evolución sin haber guardado");
+                JOptionPane.showMessageDialog(null,ex.getMessage()+ ": No puede finalizar la nota de Evolución sin haber guardado");
             }
         }
     }//GEN-LAST:event_jButton13ActionPerformed
