@@ -56,8 +56,6 @@ public class pPlan extends javax.swing.JPanel {
         if(pOtrasInterconsultas!=null) pOtrasInterconsultas.saveChanges(factory, hcuEvolucion);
         if(pProcedimientos!=null) pProcedimientos.saveChanges(factory, hcuEvolucion);
         if(destino!=null) destino.saveChanges(factory, hcuEvolucion);
-//        if(hejc ==null) hejc = new HcuEvolucionJpaController(factory);        
-//        this.hcuEvolucion = hejc.findHcuEvolucion(hcuEvolucion.getId());
         return hcuEvolucion;
     }
     
