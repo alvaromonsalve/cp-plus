@@ -245,7 +245,6 @@ public class newEvo extends javax.swing.JPanel {
                     jpaController.create(hcuEvolucion);
                     sigue =true;
                 }else{
-                    System.out.println("lol");
                     jpaController.edit(hcuEvolucion);
                     sigue = true;
                 }            
