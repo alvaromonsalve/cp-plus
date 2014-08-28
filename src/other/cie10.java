@@ -38,22 +38,21 @@ public class cie10 extends javax.swing.JDialog {
         listarCie10();
     }
     
-    private void listarCie10(){
-        
+    private void listarCie10(){        
         factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
         StaticCie10JpaController staticcie10EJB = new StaticCie10JpaController(factory);
         Object dato[] = null;
         listaCie10 = staticcie10EJB.findStaticCie10Entities();
-        StaticCie10 staticCie10;
+//        StaticCie10 staticCie10;
         if (listaCie10!=null){
-            for (int i = 0; i < listaCie10.size(); i++) {
-                staticCie10 = listaCie10.get(i);
+            for (StaticCie10 staticCie10 : listaCie10) {
                 if(!staticCie10.getCodigo().equals("0000")){
+                    int i = modelo.getRowCount();
                     modelo.addRow(dato);
                     modelo.setValueAt(staticCie10.getId(), i, 0);
                     modelo.setValueAt(staticCie10.getCodigo(), i, 1);
                     modelo.setValueAt(staticCie10.getDescripcion(),i,2);
-                }                
+                }
             }
         }
     }
