@@ -96,7 +96,7 @@ public class AtencionUrgencia {
             imagen=new ImageIcon(ClassLoader.getSystemResource(nombre));
             g.drawImage(imagen.getImage(), 0, 0, tamanio.width,tamanio.height,null);
             setOpaque(false);
-            super.paint(g);
+            super.paintComponent(g);
         }
     }
 }
