@@ -44,7 +44,7 @@ public class AtencionUrgencia {
      * @return panel principal de la clase setBounds(0, 0, 840, 540)
      */
     public static JPanel getPanelIndex(int idUsuario2, Properties props){
-        JPanel jPanel = new Panel("images/permiso.png");
+        JPanel jPanel = new Panel("images/permiso.jpg");
         JLabel label = new JLabel("CODIGO DE PERMISO: 10000");
         label.setForeground(Color.white);
         label.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -63,7 +63,7 @@ public class AtencionUrgencia {
             DseleccionarACU aCU = new DseleccionarACU(null,true);
             aCU.setACU(ACU);
             aCU.setLocationRelativeTo(null);
-            aCU.setVisible(true);
+            aCU.setVisible(true);            
             configUser = aCU.configUser;
         }else if(ACU.size()==1){
             configUser = ACU.get(0);
