@@ -67,7 +67,7 @@ public class AtencionUrgencia {
             configUser = aCU.configUser;
         }else if(ACU.size()==1){
             configUser = ACU.get(0);
-        }    
+        }
         if(configUser!=null){
             roles = configUser.getIdPerfiles().getAccessRolesList();
             for(AccessRoles ar:roles){
@@ -77,7 +77,7 @@ public class AtencionUrgencia {
                     AtencionUrgencia.props =props;       
                     jPanel = panelindex;
                 }
-            }            
+            }
         }
         return jPanel;
     }
