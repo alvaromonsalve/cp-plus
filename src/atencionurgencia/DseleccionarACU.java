@@ -182,8 +182,13 @@ public class DseleccionarACU extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        configUser = null;
-        this.dispose();
+        try {
+            configUser = null;
+            this.dispose();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        
     }//GEN-LAST:event_jButton2ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
