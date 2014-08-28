@@ -48,10 +48,12 @@ public class cie10 extends javax.swing.JDialog {
         if (listaCie10!=null){
             for (int i = 0; i < listaCie10.size(); i++) {
                 staticCie10 = listaCie10.get(i);
-                modelo.addRow(dato);
-                modelo.setValueAt(staticCie10.getId(), i, 0);
-                modelo.setValueAt(staticCie10.getCodigo(), i, 1);
-                modelo.setValueAt(staticCie10.getDescripcion(),i,2);
+                if(!staticCie10.getCodigo().equals("0000")){
+                    modelo.addRow(dato);
+                    modelo.setValueAt(staticCie10.getId(), i, 0);
+                    modelo.setValueAt(staticCie10.getCodigo(), i, 1);
+                    modelo.setValueAt(staticCie10.getDescripcion(),i,2);
+                }                
             }
         }
     }
