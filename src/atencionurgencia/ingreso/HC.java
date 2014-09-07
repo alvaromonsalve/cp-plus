@@ -3921,7 +3921,7 @@ public class HC extends javax.swing.JPanel {
                 int n = JOptionPane.showOptionDialog(this, "¿Desea Finalizar la Nota de Ingreso?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
                 if (n == 0) {
-                    finalizar = 1;
+                    finalizar = 1;   
                     CrearHistoriaC();//guardo en hc
                     SaveAntPersonales();
                     impresionesHC imp = new impresionesHC();

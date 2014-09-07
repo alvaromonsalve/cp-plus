@@ -114,43 +114,6 @@ public class impresionesHC extends javax.swing.JFrame {
                 }
                 List<InfoProcedimientoHcu> listInfoProcedimientoHcufilter = new ArrayList<InfoProcedimientoHcu>();
                 List<InfoProcedimientoHcu> listInfoProcedimientoHcu = infoProcedimientoHcuJPA.ListFindInfoProcedimientoHcu(idHC);
-                if (jCheckBox2.isSelected()) {//otros procedimientos
-                    for (InfoProcedimientoHcu iph : listInfoProcedimientoHcu) {
-                        ConfigCups cc = ccjc.findConfigCups(iph.getIdCups());
-                        if (cc.getIdEstructuraCups().getId() != 17 && cc.getIdEstructuraCups().getId() != 15) {
-                            listInfoProcedimientoHcufilter.add(iph);
-                        }
-                    }
-                    if (listInfoProcedimientoHcufilter != null & listInfoProcedimientoHcufilter.size() > 0) {
-                        String master=null;
-                        if(idHC.getEstado()==1){
-                            //reporte que no genera consecutivo
-                            master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientos.jasper";
-                        }else{
-                            master = System.getProperty("user.dir") + "/reportes/solPorcedimientos.jasper";
-                        }
-                        if (master != null) {
-                            oldConnection.Database db = new Database(AtencionUrgencia.props);
-                            db.Conectar();
-                            Map param = new HashMap();
-                            param.put("id_hc", idHC.getId());
-                            param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS");
-                            param.put("version", "1.0");
-                            param.put("codigo", "R-FA-005");
-                            param.put("servicio", "URGENCIAS");
-                            param.put("novalido", setValueValidoInt(noValido));
-                            JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
-                            JRExporter exporter = new JRPdfExporter();
-                            exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
-                            File tempFile = File.createTempFile("Solicitud_de_Procedimientos", ".pdf");
-                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE, tempFile);
-                            exporter.exportReport();
-                            reader1 = new PdfReader(tempFile.getAbsolutePath());
-                            db.DesconectarBasedeDatos();
-                            tempFile.deleteOnExit();
-                        }
-                    }
-                }
                 if (jCheckBox5.isSelected()) {//Laboratorios                    
                     listInfoProcedimientoHcufilter.clear();
                     for (InfoProcedimientoHcu iph : listInfoProcedimientoHcu) {
@@ -159,13 +122,13 @@ public class impresionesHC extends javax.swing.JFrame {
                             listInfoProcedimientoHcufilter.add(iph);
                         }
                     }
-                    if (listInfoProcedimientoHcufilter != null & listInfoProcedimientoHcufilter.size() > 0) {
-                        String master=null;
-                        if(idHC.getEstado()==1){
-                            //reporte que no genera consecutivo
-                            master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientolabposthcu.jasper";
+                    if (listInfoProcedimientoHcufilter != null & listInfoProcedimientoHcufilter.size() > 0){
+                        String master=null;                        
+                        if((idHC.getEstado()!=1 & noValido == true) | (idHC.getEstado()==1 & noValido == false)){                            
+                            master = System.getProperty("user.dir") + "/reportes/solPorcedimientosLaboratorio.jasper";                                            
                         }else{
-                            master = System.getProperty("user.dir") + "/reportes/solPorcedimientosLaboratorio.jasper";
+                             //reporte que no genera consecutivo
+                            master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientolabposthcu.jasper"; 
                         }
                         if (master != null) {
                             oldConnection.Database db = new Database(AtencionUrgencia.props);
@@ -189,6 +152,44 @@ public class impresionesHC extends javax.swing.JFrame {
                         }
                     }
                 }
+                if (jCheckBox2.isSelected()) {//otros procedimientos
+                    for (InfoProcedimientoHcu iph : listInfoProcedimientoHcu) {
+                        ConfigCups cc = ccjc.findConfigCups(iph.getIdCups());
+                        if (cc.getIdEstructuraCups().getId() != 17 && cc.getIdEstructuraCups().getId() != 15) {
+                            listInfoProcedimientoHcufilter.add(iph);
+                        }
+                    }
+                    if (listInfoProcedimientoHcufilter != null & listInfoProcedimientoHcufilter.size() > 0) {
+                        String master=null;
+                        if((idHC.getEstado()!=1 & noValido == true) | (idHC.getEstado()==1 & noValido == false)){                             
+                            master = System.getProperty("user.dir") + "/reportes/solPorcedimientos.jasper";
+                        }else{
+                            //reporte que no genera consecutivo
+                            master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientos.jasper";
+                        }
+                        if (master != null) {
+                            oldConnection.Database db = new Database(AtencionUrgencia.props);
+                            db.Conectar();
+                            Map param = new HashMap();
+                            param.put("id_hc", idHC.getId());
+                            param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS");
+                            param.put("version", "1.0");
+                            param.put("codigo", "R-FA-005");
+                            param.put("servicio", "URGENCIAS");
+                            param.put("novalido", setValueValidoInt(noValido));
+                            JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
+                            JRExporter exporter = new JRPdfExporter();
+                            exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
+                            File tempFile = File.createTempFile("Solicitud_de_Procedimientos", ".pdf");
+                            exporter.setParameter(JRExporterParameter.OUTPUT_FILE, tempFile);
+                            exporter.exportReport();
+                            reader1 = new PdfReader(tempFile.getAbsolutePath());
+                            db.DesconectarBasedeDatos();
+                            tempFile.deleteOnExit();
+                        }
+                    }
+                }
+                
                 if (jCheckBox6.isSelected()) {//IMAGENOLOGIA
                     listInfoProcedimientoHcufilter.clear();//15
                     for (InfoProcedimientoHcu iph : listInfoProcedimientoHcu) {
@@ -199,11 +200,11 @@ public class impresionesHC extends javax.swing.JFrame {
                     }
                     if (listInfoProcedimientoHcufilter != null & listInfoProcedimientoHcufilter.size() > 0) {
                         String master=null;
-                        if(idHC.getEstado()==1){
-                            //reporte que no genera consecutivo
-                            master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientorxposthcu.jasper";
-                        }else{
+                        if((idHC.getEstado()!=1 & noValido == true) | (idHC.getEstado()==1 & noValido == false)){ 
                             master = System.getProperty("user.dir") + "/reportes/solPorcedimientosImagenologia.jasper";
+                        }else{
+                            //reporte que no genera consecutivo
+                            master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientorxposthcu.jasper";                            
                         }                        
                         if (master != null) {
                             oldConnection.Database db = new Database(AtencionUrgencia.props);
@@ -234,11 +235,11 @@ public class impresionesHC extends javax.swing.JFrame {
                     List<InfoPosologiaHcu> listInfoPosologiaHcu = infoPosologiaHcuJPA.ListFindInfoPosologia(idHC);
                     if (listInfoPosologiaHcu.size() > 0) {
                         String master=null;
-                        if(idHC.getEstado()==1){
-                            //reporte que no genera consecutivomaster = System.getProperty("user.dir") + "/reportes/resetaMedica.jasper";
-                            master = System.getProperty("user.dir") + "/reportes/solicitudmedicamentos.jasper";
-                        }else{
+                        if((idHC.getEstado()!=1 & noValido == true) | (idHC.getEstado()==1 & noValido == false)){ 
                             master = System.getProperty("user.dir") + "/reportes/resetaMedica.jasper";
+                        }else{                            
+                            //reporte que no genera consecutivo
+                            master = System.getProperty("user.dir") + "/reportes/solicitudmedicamentos.jasper";
                         }
                         if (master != null) {
                             oldConnection.Database db = new Database(AtencionUrgencia.props);
