@@ -122,9 +122,8 @@ public class imphcuEvo extends javax.swing.JDialog {
     }
 
     private class hiloReporte extends Thread {
-
         Dialog form = null;
-
+        
         public hiloReporte(Dialog form) {
             this.form = form;
         }
