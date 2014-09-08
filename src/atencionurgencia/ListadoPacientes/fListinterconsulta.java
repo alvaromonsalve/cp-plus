@@ -59,7 +59,9 @@ public class fListinterconsulta extends javax.swing.JFrame {
         @Override
         public void run() {
                 jLabel1.setVisible(true);
+                jComboBox1.setEnabled(false);
                 showPacientes();
+                jComboBox1.setEnabled(true);
                 jLabel1.setVisible(false);
             }
         };
@@ -216,14 +218,6 @@ public class fListinterconsulta extends javax.swing.JFrame {
 
         jComboBox1.setDoubleBuffered(true);
         jComboBox1.setFocusable(false);
-        jComboBox1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jComboBox1MouseClicked(evt);
-            }
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                jComboBox1MouseReleased(evt);
-            }
-        });
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox1ActionPerformed(evt);
@@ -316,14 +310,6 @@ public class fListinterconsulta extends javax.swing.JFrame {
             this.inicio();
         }
     }//GEN-LAST:event_jComboBox1ActionPerformed
-
-    private void jComboBox1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComboBox1MouseReleased
-
-    }//GEN-LAST:event_jComboBox1MouseReleased
-
-    private void jComboBox1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComboBox1MouseClicked
-
-    }//GEN-LAST:event_jComboBox1MouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if(jTable1.getSelectedRow()>-1){
