@@ -26,7 +26,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.JOptionPane;
 import jpa.HcuEvoProcedimientoJpaController;
-import jpa.HcuEvolucionJpaController;
 import oldConnection.Database;
 import tools.ImprimirEvolucion;
 import tools.ImprimirNotaegreso;
@@ -45,7 +44,6 @@ public class imphcuEvo extends javax.swing.JDialog {
     private HcuEvolucion hcuEvolucion = null;
     private boolean noValido;
     private HcuEvoProcedimientoJpaController procedimientoJpa = null;
-//    private final HcuEvolucionJpaController evolucionJpa = null;
     private EntityManagerFactory factory;
     private Imprimirautorizacionlaboratorio impautlab;
     private ImprimirautorizacionlaboratorioFinal implabf;
@@ -80,6 +78,7 @@ public class imphcuEvo extends javax.swing.JDialog {
         if (hcuEvolucion.getEstado() != 4) {
             jCheckBox2.setEnabled(false);
             jCheckBox10.setEnabled(false);
+            jCheckBox8.setEnabled(false);
         } else {
             if (hcuEvolucion.getEstado() == 4) {
                 jCheckBox2.setEnabled(true);
@@ -94,15 +93,12 @@ public class imphcuEvo extends javax.swing.JDialog {
         if (hcuEvolucion.getEstado() == 3) {
             jCheckBox2.setEnabled(true);
             jCheckBox4.setEnabled(false);
-            jCheckBox8.setEnabled(false);
         }
         //nota de evolucion
-        if (hcuEvolucion.getEstado() == 2) {
+        if (hcuEvolucion.getEstado() == 2) {//evo finalizada
             jCheckBox2.setEnabled(false);
-            jCheckBox8.setEnabled(false);
         } else {
             jCheckBox2.setEnabled(true);
-            jCheckBox8.setEnabled(false);
         }
         if (hcuEvolucion.getEstado() == 1) {
             jCheckBox2.setEnabled(false);
