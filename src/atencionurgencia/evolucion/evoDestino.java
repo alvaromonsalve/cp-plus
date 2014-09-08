@@ -35,6 +35,13 @@ public class evoDestino extends javax.swing.JPanel {
             if(jComboBox1.getSelectedIndex()!=-1) egreso.setDestino(jComboBox1.getSelectedIndex());
             egreso.setUsuario(AtencionUrgencia.idUsuario);
             egreso.setObservaciones(jTextArea26.getText().toUpperCase());
+            if(jCheckBox1.isSelected()==true){
+                egreso.setIncapacidad(1);
+                egreso.setIncapacidadInit(jDateChooser1.getDate());
+                egreso.setIncapacidadEnd(jDateChooser2.getDate());
+            }else{
+                egreso.setIncapacidad(0);
+            }
             egreso.setEstado(1);
             jpaController.create(egreso);    
             List<HcuEvoEgreso> evodestino = new ArrayList<HcuEvoEgreso>();
@@ -46,6 +53,13 @@ public class evoDestino extends javax.swing.JPanel {
                 egreso.setDestino(jComboBox1.getSelectedIndex());
                 egreso.setUsuario(AtencionUrgencia.idUsuario);
                 egreso.setObservaciones(jTextArea26.getText().toUpperCase());
+                if(jCheckBox1.isSelected()==true){
+                    egreso.setIncapacidad(1);
+                    egreso.setIncapacidadInit(jDateChooser1.getDate());
+                    egreso.setIncapacidadEnd(jDateChooser2.getDate());
+                }else{
+                    egreso.setIncapacidad(0);
+                }
                 egreso.setEstado(1);
                 jpaController.edit(egreso);
             } catch (Exception ex) {
@@ -59,6 +73,11 @@ public class evoDestino extends javax.swing.JPanel {
         if(evoEgresos!=null &&  !evoEgresos.isEmpty()){
             if(!evoEgresos.isEmpty()){
                 HcuEvoEgreso egreso = evoEgresos.get(0);
+                if(egreso.getIncapacidad()==1){
+                    jCheckBox1.setSelected(true);
+                    jDateChooser1.setDate(egreso.getIncapacidadInit());
+                    jDateChooser2.setDate(egreso.getIncapacidadEnd());
+                }
                 jComboBox1.setSelectedIndex(egreso.getDestino());
                 jTextArea26.setText(egreso.getObservaciones());
             }
@@ -79,6 +98,12 @@ public class evoDestino extends javax.swing.JPanel {
         jPanel33 = new javax.swing.JPanel();
         jScrollPane26 = new javax.swing.JScrollPane();
         jTextArea26 = new javax.swing.JTextArea();
+        jPanel1 = new javax.swing.JPanel();
+        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        jLabel1 = new javax.swing.JLabel();
+        jDateChooser2 = new com.toedter.calendar.JDateChooser();
+        jLabel2 = new javax.swing.JLabel();
+        jCheckBox1 = new javax.swing.JCheckBox();
 
         setMaximumSize(new java.awt.Dimension(380, 420));
         setMinimumSize(new java.awt.Dimension(380, 420));
@@ -126,11 +151,6 @@ public class evoDestino extends javax.swing.JPanel {
         jTextArea26.setRows(2);
         jTextArea26.setMaximumSize(new java.awt.Dimension(164, 40));
         jTextArea26.setMinimumSize(new java.awt.Dimension(164, 40));
-        jTextArea26.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                jTextArea26KeyReleased(evt);
-            }
-        });
         jScrollPane26.setViewportView(jTextArea26);
 
         javax.swing.GroupLayout jPanel33Layout = new javax.swing.GroupLayout(jPanel33);
@@ -141,19 +161,75 @@ public class evoDestino extends javax.swing.JPanel {
         );
         jPanel33Layout.setVerticalGroup(
             jPanel33Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane26, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+            .addComponent(jScrollPane26, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
+        );
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Incapacidad"));
+        jPanel1.setOpaque(false);
+
+        jDateChooser1.setEnabled(false);
+
+        jLabel1.setText("Desde:");
+
+        jDateChooser2.setEnabled(false);
+
+        jLabel2.setText("Hasta:");
+
+        jCheckBox1.setText("Generar Incapacidad");
+        jCheckBox1.setOpaque(false);
+        jCheckBox1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jCheckBox1StateChanged(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jCheckBox1)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addComponent(jCheckBox1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel49, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel32, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel33, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel49, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
+                    .addComponent(jPanel32, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel33, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -162,20 +238,34 @@ public class evoDestino extends javax.swing.JPanel {
                 .addComponent(jLabel49)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel32, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jPanel33, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel33, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(81, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextArea26KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea26KeyReleased
-        
-    }//GEN-LAST:event_jTextArea26KeyReleased
+    private void jCheckBox1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jCheckBox1StateChanged
+        if(jCheckBox1.isSelected()==false){
+            jDateChooser1.setEnabled(false);
+            jDateChooser2.setEnabled(false);
+        }else{
+            jDateChooser1.setEnabled(true);
+            jDateChooser2.setEnabled(true);
+        }
+    }//GEN-LAST:event_jCheckBox1StateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JComboBox jComboBox1;
+    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private com.toedter.calendar.JDateChooser jDateChooser2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel49;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel33;
     private javax.swing.JScrollPane jScrollPane26;
