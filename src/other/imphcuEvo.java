@@ -18,7 +18,6 @@ import entidades.HcuEvoProcedimiento;
 import entidades.HcuEvolucion;
 import java.awt.Desktop;
 import java.awt.Dialog;
-import java.awt.HeadlessException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,6 +30,7 @@ import jpa.HcuEvolucionJpaController;
 import oldConnection.Database;
 import tools.ImprimirEvolucion;
 import tools.ImprimirNotaegreso;
+import tools.ImprimirRecetaMedicamentos;
 import tools.Imprimirautorizacionlaboratorio;
 import tools.ImprimirautorizacionlaboratorioFinal;
 import tools.Imprimirautorizacionrx;
@@ -45,7 +45,7 @@ public class imphcuEvo extends javax.swing.JDialog {
     private HcuEvolucion hcuEvolucion = null;
     private boolean noValido;
     private HcuEvoProcedimientoJpaController procedimientoJpa = null;
-    private final HcuEvolucionJpaController evolucionJpa = null;
+//    private final HcuEvolucionJpaController evolucionJpa = null;
     private EntityManagerFactory factory;
     private Imprimirautorizacionlaboratorio impautlab;
     private ImprimirautorizacionlaboratorioFinal implabf;
@@ -79,11 +79,16 @@ public class imphcuEvo extends javax.swing.JDialog {
         //Nota EGRESO
         if (hcuEvolucion.getEstado() != 4) {
             jCheckBox2.setEnabled(false);
+            jCheckBox10.setEnabled(false);
         } else {
             if (hcuEvolucion.getEstado() == 4) {
                 jCheckBox2.setEnabled(true);
                 jCheckBox4.setEnabled(false);
-                jCheckBox8.setEnabled(false);
+                jCheckBox8.setEnabled(true);
+                if(hcuEvolucion.getHcuEvoEgreso().isEmpty() == false & 
+                        hcuEvolucion.getHcuEvoEgreso().get(hcuEvolucion.getHcuEvoEgreso().size()-1).getIncapacidad()==1 ){
+                    jCheckBox10.setEnabled(true);
+                }
             }
         }
         if (hcuEvolucion.getEstado() == 3) {
@@ -94,7 +99,7 @@ public class imphcuEvo extends javax.swing.JDialog {
         //nota de evolucion
         if (hcuEvolucion.getEstado() == 2) {
             jCheckBox2.setEnabled(false);
-            jCheckBox8.setEnabled(true);
+            jCheckBox8.setEnabled(false);
         } else {
             jCheckBox2.setEnabled(true);
             jCheckBox8.setEnabled(false);
@@ -208,6 +213,21 @@ public class imphcuEvo extends javax.swing.JDialog {
                     db.DesconectarBasedeDatos();
                     iep.tempFile.deleteOnExit();
                 }
+                if (jCheckBox10.isSelected()) {//incapacidad
+                    ImprimirRecetaMedicamentos iep = new ImprimirRecetaMedicamentos();
+                    Database db = new Database(AtencionUrgencia.props);
+                    db.Conectar();
+                    iep.setCodigoReport("R-FA-012");
+                    iep.setNombrereport("INCAPACIDAD");
+                    iep.setServicioreport("URGENCIAS");
+                    iep.setVersionreport("1.0");
+                    iep.setIdevolucion(hcuEvolucion.getId().toString());
+                    iep.setConnection(db.conexion);
+                    reader7 = iep.ImprimirRecetaMedicamentos();
+                    db.DesconectarBasedeDatos();
+                    iep.tempFile.deleteOnExit();
+                }
+                
                 PdfCopyFields copy = new PdfCopyFields(new FileOutputStream(archivoTemporal));
                 if (jCheckBox2.isSelected()) {
                     if (reader2 != null) {
@@ -242,15 +262,11 @@ public class imphcuEvo extends javax.swing.JDialog {
                         Desktop.getDesktop().open(archivoTemporal);
                     }
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Clipa+", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "10136:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
                 }
                 archivoTemporal.deleteOnExit();
-            } catch (DocumentException ex) {
-                JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            } catch (HeadlessException ex) {
-                JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "10135:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
             }
             ((imphcuEvo) form).jLabel1.setVisible(false);
             ((imphcuEvo) form).jButton1.setEnabled(true);
@@ -461,6 +477,7 @@ public class imphcuEvo extends javax.swing.JDialog {
         jCheckBox2 = new javax.swing.JCheckBox();
         jCheckBox8 = new javax.swing.JCheckBox();
         jCheckBox9 = new javax.swing.JCheckBox();
+        jCheckBox10 = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -519,9 +536,13 @@ public class imphcuEvo extends javax.swing.JDialog {
         jCheckBox8.setFocusable(false);
         jCheckBox8.setOpaque(false);
 
-        jCheckBox9.setText("??????????");
+        jCheckBox9.setText("Receta Medicamentos");
         jCheckBox9.setFocusable(false);
         jCheckBox9.setOpaque(false);
+
+        jCheckBox10.setText("Incapacidad");
+        jCheckBox10.setFocusable(false);
+        jCheckBox10.setOpaque(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -542,12 +563,14 @@ public class imphcuEvo extends javax.swing.JDialog {
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jCheckBox5, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jCheckBox6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addComponent(jCheckBox4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jCheckBox2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jCheckBox8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jCheckBox9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(jCheckBox5, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jCheckBox6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(jCheckBox4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(jCheckBox2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jCheckBox8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jCheckBox9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jCheckBox10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -572,6 +595,8 @@ public class imphcuEvo extends javax.swing.JDialog {
                         .addComponent(jCheckBox8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox10)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
@@ -621,6 +646,7 @@ public class imphcuEvo extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JCheckBox jCheckBox10;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox4;
     private javax.swing.JCheckBox jCheckBox5;

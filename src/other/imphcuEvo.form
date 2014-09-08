@@ -60,16 +60,19 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="103" groupAlignment="0" attributes="0">
-                                              <Component id="jCheckBox5" alignment="0" min="-2" pref="167" max="-2" attributes="0"/>
-                                              <Component id="jCheckBox6" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="jCheckBox5" alignment="0" min="-2" pref="167" max="-2" attributes="0"/>
+                                                  <Component id="jCheckBox6" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
+                                              </Group>
+                                              <Component id="jCheckBox4" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
                                           </Group>
-                                          <Component id="jCheckBox4" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
+                                          <Component id="jCheckBox2" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
                                       </Group>
-                                      <Component id="jCheckBox2" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
+                                      <Component id="jCheckBox8" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="jCheckBox8" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
+                                  <Component id="jCheckBox9" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="jCheckBox9" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
+                              <Component id="jCheckBox10" alignment="1" min="-2" pref="167" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jLabel1" max="32767" attributes="0"/>
@@ -99,6 +102,8 @@
                           <Component id="jCheckBox8" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jCheckBox9" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jCheckBox10" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
@@ -216,7 +221,14 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="jCheckBox9">
           <Properties>
-            <Property name="text" type="java.lang.String" value="??????????"/>
+            <Property name="text" type="java.lang.String" value="Receta Medicamentos"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="opaque" type="boolean" value="false"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="jCheckBox10">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Incapacidad"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
