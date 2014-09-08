@@ -30,7 +30,7 @@ import jpa.HcuEvolucionJpaController;
 import oldConnection.Database;
 import tools.ImprimirEvolucion;
 import tools.ImprimirNotaegreso;
-import tools.ImprimirRecetaMedicamentos;
+import tools.ImprimirIncapacidad;
 import tools.Imprimirautorizacionlaboratorio;
 import tools.ImprimirautorizacionlaboratorioFinal;
 import tools.Imprimirautorizacionrx;
@@ -154,35 +154,59 @@ public class imphcuEvo extends javax.swing.JDialog {
                     db.DesconectarBasedeDatos();
                     ie.tempFile.deleteOnExit();
                 }
-                if (jCheckBox5.isSelected()) {//Laboratorios no valido
+                if (jCheckBox5.isSelected()) {                    
                     Database db = new Database(AtencionUrgencia.props);
                     db.Conectar();
-                    impautlab = new Imprimirautorizacionlaboratorio();
-                    impautlab.setCodigo("R-FA-008");
-                    impautlab.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
-                    impautlab.setNovalido(setValueValidoInt(noValido));
-                    impautlab.setServicio("URGENCIAS");
-                    impautlab.setVersion("1.0");
-                    impautlab.setIdevu(hcuEvolucion.getId().toString());
-                    impautlab.setConnection(db.conexion);
-                    reader5 = impautlab.Imprimirautolab();
+                    if (hcuEvolucion.getEstado() == 1 || hcuEvolucion.getEstado() == 3) {
+                        impautlab = new Imprimirautorizacionlaboratorio();
+                        impautlab.setCodigo("R-FA-008");
+                        impautlab.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
+                        impautlab.setNovalido(setValueValidoInt(noValido));
+                        impautlab.setServicio("URGENCIAS");
+                        impautlab.setVersion("1.0");
+                        impautlab.setIdevu(hcuEvolucion.getId().toString());
+                        impautlab.setConnection(db.conexion);
+                        reader5 = impautlab.Imprimirautolab();
+                        impautlab.tempFile.deleteOnExit();
+                    }else{
+                        implabf = new ImprimirautorizacionlaboratorioFinal();
+                        implabf.setCodigo("R-FA-008");
+                        implabf.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
+                        implabf.setServicio("URGENCIAS");
+                        implabf.setVersion("1.0");
+                        implabf.setIdevu(hcuEvolucion.getId().toString());
+                        implabf.setConnection(db.conexion);
+                        reader5 = implabf.ImprimirautolabFinal();                        
+                        implabf.tempFile.deleteOnExit();
+                    }   
                     db.DesconectarBasedeDatos();
-                    impautlab.tempFile.deleteOnExit();
                 }
                 if (jCheckBox6.isSelected()) {//IMAGENOLOGIA
-                    Imprimirautorizacionrx impautrx = new Imprimirautorizacionrx();
                     Database db = new Database(AtencionUrgencia.props);
                     db.Conectar();
-                    impautrx.setCodigo("R-FA-009");
-                    impautrx.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE IMAGENOLOGIA");
-                    impautrx.setNovalido(setValueValidoInt(noValido));
-                    impautrx.setServicio("URGENCIAS");
-                    impautrx.setVersion("1.0");
-                    impautrx.setIdevu(hcuEvolucion.getId().toString());
-                    impautrx.setConnection(db.conexion);
-                    reader6 = impautrx.Imprimirautorx();
+                    if (hcuEvolucion.getEstado() == 1 || hcuEvolucion.getEstado() == 3) {
+                        Imprimirautorizacionrx impautrx = new Imprimirautorizacionrx();
+                        impautrx.setCodigo("R-FA-009");
+                        impautrx.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE IMAGENOLOGIA");
+                        impautrx.setNovalido(setValueValidoInt(noValido));
+                        impautrx.setServicio("URGENCIAS");
+                        impautrx.setVersion("1.0");
+                        impautrx.setIdevu(hcuEvolucion.getId().toString());
+                        impautrx.setConnection(db.conexion);
+                        reader6 = impautrx.Imprimirautorx();                        
+                        impautrx.tempFile.deleteOnExit();
+                    }else{
+                        ImprimirautorizacionrxFinal impautrxf = new ImprimirautorizacionrxFinal();
+                        impautrxf.setCodigo("R-FA-009");
+                        impautrxf.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE IMAGENOLOGIA");
+                        impautrxf.setServicio("URGENCIAS");
+                        impautrxf.setVersion("1.0");
+                        impautrxf.setIdevu(hcuEvolucion.getId().toString());
+                        impautrxf.setConnection(db.conexion);
+                        reader6 = impautrxf.ImprimirautorxFinal();
+                        impautrxf.tempFile.deleteOnExit();
+                    }
                     db.DesconectarBasedeDatos();
-                    impautrx.tempFile.deleteOnExit();
                 }
                 if (jCheckBox4.isSelected()) {//NOTA EVO
                     ImprimirEvolucion ie = new ImprimirEvolucion();
@@ -214,7 +238,7 @@ public class imphcuEvo extends javax.swing.JDialog {
                     iep.tempFile.deleteOnExit();
                 }
                 if (jCheckBox10.isSelected()) {//incapacidad
-                    ImprimirRecetaMedicamentos iep = new ImprimirRecetaMedicamentos();
+                    ImprimirIncapacidad iep = new ImprimirIncapacidad();
                     Database db = new Database(AtencionUrgencia.props);
                     db.Conectar();
                     iep.setCodigoReport("R-FA-012");
@@ -223,7 +247,7 @@ public class imphcuEvo extends javax.swing.JDialog {
                     iep.setVersionreport("1.0");
                     iep.setIdevolucion(hcuEvolucion.getId().toString());
                     iep.setConnection(db.conexion);
-                    reader7 = iep.ImprimirRecetaMedicamentos();
+                    reader1 = iep.ImprimirIncapacidad();
                     db.DesconectarBasedeDatos();
                     iep.tempFile.deleteOnExit();
                 }
@@ -252,6 +276,11 @@ public class imphcuEvo extends javax.swing.JDialog {
                 if (jCheckBox8.isSelected()) {
                     if (reader7 != null) {
                         copy.addDocument(reader7);
+                    }
+                }
+                if (jCheckBox10.isSelected()) {
+                    if (reader1 != null) {
+                        copy.addDocument(reader1);
                     }
                 }
                 try {
@@ -304,125 +333,144 @@ public class imphcuEvo extends javax.swing.JDialog {
         thread.start();
     }
 
-    public void imprimir2() {
-        jLabel1.setVisible(true);
-        jButton1.setEnabled(false);
-        try {
-            PdfReader reader1 = null, reader2 = null, reader3 = null, reader4 = null, reader5 = null, reader6 = null, reader7 = null, reader8 = null, reader9 = null;
-            File archivoTemporal = File.createTempFile("Evolucion_Urgencia", ".pdf");
-            if (jCheckBox2.isSelected()) {//NOTA egreso
-                ImprimirNotaegreso ie = new ImprimirNotaegreso();
-                Database db = new Database(AtencionUrgencia.props);
-                db.Conectar();
-                ie.setCodigoReport("R-FA-012");
-                ie.setNombrereport("NOTA DE EGRESO");
-                ie.setServicioreport("URGENCIAS");
-                ie.setVersionreport("1.0");
-                ie.setIdevolucion(hcuEvolucion.getId().toString());
-                ie.setConnection(db.conexion);
-                reader2 = ie.ImprimirNotaEgreso();
-                db.DesconectarBasedeDatos();
-                ie.tempFile.deleteOnExit();
-            }
-
-            if (jCheckBox5.isSelected()) {//Laboratorios no valido
-                Database db = new Database(AtencionUrgencia.props);
-                db.Conectar();
-                implabf = new ImprimirautorizacionlaboratorioFinal();
-                implabf.setCodigo("R-FA-008");
-                implabf.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
-                implabf.setServicio("URGENCIAS");
-                implabf.setVersion("1.0");
-                implabf.setIdevu(hcuEvolucion.getId().toString());
-                implabf.setConnection(db.conexion);
-                reader5 = implabf.ImprimirautolabFinal();
-                db.DesconectarBasedeDatos();
-                implabf.tempFile.deleteOnExit();
-            }
-            if (jCheckBox6.isSelected()) {//IMAGENOLOGIA
-                ImprimirautorizacionrxFinal impautrxf = new ImprimirautorizacionrxFinal();
-                Database db = new Database(AtencionUrgencia.props);
-                db.Conectar();
-                impautrxf.setCodigo("R-FA-009");
-                impautrxf.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE IMAGENOLOGIA");
-                impautrxf.setServicio("URGENCIAS");
-                impautrxf.setVersion("1.0");
-                impautrxf.setIdevu(hcuEvolucion.getId().toString());
-                impautrxf.setConnection(db.conexion);
-                reader6 = impautrxf.ImprimirautorxFinal();
-                db.DesconectarBasedeDatos();
-                impautrxf.tempFile.deleteOnExit();
-            }
-            if (jCheckBox4.isSelected()) {//NOTA EVO
-                ImprimirEvolucion ie = new ImprimirEvolucion();
-                Database db = new Database(AtencionUrgencia.props);
-                db.Conectar();
-                ie.setCodigoReport("R-FA-010");
-                ie.setNombrereport("NOTA DE EVOLUCION");
-                ie.setServicioreport("URGENCIAS");
-                ie.setVersionreport("1.0");
-                ie.setIdevolucion(hcuEvolucion.getId().toString());
-                ie.setConnection(db.conexion);
-                reader4 = ie.ImprimirEvolucion();
-                db.DesconectarBasedeDatos();
-                ie.tempFile.deleteOnExit();
-            }
-            if (jCheckBox8.isSelected()) {//Epicrisis   
-                ImprimirEpicrisis iep = new ImprimirEpicrisis();
-                Database db = new Database(AtencionUrgencia.props);
-                db.Conectar();
-                iep.setCodigo("R-FA-011");
-                iep.setNombrereport("EPICRISIS");
-                iep.setServicio("URGENCIAS");
-                iep.setVersion("1.0");
-                iep.setDestinohc("destino");
-                iep.setIdhc(hcuEvolucion.getIdInfoHistoriac().getId().toString());
-                iep.setConnection(db.conexion);
-                reader7 = iep.ImprimirEpicrisis();
-                db.DesconectarBasedeDatos();
-                iep.tempFile.deleteOnExit();
-            }
-            PdfCopyFields copy = new PdfCopyFields(new FileOutputStream(archivoTemporal));
-            if (jCheckBox2.isSelected()) {
-                if (reader2 != null) {
-                    copy.addDocument(reader2);
-                }
-            }
-            if (jCheckBox5.isSelected()) {
-                if (reader5 != null) {
-                    copy.addDocument(reader5);
-                }
-            }
-            if (jCheckBox6.isSelected()) {
-                if (reader6 != null) {
-                    copy.addDocument(reader6);
-                }
-            }
-            if (jCheckBox4.isSelected()) {
-                if (reader4 != null) {
-                    copy.addDocument(reader4);
-                }
-            }
-            if (jCheckBox8.isSelected()) {
-                if (reader7 != null) {
-                    copy.addDocument(reader7);
-                }
-            }
-            try {
-                copy.close();
-                if (noValido) {
-                    marcaAguaPDF(archivoTemporal);
-                } else {
-                    Desktop.getDesktop().open(archivoTemporal);
-                }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, ex.getMessage(), "Clipa+", JOptionPane.INFORMATION_MESSAGE);
-            }
-            archivoTemporal.deleteOnExit();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
+//    public void imprimir2() {
+//        jLabel1.setVisible(true);
+//        jButton1.setEnabled(false);
+//        try {
+//            PdfReader reader1 = null, reader2 = null, reader3 = null, reader4 = null, reader5 = null, reader6 = null, reader7 = null, reader8 = null, reader9 = null;
+//            File archivoTemporal = File.createTempFile("Evolucion_Urgencia", ".pdf");
+//            if (jCheckBox2.isSelected()) {//NOTA egreso
+//                ImprimirNotaegreso ie = new ImprimirNotaegreso();
+//                Database db = new Database(AtencionUrgencia.props);
+//                db.Conectar();
+//                ie.setCodigoReport("R-FA-012");
+//                ie.setNombrereport("NOTA DE EGRESO");
+//                ie.setServicioreport("URGENCIAS");
+//                ie.setVersionreport("1.0");
+//                ie.setIdevolucion(hcuEvolucion.getId().toString());
+//                ie.setConnection(db.conexion);
+//                reader2 = ie.ImprimirNotaEgreso();
+//                db.DesconectarBasedeDatos();
+//                ie.tempFile.deleteOnExit();
+//            }
+//
+//            if (jCheckBox5.isSelected()) {//Laboratorios no valido
+//                Database db = new Database(AtencionUrgencia.props);
+//                db.Conectar();
+//                implabf = new ImprimirautorizacionlaboratorioFinal();
+//                implabf.setCodigo("R-FA-008");
+//                implabf.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
+//                implabf.setServicio("URGENCIAS");
+//                implabf.setVersion("1.0");
+//                implabf.setIdevu(hcuEvolucion.getId().toString());
+//                implabf.setConnection(db.conexion);
+//                reader5 = implabf.ImprimirautolabFinal();
+//                db.DesconectarBasedeDatos();
+//                implabf.tempFile.deleteOnExit();
+//            }
+//            if (jCheckBox6.isSelected()) {//IMAGENOLOGIA
+//                ImprimirautorizacionrxFinal impautrxf = new ImprimirautorizacionrxFinal();
+//                Database db = new Database(AtencionUrgencia.props);
+//                db.Conectar();
+//                impautrxf.setCodigo("R-FA-009");
+//                impautrxf.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE IMAGENOLOGIA");
+//                impautrxf.setServicio("URGENCIAS");
+//                impautrxf.setVersion("1.0");
+//                impautrxf.setIdevu(hcuEvolucion.getId().toString());
+//                impautrxf.setConnection(db.conexion);
+//                reader6 = impautrxf.ImprimirautorxFinal();
+//                db.DesconectarBasedeDatos();
+//                impautrxf.tempFile.deleteOnExit();
+//            }
+//            if (jCheckBox4.isSelected()) {//NOTA EVO
+//                ImprimirEvolucion ie = new ImprimirEvolucion();
+//                Database db = new Database(AtencionUrgencia.props);
+//                db.Conectar();
+//                ie.setCodigoReport("R-FA-010");
+//                ie.setNombrereport("NOTA DE EVOLUCION");
+//                ie.setServicioreport("URGENCIAS");
+//                ie.setVersionreport("1.0");
+//                ie.setIdevolucion(hcuEvolucion.getId().toString());
+//                ie.setConnection(db.conexion);
+//                reader4 = ie.ImprimirEvolucion();
+//                db.DesconectarBasedeDatos();
+//                ie.tempFile.deleteOnExit();
+//            }
+//            if (jCheckBox8.isSelected()) {//Epicrisis   
+//                ImprimirEpicrisis iep = new ImprimirEpicrisis();
+//                Database db = new Database(AtencionUrgencia.props);
+//                db.Conectar();
+//                iep.setCodigo("R-FA-011");
+//                iep.setNombrereport("EPICRISIS");
+//                iep.setServicio("URGENCIAS");
+//                iep.setVersion("1.0");
+//                iep.setDestinohc("destino");
+//                iep.setIdhc(hcuEvolucion.getIdInfoHistoriac().getId().toString());
+//                iep.setConnection(db.conexion);
+//                reader7 = iep.ImprimirEpicrisis();
+//                db.DesconectarBasedeDatos();
+//                iep.tempFile.deleteOnExit();
+//            }
+//            if (jCheckBox10.isSelected()) {//incapacidad
+//                ImprimirIncapacidad ie = new ImprimirIncapacidad();
+//                Database db = new Database(AtencionUrgencia.props);
+//                db.Conectar();
+//                ie.setCodigoReport("R-FA-010");
+//                ie.setNombrereport("INCAPACIDAD");
+//                ie.setServicioreport("URGENCIAS");
+//                ie.setVersionreport("1.0");
+//                ie.setIdevolucion(hcuEvolucion.getId().toString());
+//                ie.setConnection(db.conexion);
+//                reader1 = ie.ImprimirIncapacidad();
+//                db.DesconectarBasedeDatos();
+//                ie.tempFile.deleteOnExit();
+//            }
+//            PdfCopyFields copy = new PdfCopyFields(new FileOutputStream(archivoTemporal));
+//            if (jCheckBox2.isSelected()) {
+//                if (reader2 != null) {
+//                    copy.addDocument(reader2);
+//                }
+//            }
+//            if (jCheckBox5.isSelected()) {
+//                if (reader5 != null) {
+//                    copy.addDocument(reader5);
+//                }
+//            }
+//            if (jCheckBox6.isSelected()) {
+//                if (reader6 != null) {
+//                    copy.addDocument(reader6);
+//                }
+//            }
+//            if (jCheckBox4.isSelected()) {
+//                if (reader4 != null) {
+//                    copy.addDocument(reader4);
+//                }
+//            }
+//            if (jCheckBox8.isSelected()) {
+//                if (reader7 != null) {
+//                    copy.addDocument(reader7);
+//                }
+//            }
+//            if (jCheckBox10.isSelected()) {
+//                if (reader1 != null) {
+//                    copy.addDocument(reader1);
+//                }
+//            }
+//            try {
+//                copy.close();
+//                if (noValido) {
+//                    marcaAguaPDF(archivoTemporal);
+//                } else {
+//                    Desktop.getDesktop().open(archivoTemporal);
+//                }
+//            } catch (Exception ex) {
+//                JOptionPane.showMessageDialog(null, ex.getMessage(), "Clipa+", JOptionPane.INFORMATION_MESSAGE);
+//            }
+//            archivoTemporal.deleteOnExit();
+//        } catch (Exception ex) {
+//            JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+//        }
+//    }
 
     private void marcaAguaPDF(File archivo_entrada) {
         try {
@@ -623,16 +671,11 @@ public class imphcuEvo extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (hcuEvolucion.getEstado() == 1 || hcuEvolucion.getEstado() == 3) {
+
             hiloReporte ut = new hiloReporte(this);
             Thread thread = new Thread(ut);
             thread.start();
-        } else {
-            imprimir2();
-            jLabel1.setVisible(false);
-            jButton1.setEnabled(true);
-            this.dispose();
-        }
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
