@@ -61,9 +61,10 @@ public class Ftriaje extends javax.swing.JFrame {
      * @param tipo valor que designa el tipo de hc.
      * 0:nota de ingreso; 1:observacion; 2:domicilio; 3:consulta externa
      */
-    private void generateHC(int tipo){
+    private void generateHC(int tipo, String destino){
         AtencionUrgencia.panelindex.hc.infohistoriac.setMotivoConsulta(jTextArea10.getText().toUpperCase());
         AtencionUrgencia.panelindex.hc.infohistoriac.setNivelTriaje(getNivelTriaje());
+        AtencionUrgencia.panelindex.hc.infohistoriac.setDestino(destino);
         AtencionUrgencia.panelindex.hc.finalizar = tipo;
         AtencionUrgencia.panelindex.hc.CrearHistoriaC();
         AtencionUrgencia.panelindex.hc.saveHistoryClinic();
@@ -233,7 +234,7 @@ public class Ftriaje extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "OBSERVACION", "CONSULTA EXTERNA (CITA PRIORITARIA)", "DOMICILIO" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "OBSERVACION", "CONSULTA EXTERNA (CITA PRIORITARIA)", "DOMICILIO", "HOSPITALICACION" }));
         jComboBox1.setFocusable(false);
 
         jLabel44.setText("DESTINO:");
@@ -310,57 +311,62 @@ public class Ftriaje extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         //0 es observacion
-        if(jComboBox1.getSelectedIndex()==0){
+        if(jComboBox1.getSelectedIndex()==0 || jComboBox1.getSelectedIndex()==3){
             AtencionUrgencia.panelindex.jpContainer.removeAll();
             AtencionUrgencia.panelindex.hc.setBounds(0, 0, 764, 514);
             AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.hc);
             AtencionUrgencia.panelindex.hc.setVisible(true);
             AtencionUrgencia.panelindex.jpContainer.validate();
             AtencionUrgencia.panelindex.jpContainer.repaint();
-            AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());
-            AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());
+            AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());//observaciones
+            AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());//nivel de triaje
             AtencionUrgencia.panelindex.FramEnable(true);
-            generateHC(0);//el estado para observacion es 1 pero aun no se ha terminado la nota de ingreso
+            generateHC(0,jComboBox1.getSelectedItem().toString());//el estado para observacion es 1 pero aun no se ha terminado la nota de ingreso
             this.setVisible(false);            
             //3 consulta externa
         }else if(jComboBox1.getSelectedIndex()==1){
-            Object[] objeto ={"Si","No","Cancelar"};
-            int n = JOptionPane.showOptionDialog(this, "¿Desea continuar la atención como cita prioritaria?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
-                    JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[2]);
-            if(n==0){
-                JOptionPane.showMessageDialog(this, "El modulo de Historia Clinica para consulta externa aun se encuentra en desarrollo.\nDebe diligenciar la Historia Clínica manual.");
-                
-                //comienza el hilo para reporte
-
-                /**
-                 * mostrar el panel de hc consulta externa y quitar el reporte de triaje
-                 */
-                AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());
-                AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());
-                AtencionUrgencia.panelindex.FramEnable(true);
-                generateHC(3);//el estado para consulta externa
+//            Object[] objeto ={"Si","No","Cancelar"};
+//            int n = JOptionPane.showOptionDialog(this, "¿Desea continuar la atención como cita prioritaria?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
+//                    JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[2]);
+//            if(n==0){
+//                         
+//                JOptionPane.showMessageDialog(this, "El modulo de Historia Clinica para consulta externa aun se encuentra en desarrollo.\nDebe diligenciar la Historia Clínica manual.");
+//                
+//                //comienza el hilo para reporte
+//
+//                /**
+//                 * mostrar el panel de hc consulta externa y quitar el reporte de triaje
+//                 */
+//                AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());
+//                AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());
+//                AtencionUrgencia.panelindex.FramEnable(true);
+//                generateHC(3,jComboBox1.getSelectedItem().toString());//el estado para consulta externa
+//                
+//                
+//                
+//                
+////                hiloReporte ut = new hiloReporte(this,AtencionUrgencia.panelindex.hc.infohistoriac);
+////                Thread thread = new Thread(ut);
+////                thread.start();
+////                this.setVisible(false);                
+//            }else if(n==1){
+//                AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());
+//                AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());
+//                AtencionUrgencia.panelindex.FramEnable(true);
+//                generateHC(3,jComboBox1.getSelectedItem().toString());//el estado para consulta externa es 3
+////                this.setVisible(false);
+//                //debemos generar cita prioritaria para que sea visualizada en el formulario de consulta externa
+//                //para citas prioritarias y quitar el reporte de triaje asi como quitarle el destino del paciente 
+//                // es posible que no sea necesario generar el reporte de triaje
 //                hiloReporte ut = new hiloReporte(this,AtencionUrgencia.panelindex.hc.infohistoriac);
 //                Thread thread = new Thread(ut);
 //                thread.start();
-//                this.setVisible(false);                
-            }else if(n==1){
-                AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());
-                AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());
-                AtencionUrgencia.panelindex.FramEnable(true);
-                generateHC(3);//el estado para consulta externa es 3
-//                this.setVisible(false);
-                //debemos generar cita prioritaria para que sea visualizada en el formulario de consulta externa
-                //para citas prioritarias y quitar el reporte de triaje asi como quitarle el destino del paciente 
-                // es posible que no sea necesario generar el reporte de triaje
-                hiloReporte ut = new hiloReporte(this,AtencionUrgencia.panelindex.hc.infohistoriac);
-                Thread thread = new Thread(ut);
-                thread.start();
-            }                    
+//            }                    
         }else if(jComboBox1.getSelectedIndex()==2){
             AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());
             AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());
             AtencionUrgencia.panelindex.FramEnable(true);
-            generateHC(2);//el estado para domicilio y generar reporte de triage
+            generateHC(2,jComboBox1.getSelectedItem().toString());//el estado para domicilio y generar reporte de triage
             hiloReporte ut = new hiloReporte(this,AtencionUrgencia.panelindex.hc.infohistoriac);
             Thread thread = new Thread(ut);
             thread.start();
