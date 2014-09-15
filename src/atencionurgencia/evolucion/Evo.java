@@ -118,7 +118,7 @@ public class Evo extends javax.swing.JPanel {
     /**
      * Creates new form HC
      */
-    private HcuEvolucion hcuEvolucion = null;
+//    private HcuEvolucion hcuEvolucion = null;
     private int est = 0;
 
     public Evo() {
@@ -5418,6 +5418,7 @@ public class Evo extends javax.swing.JPanel {
                         hcuEvolucionJpaController.edit(he);
                         imp.setNoValido(false);
                         imp.setEvolucion(he);
+                        imp.stateevo1 =1;
                         imp.imprimir();
                         jButton13.setEnabled(false);
                         jButton12.setEnabled(false);
@@ -5434,7 +5435,7 @@ public class Evo extends javax.swing.JPanel {
                         if (entrada == 0) {
                             he.setEstado(4);
                             hcuEvolucionJpaController.edit(he);
-                            //                    setJTreeEvo(); 
+                            imp.stateevo1 =3;
                             imp.setNoValido(false);
                             imp.setEvolucion(he);
                             imp.imprimir();

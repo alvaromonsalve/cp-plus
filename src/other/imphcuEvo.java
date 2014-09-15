@@ -30,6 +30,7 @@ import oldConnection.Database;
 import tools.ImprimirEvolucion;
 import tools.ImprimirNotaegreso;
 import tools.ImprimirIncapacidad;
+import tools.ImprimirRecetaEvo;
 import tools.Imprimirautorizacionlaboratorio;
 import tools.ImprimirautorizacionlaboratorioFinal;
 import tools.Imprimirautorizacionrx;
@@ -47,6 +48,7 @@ public class imphcuEvo extends javax.swing.JDialog {
     private EntityManagerFactory factory;
     private Imprimirautorizacionlaboratorio impautlab;
     private ImprimirautorizacionlaboratorioFinal implabf;
+    public int stateevo1;
 
     public imphcuEvo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -55,7 +57,6 @@ public class imphcuEvo extends javax.swing.JDialog {
     }
 
     public void activeChec() {
-        jCheckBox9.setEnabled(false);
         if (procedimientoJpa == null) {
             factory = Persistence.createEntityManagerFactory("ClipaEJBPU", AtencionUrgencia.props);
             procedimientoJpa = new HcuEvoProcedimientoJpaController(factory);
@@ -87,6 +88,7 @@ public class imphcuEvo extends javax.swing.JDialog {
                 if(hcuEvolucion.getHcuEvoEgreso().isEmpty() == false & 
                         hcuEvolucion.getHcuEvoEgreso().get(hcuEvolucion.getHcuEvoEgreso().size()-1).getIncapacidad()==1 ){
                     jCheckBox10.setEnabled(true);
+                    jCheckBox9.setEnabled(true);
                 }
             }
         }
@@ -152,7 +154,7 @@ public class imphcuEvo extends javax.swing.JDialog {
                 if (jCheckBox5.isSelected()) {                    
                     Database db = new Database(AtencionUrgencia.props);
                     db.Conectar();
-                    if (hcuEvolucion.getEstado() == 1 || hcuEvolucion.getEstado() == 3) {
+                    if (stateevo1==1 || stateevo1==3) {
                         impautlab = new Imprimirautorizacionlaboratorio();
                         impautlab.setCodigo("R-FA-008");
                         impautlab.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
@@ -179,7 +181,7 @@ public class imphcuEvo extends javax.swing.JDialog {
                 if (jCheckBox6.isSelected()) {//IMAGENOLOGIA
                     Database db = new Database(AtencionUrgencia.props);
                     db.Conectar();
-                    if (hcuEvolucion.getEstado() == 1 || hcuEvolucion.getEstado() == 3) {
+                    if (stateevo1==1 || stateevo1==3) {
                         Imprimirautorizacionrx impautrx = new Imprimirautorizacionrx();
                         impautrx.setCodigo("R-FA-009");
                         impautrx.setNombrereport("SOLICITUD DE PROCEDIMIENTOS DE IMAGENOLOGIA");
@@ -208,7 +210,7 @@ public class imphcuEvo extends javax.swing.JDialog {
                     Database db = new Database(AtencionUrgencia.props);
                     db.Conectar();
                     ie.setCodigoReport("R-FA-010");
-                    ie.setNombrereport("NOTA DE EVOLUCION");
+                    ie.setNombrereport("NOTA DE EVOLUCION "+tools.MyDate.yyyyMMddHHmm2.format(hcuEvolucion.getFechaEvo()));
                     ie.setServicioreport("URGENCIAS");
                     ie.setVersionreport("1.0");
                     ie.setIdevolucion(hcuEvolucion.getId().toString());
@@ -225,10 +227,29 @@ public class imphcuEvo extends javax.swing.JDialog {
                     iep.setNombrereport("EPICRISIS");
                     iep.setServicio("URGENCIAS");
                     iep.setVersion("1.0");
-                    iep.setDestinohc("destino");
+                    iep.setDestinohc("OBSERVACION DE URGENCIAS");
                     iep.setIdhc(hcuEvolucion.getIdInfoHistoriac().getId().toString());
+                    if(hcuEvolucion.getIdInfoHistoriac().getCausaExterna().equals("ACCIDENTE DE TRANSITO")){
+                        iep.setSoat("1");
+                    }else{
+                        iep.setSoat("0");
+                    }
                     iep.setConnection(db.conexion);
                     reader7 = iep.ImprimirEpicrisis();
+                    db.DesconectarBasedeDatos();
+                    iep.tempFile.deleteOnExit();
+                }
+                if (jCheckBox9.isSelected()) {//medicamento evo 
+                    ImprimirRecetaEvo iep = new ImprimirRecetaEvo();
+                    Database db = new Database(AtencionUrgencia.props);
+                    db.Conectar();
+                    iep.setCodigoReport("R-FA-013");
+                    iep.setNombrereport("PRESCRIPCION MEDICA");
+                    iep.setServicioreport("URGENCIAS");
+                    iep.setVersionreport("1.0");
+                    iep.setIdevolucion(hcuEvolucion.getId().toString());
+                    iep.setConnection(db.conexion);
+                    reader3 = iep.ImprimirRecetaEvo();
                     db.DesconectarBasedeDatos();
                     iep.tempFile.deleteOnExit();
                 }
@@ -276,6 +297,11 @@ public class imphcuEvo extends javax.swing.JDialog {
                 if (jCheckBox10.isSelected()) {
                     if (reader1 != null) {
                         copy.addDocument(reader1);
+                    }
+                }
+                if (jCheckBox9.isSelected()) {
+                    if (reader3 != null) {
+                        copy.addDocument(reader3);
                     }
                 }
                 try {

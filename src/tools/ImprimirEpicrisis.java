@@ -14,7 +14,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 
 public class ImprimirEpicrisis {
-    private String idhc, nombrereport, codigo, servicio, version, destinohc;
+    private String idhc, nombrereport, codigo, servicio, version, destinohc, soat;
     private Connection conexion;
     public File tempFile;
     
@@ -27,6 +27,7 @@ public class ImprimirEpicrisis {
             parametro.put("codigo",getCodigo());
             parametro.put("version",getVersion());
             parametro.put("servicio",getServicio());
+            parametro.put("soat",getSoat());
             JasperPrint informe = JasperFillManager.fillReport(System.getProperty("user.dir")+"/Reportes/Epicrisis.jasper", parametro, getConnection());
             JRExporter exporter = new JRPdfExporter();
             exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
@@ -55,6 +56,14 @@ public class ImprimirEpicrisis {
     
     public String getIdhc() {
         return idhc;
+    }
+    
+    public String getSoat() {
+        return soat;
+    }
+    
+    public void setSoat(String soat) {
+        this.soat = soat;
     }
 
     public void setIdhc(String idhc) {

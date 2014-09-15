@@ -37,10 +37,10 @@ public class Imprimirautorizacionrx {
 //            Desktop.getDesktop().open(tempFile);
 //            tempFile.deleteOnExit();
         }catch (IOException e) {
-            JOptionPane.showMessageDialog(null,"Error General Lanzando Reporte Descripcion: Ex00026 \n" +e.getMessage());
+            JOptionPane.showMessageDialog(null,"!Error General Lanzando Reporte Descripcion: Ex00026 \n" +e.getMessage());
             return null;
         } catch (JRException e) {
-            JOptionPane.showMessageDialog(null,"Error General Lanzando Reporte Descripcion: Ex00026 \n" +e.getMessage());
+            JOptionPane.showMessageDialog(null,"!Error General Lanzando Reporte Descripcion: Ex00026 \n" +e.getMessage());
             return null;
         }
     }

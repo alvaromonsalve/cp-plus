@@ -87,6 +87,7 @@ public class HC extends javax.swing.JPanel {
     public pTratMedidaGeneral pMedidaGeneral = null;
     public pAnexo3 pAnexo31 = null;
     public Ftriaje ftriaje = null;
+    private HcuDestino hcuDestino = null;
     // </editor-fold>
 
     /**
@@ -98,7 +99,8 @@ public class HC extends javax.swing.JPanel {
         inicio();
         InputMap map2 = jTextArea10.getInputMap(JTextArea.WHEN_FOCUSED);
         map2.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK), "null");
-        jXTaskPane5.setVisible(false);
+        jLabel58.setVisible(false);
+        jLabel59.setVisible(false);
     }
 
     private void inicio() {
@@ -234,6 +236,10 @@ public class HC extends javax.swing.JPanel {
         if (pMedic != null) {
             pMedic.saveChanges(factory, infohistoriac);
         }
+        if(hcuDestino!=null){
+            hcuDestino.saveChanges();
+        }
+        
     }
 
     public void saveHistoryClinic() {
@@ -943,6 +949,7 @@ public class HC extends javax.swing.JPanel {
         jXTaskPane5 = new org.jdesktop.swingx.JXTaskPane();
         jLabel58 = new javax.swing.JLabel();
         jLabel59 = new javax.swing.JLabel();
+        jLabel60 = new javax.swing.JLabel();
         jFileChooser1 = new javax.swing.JFileChooser();
         jpCentro = new javax.swing.JPanel();
         jLabel23 = new javax.swing.JLabel();
@@ -1048,8 +1055,8 @@ public class HC extends javax.swing.JPanel {
         jPanel5.setOpaque(false);
 
         jComboBox1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "PACIENTE SANO", "ENFERMEDAD GENERAL O COMÚN", "ENFERMEDAD PROFESIONAL U OCUPACIONAL", "ACCIDENTE DE TRABAJO", "ACCIDENTE NO DE TRABAJO O FUERA DEL TRABAJO" }));
-        jComboBox1.setSelectedIndex(-1);
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "PACIENTE SANO", "ENFERMEDAD GENERAL O COMÚN", "ENFERMEDAD PROFESIONAL U OCUPACIONAL", "ACCIDENTE DE TRABAJO", "ACCIDENTE NO DE TRABAJO O FUERA DEL TRABAJO", "ACCIDENTE DE TRANSITO" }));
+        jComboBox1.setSelectedIndex(1);
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -2851,7 +2858,7 @@ public class HC extends javax.swing.JPanel {
         jXTaskPane4.getContentPane().add(jLabel47);
 
         jXTaskPane5.setExpanded(false);
-        jXTaskPane5.setTitle("AUTORIZACIONES");
+        jXTaskPane5.setTitle("DESTINO");
         jXTaskPane5.setAnimated(false);
         jXTaskPane5.setFocusable(false);
         jXTaskPane5.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
@@ -2865,17 +2872,17 @@ public class HC extends javax.swing.JPanel {
         jLabel58.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/product-sales-report-icon.png"))); // NOI18N
         jLabel58.setText("Anexo 3");
         jLabel58.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel58.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel58MouseMoved(evt);
+            }
+        });
         jLabel58.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel58MouseClicked(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel58MouseExited(evt);
-            }
-        });
-        jLabel58.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel58MouseMoved(evt);
             }
         });
         jXTaskPane5.getContentPane().add(jLabel58);
@@ -2899,6 +2906,28 @@ public class HC extends javax.swing.JPanel {
             }
         });
         jXTaskPane5.getContentPane().add(jLabel59);
+
+        jLabel60.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel60.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Edit.png"))); // NOI18N
+        jLabel60.setText("Destino");
+        jLabel60.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel60.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel60MouseMoved(evt);
+            }
+        });
+        jLabel60.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel60MouseClicked(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel60MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel60MouseReleased(evt);
+            }
+        });
+        jXTaskPane5.getContentPane().add(jLabel60);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -3169,14 +3198,14 @@ public class HC extends javax.swing.JPanel {
         jButton10.setMinimumSize(new java.awt.Dimension(32, 32));
         jButton10.setPreferredSize(new java.awt.Dimension(32, 32));
         jButton10.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/images/final1.png"))); // NOI18N
-        jButton10.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton10MouseExited(evt);
-            }
-        });
         jButton10.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton10MouseMoved(evt);
+            }
+        });
+        jButton10.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton10MouseExited(evt);
             }
         });
         jButton10.addActionListener(new java.awt.event.ActionListener() {
@@ -4447,6 +4476,28 @@ public class HC extends javax.swing.JPanel {
         jpCentro.repaint();
     }//GEN-LAST:event_jLabel33MouseReleased
 
+    private void jLabel60MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel60MouseClicked
+        
+    }//GEN-LAST:event_jLabel60MouseClicked
+
+    private void jLabel60MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel60MouseExited
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel60MouseExited
+
+    private void jLabel60MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel60MouseMoved
+        
+    }//GEN-LAST:event_jLabel60MouseMoved
+
+    private void jLabel60MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel60MouseReleased
+        if(hcuDestino == null) hcuDestino =  new HcuDestino(infohistoriac); 
+        jPanel35.removeAll();
+        hcuDestino.setBounds(0,0,380,420);
+        jPanel35.add(hcuDestino);
+        hcuDestino.setVisible(true);
+        jPanel35.validate();
+        jPanel35.repaint();
+    }//GEN-LAST:event_jLabel60MouseReleased
+
     // </editor-fold>
     // <editor-fold desc="Variables declaration - do not modify"> 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -4524,6 +4575,7 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel58;
     private javax.swing.JLabel jLabel59;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel60;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;

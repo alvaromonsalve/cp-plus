@@ -64,6 +64,7 @@ public class pTratMedic extends javax.swing.JPanel {
      */
     public pTratMedic() {
         initComponents();
+        jTabbedPane1.remove(1);
         onEvolucion=false;
         setCargaTabla();
         setCargaTablaMezcla();

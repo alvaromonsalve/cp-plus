@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package other;
 
 import atencionurgencia.AtencionUrgencia;
@@ -235,8 +232,10 @@ public class impresionesHC extends javax.swing.JFrame {
                     List<InfoPosologiaHcu> listInfoPosologiaHcu = infoPosologiaHcuJPA.ListFindInfoPosologia(idHC);
                     if (listInfoPosologiaHcu.size() > 0) {
                         String master=null;
+                        Map param = new HashMap();
                         if((idHC.getEstado()!=1 & noValido == true) | (idHC.getEstado()==1 & noValido == false)){ 
                             master = System.getProperty("user.dir") + "/reportes/resetaMedica.jasper";
+                            param.put("entidadadmision", idHC.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad());
                         }else{                            
                             //reporte que no genera consecutivo
                             master = System.getProperty("user.dir") + "/reportes/solicitudmedicamentos.jasper";
@@ -244,7 +243,7 @@ public class impresionesHC extends javax.swing.JFrame {
                         if (master != null) {
                             oldConnection.Database db = new Database(AtencionUrgencia.props);
                             db.Conectar();
-                            Map param = new HashMap();
+                            
                             param.put("id_hc", idHC.getId().toString());
                             param.put("NombreReport", "PRESCRIPCION MEDICA");
                             param.put("version", "1.0");
@@ -275,6 +274,7 @@ public class impresionesHC extends javax.swing.JFrame {
                             db.Conectar();
                             Map param = new HashMap();
                             param.put("id_hc", idHC.getId());
+                            param.put("entidadadmision", idHC.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad());
                             param.put("NombreReport", "SOLICITUD DE VALORACION POR ESPECIALISTA");
                             param.put("version", "1.0");
                             param.put("codigo", "R-FA-004");
@@ -302,7 +302,7 @@ public class impresionesHC extends javax.swing.JFrame {
                         param.put("version", "1.0");
                         param.put("codigo", "R-FA-002");
                         param.put("servicio", "URGENCIAS");
-                        param.put("DestinoHC", destinoHc);
+//                        param.put("DestinoHC", destinoHc);
                         JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
                         JRExporter exporter = new JRPdfExporter();
                         exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
