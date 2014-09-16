@@ -136,6 +136,7 @@ public class fListinterconsulta extends javax.swing.JFrame {
             modelo.removeRow(0);
         }
         for(InfoHistoriac ih:historiacs){
+            count =0;
             int row = modelo.getRowCount();
             count = count +  iihjc.CountInterconsultas(ih, (StaticEspecialidades) jComboBox1.getSelectedItem()).intValue();
             List<HcuEvolucion> evolucions = hejc.FindHcuEvolucions(ih);
