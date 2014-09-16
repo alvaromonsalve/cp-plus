@@ -236,10 +236,6 @@ public class HC extends javax.swing.JPanel {
         if (pMedic != null) {
             pMedic.saveChanges(factory, infohistoriac);
         }
-        if(hcuDestino!=null){
-            hcuDestino.saveChanges();
-        }
-        
     }
 
     public void saveHistoryClinic() {
@@ -276,7 +272,10 @@ public class HC extends javax.swing.JPanel {
         infohistoriac.setDiagnostico5(idDiag5);
         infohistoriac.setHallazgo(jTextArea19.getText().toUpperCase());
         infohistoriac.setTipoHc(0);//0 = urgencias; 
-
+        if(hcuDestino!=null){
+            infohistoriac.setDestino(hcuDestino.saveChanges());
+        }
+        
         infohistoriac.setEstado(finalizar);
         infohistoriac.setIdConfigdecripcionlogin(AtencionUrgencia.configdecripcionlogin);
 

@@ -24,8 +24,8 @@ public class HcuDestino extends javax.swing.JPanel {
         }
     }
     
-    public void saveChanges(){
-        infoHistoriac.setDestino(jComboBox1.getSelectedItem().toString());
+    public String saveChanges(){
+        return jComboBox1.getSelectedItem().toString();
     }
 
     @SuppressWarnings("unchecked")
