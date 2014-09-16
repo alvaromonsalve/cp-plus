@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
@@ -167,7 +168,6 @@ public class addMedicamentos extends javax.swing.JDialog {
         jTextField1 = new javax.swing.JTextField();
         jLabel41 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
-        jLabel43 = new javax.swing.JLabel();
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -322,7 +322,7 @@ public class addMedicamentos extends javax.swing.JDialog {
         jLabel38.setForeground(new java.awt.Color(0, 51, 255));
         jLabel38.setText("Via:");
 
-        jComboBox5.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "[IM] Intramucsular", "[IV] Intravenosa", "[VB] Vía  Bucal (enjuagues, aplicación tópica)", "[Vic] Vía Intracavernosa", "[Vinh] Vía Inhalatoria", "[VO] Vía Oral", "[Vof] Vía Oftálmica", "[Vot] Vía Otica", "[VP] Vía(s) Parental(es)", "[VR] Vía Rectal", "[VSc] Vía Subcutánea", "[VSl] Vía Sublingual", "[VT] Vía Tópica", "[VTd] Vía Transdérmica", "[VV] Vía Vaginal (o Vulvar)" }));
+        jComboBox5.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "[IM] Intramuscular", "[IV] Intravenosa", "[VB] Vía  Bucal (enjuagues, aplicación tópica)", "[Vic] Vía Intracavernosa", "[Vinh] Vía Inhalatoria", "[VO] Vía Oral", "[Vof] Vía Oftálmica", "[Vot] Vía Otica", "[VP] Vía(s) Parental(es)", "[VR] Vía Rectal", "[VSc] Vía Subcutánea", "[VSl] Vía Sublingual", "[VT] Vía Tópica", "[VTd] Vía Transdérmica", "[VV] Vía Vaginal (o Vulvar)" }));
         jComboBox5.setSelectedIndex(-1);
         jComboBox5.setFocusable(false);
 
@@ -340,9 +340,6 @@ public class addMedicamentos extends javax.swing.JDialog {
                 jTextField2FocusLost(evt);
             }
         });
-
-        jLabel43.setForeground(new java.awt.Color(255, 0, 0));
-        jLabel43.setText("La cantidad del suministro solo es para la formula medica.");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -369,8 +366,7 @@ public class addMedicamentos extends javax.swing.JDialog {
                                 .addComponent(jLabel41, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jLabel43, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -393,9 +389,7 @@ public class addMedicamentos extends javax.swing.JDialog {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel41)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel43)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("POSOLOGIA", jPanel2);
@@ -486,9 +480,9 @@ public class addMedicamentos extends javax.swing.JDialog {
     }//GEN-LAST:event_jTextField15KeyReleased
 
     private void buttonSeven13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven13ActionPerformed
-        if(jTextField2.getText().isEmpty()){
-            jTextField2.setText("0");
-        }
+        if(!jTextField2.getText().isEmpty()){
+            
+        
         Numero_a_Letra num = new Numero_a_Letra();
         if(jTable1.getRowCount() > 0){
             suminis = (SumSuministro)jTable1.getValueAt(jTable1.getSelectedRow(), 0);
@@ -505,6 +499,9 @@ public class addMedicamentos extends javax.swing.JDialog {
                 }
                 this.dispose();
             }
+        }
+        }else{
+            JOptionPane.showMessageDialog(null, "Por favor digite la cantidad");
         }
 
     }//GEN-LAST:event_buttonSeven13ActionPerformed
@@ -591,7 +588,6 @@ public class addMedicamentos extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel40;
     private javax.swing.JLabel jLabel41;
     private javax.swing.JLabel jLabel42;
-    private javax.swing.JLabel jLabel43;
     private javax.swing.JLabel jLabel50;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
