@@ -81,9 +81,9 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
     
     private void setCargaTabla(){
         ModeloTabla = getModelo();
-        sorter=new TableRowSorter<TableModel>(ModeloTabla);
+//        sorter=new TableRowSorter<TableModel>(ModeloTabla);
         jTable1.setModel(ModeloTabla);
-        jTable1.setRowSorter(sorter);
+//        jTable1.setRowSorter(sorter);
         jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         Funciones.setOcultarColumnas(jTable1,new int[]{0,3});
