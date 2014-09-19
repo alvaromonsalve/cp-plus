@@ -123,6 +123,8 @@ public class impresionesHC extends javax.swing.JFrame {
                         String master=null;                        
                         if((idHC.getEstado()!=1 & noValido == true) | (idHC.getEstado()==1 & noValido == false)){                            
                             master = System.getProperty("user.dir") + "/reportes/solPorcedimientosLaboratorio.jasper";                                            
+                        }else if((idHC.getEstado()!=2 & noValido == true) | (idHC.getEstado()==2 & noValido == false)){    
+                            master = System.getProperty("user.dir") + "/reportes/solPorcedimientosLaboratorio.jasper"; 
                         }else{
                              //reporte que no genera consecutivo
                             master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientolabposthcu.jasper"; 
@@ -159,6 +161,8 @@ public class impresionesHC extends javax.swing.JFrame {
                     if (listInfoProcedimientoHcufilter != null & listInfoProcedimientoHcufilter.size() > 0) {
                         String master=null;
                         if((idHC.getEstado()!=1 & noValido == true) | (idHC.getEstado()==1 & noValido == false)){                             
+                            master = System.getProperty("user.dir") + "/reportes/solPorcedimientos.jasper";
+                        }else if((idHC.getEstado()!=2 & noValido == true) | (idHC.getEstado()==2 & noValido == false)){  
                             master = System.getProperty("user.dir") + "/reportes/solPorcedimientos.jasper";
                         }else{
                             //reporte que no genera consecutivo
@@ -199,6 +203,8 @@ public class impresionesHC extends javax.swing.JFrame {
                         String master=null;
                         if((idHC.getEstado()!=1 & noValido == true) | (idHC.getEstado()==1 & noValido == false)){ 
                             master = System.getProperty("user.dir") + "/reportes/solPorcedimientosImagenologia.jasper";
+                        }else if((idHC.getEstado()!=2 & noValido == true) | (idHC.getEstado()==2 & noValido == false)){
+                            master = System.getProperty("user.dir") + "/reportes/solPorcedimientosImagenologia.jasper";
                         }else{
                             //reporte que no genera consecutivo
                             master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientorxposthcu.jasper";                            
@@ -233,10 +239,13 @@ public class impresionesHC extends javax.swing.JFrame {
                     if (listInfoPosologiaHcu.size() > 0) {
                         String master=null;
                         Map param = new HashMap();
-                        if((idHC.getEstado()!=1 & noValido == true) | (idHC.getEstado()==1 & noValido == false)){ 
+                        if((idHC.getEstado()!=1 & noValido == true) | (idHC.getEstado()==1 & noValido == false)){
                             master = System.getProperty("user.dir") + "/reportes/resetaMedica.jasper";
                             param.put("entidadadmision", idHC.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad());
-                        }else{                            
+                        }else if((idHC.getEstado()!=2 & noValido == true) | (idHC.getEstado()==2 & noValido == false)){
+                            master = System.getProperty("user.dir") + "/reportes/resetaMedica.jasper";
+                            param.put("entidadadmision", idHC.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad());
+                        }else{
                             //reporte que no genera consecutivo
                             master = System.getProperty("user.dir") + "/reportes/solicitudmedicamentos.jasper";
                         }

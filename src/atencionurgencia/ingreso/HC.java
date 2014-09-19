@@ -272,7 +272,7 @@ public class HC extends javax.swing.JPanel {
         infohistoriac.setDiagnostico5(idDiag5);
         infohistoriac.setHallazgo(jTextArea19.getText().toUpperCase());
         infohistoriac.setTipoHc(0);//0 = urgencias; 
-        infohistoriac.setEstado(finalizar);
+        if(infohistoriac.getEstado()!=2) infohistoriac.setEstado(finalizar);
         if(hcuDestino!=null){
             infohistoriac.setDestino(hcuDestino.saveChanges());
             if(infohistoriac.getDestino().equals("DOMICILIO")){

@@ -141,6 +141,7 @@ public class fListinterconsulta extends javax.swing.JFrame {
             count = count +  iihjc.CountInterconsultas(ih, (StaticEspecialidades) jComboBox1.getSelectedItem()).intValue();
             List<HcuEvolucion> evolucions = hejc.FindHcuEvolucions(ih);
             for(HcuEvolucion he:evolucions){
+//                System.out.println(he.);
                 count = count + heijc.CountInterconsultas(he, (StaticEspecialidades) jComboBox1.getSelectedItem()).intValue();                
             }
             count = count - hejc.CountInterconsultasGeneradas(ih, especialidades).intValue();

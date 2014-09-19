@@ -656,6 +656,8 @@ public class fListPacientes extends javax.swing.JFrame {
         if (jTextField1.getText()!=null && !jTextField1.getText().equals("") && !jTextField1.getText().equals("...")){  
             AtencionUrgencia.panelindex.hc = new HC();
             AtencionUrgencia.panelindex.hc.ftriaje = new Ftriaje();
+            AtencionUrgencia.panelindex.hc.ftriaje.setTitle(ia.getIdDatosPersonales().getNombre1()+" "
+                    +ia.getIdDatosPersonales().getApellido1()+" ["+ia.getIdDatosPersonales().getNumDoc()+"]");
             AtencionUrgencia.panelindex.hc.ftriaje.setVisible(true);
             AtencionUrgencia.panelindex.FramEnable(false);
             AtencionUrgencia.panelindex.hc.infopaciente = infopacienteJPA.findInfoPaciente(ia.getIdDatosPersonales().getId());
