@@ -288,7 +288,7 @@
             <EtchetBorder/>
           </Border>
         </Property>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor" postCode="jpContainer.setIcon(new ImageIcon(&quot;//192.168.1.210/signature$/f_enfermeria.png&quot;));">
           <Image iconType="3" name="/images/fondoIndexHC.png"/>
         </Property>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">

@@ -77,28 +77,30 @@ public class fListinterconsulta extends javax.swing.JFrame {
         timerSelect.schedule(timerListar, new Date());
     }
     
-    private DefaultTableModel getModeloTabla(){
-                return (new DefaultTableModel(
-                null, new String [] {"hcu","Documento","Nombre"}){
-                Class[] types = new Class [] {
-                     InfoHistoriac.class,
-                     java.lang.String.class,
-                     java.lang.String.class,
-                     java.lang.String.class
-                };
-                boolean[] canEdit = new boolean [] {
-                false,false,false,false
-                };
-                @Override
-                public Class getColumnClass(int columnIndex) {
-                   return types [columnIndex];
-                }
-                @Override
-                public boolean isCellEditable(int rowIndex, int colIndex){
-                   return canEdit [colIndex];
-                }
-            });
-        }
+    private DefaultTableModel getModeloTabla() {
+        return (new DefaultTableModel(
+                null, new String[]{"hcu", "Documento", "Nombre"}) {
+                    Class[] types = new Class[]{
+                        InfoHistoriac.class,
+                        java.lang.String.class,
+                        java.lang.String.class,
+                        java.lang.String.class
+                    };
+                    boolean[] canEdit = new boolean[]{
+                        false, false, false, false
+                    };
+
+                    @Override
+                    public Class getColumnClass(int columnIndex){
+                        return types[columnIndex];
+                    }
+
+                    @Override
+                    public boolean isCellEditable(int rowIndex, int colIndex) {
+                        return canEdit[colIndex];
+                    }
+                });
+    }
     
     private void TablaModeloTabla(){
            modelo = getModeloTabla();

@@ -15,6 +15,7 @@ import atencionurgencia.ingreso.HC;
 import entidades.AccessRoles;
 import java.awt.Color;
 import java.awt.Font;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
@@ -238,6 +239,7 @@ public class panelIndex extends javax.swing.JPanel {
         jpContainer.setBackground(new java.awt.Color(255, 255, 255));
         jpContainer.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jpContainer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/fondoIndexHC.png"))); // NOI18N
+        jpContainer.setIcon(new ImageIcon("//192.168.1.210/signature$/f_enfermeria.png"));
         jpContainer.setMaximumSize(new java.awt.Dimension(764, 514));
         jpContainer.setMinimumSize(new java.awt.Dimension(764, 514));
         jpContainer.setPreferredSize(new java.awt.Dimension(764, 514));
