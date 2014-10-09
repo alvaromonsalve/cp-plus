@@ -706,7 +706,7 @@ public class HC extends javax.swing.JPanel {
             mensaje.add("*Aspectos Generales*");
             retorno=true;
         }
-        if(jTextArea11.getText().isEmpty()){
+        if(jTextField11.getText().isEmpty()){
             mensaje.add("*Diagnostico Medico*");
             retorno=true;
         }
