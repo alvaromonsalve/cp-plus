@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.DefaultComboBoxModel;
@@ -143,8 +144,7 @@ public class fListinterconsulta extends javax.swing.JFrame {
             count = count +  iihjc.CountInterconsultas(ih, (StaticEspecialidades) jComboBox1.getSelectedItem()).intValue();
             List<HcuEvolucion> evolucions = hejc.FindHcuEvolucions(ih);
             for(HcuEvolucion he:evolucions){
-//                System.out.println(he.);
-                count = count + heijc.CountInterconsultas(he, (StaticEspecialidades) jComboBox1.getSelectedItem()).intValue();                
+                count = count + CountInterconsultas(he, (StaticEspecialidades) jComboBox1.getSelectedItem()).intValue();                
             }
             count = count - hejc.CountInterconsultasGeneradas(ih, especialidades).intValue();
             if(count>0){
@@ -158,25 +158,39 @@ public class fListinterconsulta extends javax.swing.JFrame {
         timer.cancel();
     }
     
+    private Long CountInterconsultas(HcuEvolucion evo, StaticEspecialidades se){
+        EntityManager em = heijc.getEntityManager();
+        em.clear();
+        try {
+            return (Long) em.createQuery("SELECT COUNT(h) FROM HcuEvoInterconsulta h WHERE h.idHcuEvolucion = :evo AND h.idStaticEspecialidades = :se AND h.idHcuEvolucion.estado='2'")
+            .setParameter("evo", evo)
+            .setParameter("se", se)
+            .setHint("javax.persistence.cache.storeMode", "REFRESH")
+            .getSingleResult();
+        } finally {
+            em.close();
+        }
+   }
+    
     private void closed(){
         AtencionUrgencia.panelindex.jButton4.setEnabled(true);
         this.dispose();
     }
     
-    private void select(){
-                AtencionUrgencia.panelindex.jpContainer.removeAll();
-                AtencionUrgencia.panelindex.evo = new Evo();
-                AtencionUrgencia.panelindex.evo.setBounds(0, 0, 764, 514);
-                AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.evo);
-                AtencionUrgencia.panelindex.evo.setVisible(true);
-                AtencionUrgencia.panelindex.evo.tipoEvo=1;//1 es valoracion
-                AtencionUrgencia.panelindex.evo.staticEspecialidades = especialidades;
-                AtencionUrgencia.panelindex.jpContainer.validate();
-                AtencionUrgencia.panelindex.jpContainer.repaint();
-                AtencionUrgencia.panelindex.evo.viewClinicHistory((InfoHistoriac) modelo.getValueAt(jTable1.getSelectedRow(), 0));
-                AtencionUrgencia.panelindex.evo.DatosAntPersonales();//mostrar antecedentes personales
-                timerSelect.cancel();
-                closed();
+    private void select() {
+        AtencionUrgencia.panelindex.jpContainer.removeAll();
+        AtencionUrgencia.panelindex.evo = new Evo();
+        AtencionUrgencia.panelindex.evo.setBounds(0, 0, 764, 514);
+        AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.evo);
+        AtencionUrgencia.panelindex.evo.setVisible(true);
+        AtencionUrgencia.panelindex.evo.tipoEvo = 1;//1 es valoracion
+        AtencionUrgencia.panelindex.evo.staticEspecialidades = especialidades;
+        AtencionUrgencia.panelindex.jpContainer.validate();
+        AtencionUrgencia.panelindex.jpContainer.repaint();
+        AtencionUrgencia.panelindex.evo.viewClinicHistory((InfoHistoriac) modelo.getValueAt(jTable1.getSelectedRow(), 0));
+        AtencionUrgencia.panelindex.evo.DatosAntPersonales();//mostrar antecedentes personales
+        timerSelect.cancel();
+        closed();
     }
 
     @SuppressWarnings("unchecked")
