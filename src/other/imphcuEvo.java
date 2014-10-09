@@ -151,7 +151,7 @@ public class imphcuEvo extends javax.swing.JDialog {
                     db.DesconectarBasedeDatos();
                     ie.tempFile.deleteOnExit();
                 }
-                if (jCheckBox5.isSelected()) {                    
+                if (jCheckBox5.isSelected()){
                     Database db = new Database(AtencionUrgencia.props);
                     db.Conectar();
                     if (stateevo1==1 || stateevo1==3) {
@@ -173,9 +173,9 @@ public class imphcuEvo extends javax.swing.JDialog {
                         implabf.setVersion("1.0");
                         implabf.setIdevu(hcuEvolucion.getId().toString());
                         implabf.setConnection(db.conexion);
-                        reader5 = implabf.ImprimirautolabFinal();                        
+                        reader5 = implabf.ImprimirautolabFinal();
                         implabf.tempFile.deleteOnExit();
-                    }   
+                    }
                     db.DesconectarBasedeDatos();
                 }
                 if (jCheckBox6.isSelected()) {//IMAGENOLOGIA
@@ -190,7 +190,7 @@ public class imphcuEvo extends javax.swing.JDialog {
                         impautrx.setVersion("1.0");
                         impautrx.setIdevu(hcuEvolucion.getId().toString());
                         impautrx.setConnection(db.conexion);
-                        reader6 = impautrx.Imprimirautorx();                        
+                        reader6 = impautrx.Imprimirautorx();  
                         impautrx.tempFile.deleteOnExit();
                     }else{
                         ImprimirautorizacionrxFinal impautrxf = new ImprimirautorizacionrxFinal();
