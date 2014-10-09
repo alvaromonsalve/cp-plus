@@ -61,6 +61,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import jpa.HcuEvolucionJpaController;
+import jpa.InfoAdmisionJpaController;
 import tools.JTreeRendererArbolEvo;
 import tools.MyDate;
 
@@ -5402,8 +5403,10 @@ public class Evo extends javax.swing.JPanel {
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
         if (getCamposObligatoriosVacios() == false) {
+            InfoAdmisionJpaController iajc = null;
             if (hcuEvolucionJpaController == null) {
                 hcuEvolucionJpaController = new HcuEvolucionJpaController(factory);
+                iajc = new InfoAdmisionJpaController(factory);
             }
             HcuEvolucion he = null;
             imphcuEvo imp = new imphcuEvo(null, true);
@@ -5434,6 +5437,8 @@ public class Evo extends javax.swing.JPanel {
                         int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar Finalizacion", JOptionPane.YES_NO_OPTION);
                         if (entrada == 0) {
                             he.setEstado(4);
+                            he.getIdInfoHistoriac().getIdInfoAdmision().setEstado(4);
+                            iajc.edit(he.getIdInfoHistoriac().getIdInfoAdmision());
                             hcuEvolucionJpaController.edit(he);
                             imp.stateevo1 =3;
                             imp.setNoValido(false);
