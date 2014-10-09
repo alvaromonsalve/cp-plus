@@ -265,21 +265,21 @@ public class newEvo extends javax.swing.JPanel {
         if(jComboBox2.getSelectedIndex()==-1 || jComboBox3.getSelectedIndex()==-1 || jComboBox3.getSelectedIndex()==-1 ){
             mensaje.add("*Glasgow*");
         }
-        if(jTextField1.getText().isEmpty()){
-            mensaje.add("*Saturación de Oxígeno*");
-        }
-        if(jTextField8.getText().isEmpty()){
-            mensaje.add("*Temperatura*");
-        }
-        if(jTextField3.getText().isEmpty()){
-            mensaje.add("*Frecuencia Cardíaca*");
-        }
-        if(jTextField4.getText().isEmpty()){
-            mensaje.add("*Frecuencia Respiratoria*");
-        }
-        if(jTextField6.getText().isEmpty() || jTextField7.getText().isEmpty()){
-            mensaje.add("*Tensión Arterial*");
-        }        
+//        if(jTextField1.getText().isEmpty()){
+//            mensaje.add("*Saturación de Oxígeno*");
+//        }
+//        if(jTextField8.getText().isEmpty()){
+//            mensaje.add("*Temperatura*");
+//        }
+//        if(jTextField3.getText().isEmpty()){
+//            mensaje.add("*Frecuencia Cardíaca*");
+//        }
+//        if(jTextField4.getText().isEmpty()){
+//            mensaje.add("*Frecuencia Respiratoria*");
+//        }
+//        if(jTextField6.getText().isEmpty() || jTextField7.getText().isEmpty()){
+//            mensaje.add("*Tensión Arterial*");
+//        }        
         return mensaje;
     }
     
