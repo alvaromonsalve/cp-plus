@@ -8,6 +8,7 @@ import entidades.HcuEvolucion;
 import entidades.InfoHistoriac;
 import entidades.InfoProcedimientoHcu;
 import java.util.List;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
@@ -124,19 +125,19 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
     public void cargaDatoSeleccionado(ConfigCups cc,String observ){
         int rowIndex = ModeloTabla.getRowCount();
         boolean existe=false;
-        for(int i=0;i<ModeloTabla.getRowCount();i++){
+        for(int i=0;i<ModeloTabla.getRowCount();i++){            
             if(cc.getId().equals(((ConfigCups)ModeloTabla.getValueAt(i, 0)).getId())){
                 existe = true;
                 break;
             }
         }
-        if(!existe){
+        if(existe==false){
             ModeloTabla.addRow(dato);
             ModeloTabla.setValueAt(cc, rowIndex, 0);
             ModeloTabla.setValueAt(cc.getCodigo(), rowIndex, 1);
             ModeloTabla.setValueAt(cc.getDeSubcategoria(), rowIndex, 2);
             ModeloTabla.setValueAt(observ, rowIndex, 3);
-            jTable1.getRowSorter().toggleSortOrder(1);
+//            jTable1.getRowSorter().toggleSortOrder(1);
         }
     }
     
@@ -281,74 +282,86 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
         for (HcuEvoProcedimiento listInfoProcedimientoEvo1 : listInfoProcedimientoEvo) {
             ConfigCups cups = cupsJpaController.findConfigCups(listInfoProcedimientoEvo1.getIdConfigCups().getId());
             this.cargaDatoSeleccionado(cups, listInfoProcedimientoEvo1.getObservacion());
-        }
-        /* Comprobamos que la evolucion no contiene procedimientos */
-        if(listInfoProcedimientoEvo.isEmpty()){
-            List<HcuEvoProcedimiento> evoProcedimientos=null;
-            HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
-            /* consulta de las evoluciones que pertenecen a la nota de ingreso */
-            List<HcuEvolucion> hes= hejc.FindHcuEvolucions(evol.getIdInfoHistoriac());
-            /*
-             * verifica si tiene evoluciones y toma la ultima listada.
-             * el orden de la fecha es ascendente
-             */
-            if(!hes.isEmpty()){
-                evoProcedimientos = hes.get(hes.size()-1).getHcuEvoProcedimientos();
-                 /* verificamos si la ultima evolucion tiene procedimientos. 
-                 *   --> si tiene procedimientos en la ultima evolucion hacemos la migracion
-                 *   --> a la evolucion que se esta creando
-                 */
-                if(!evoProcedimientos.isEmpty() && evol.getFechaEvo().compareTo(hes.get(hes.size()-1).getFechaEvo())>0 ){
-                    /* preguntamos si se desea hacer la migracion */
-                    migrarProcedimToEvo(hes, evo, factory);
-                }
-            }else{
-                HcuEvoProcedimientoJpaController hepjc = new HcuEvoProcedimientoJpaController(factory);
-                List<HcuEvoProcedimiento> heps = hepjc.ListFindInfoProcedimientoEvo(evol);
-                /* verificamos que la hcu tiene procedimientos */
-                if(!heps.isEmpty()){
-                    migrarProcedimToEvo(heps, evo, factory);
-                }
-            }
-        }
+        }        
+//        /* Comprobamos que la evolucion no contiene procedimientos */
+//        if(listInfoProcedimientoEvo.isEmpty()){
+//            List<HcuEvoProcedimiento> evoProcedimientos=null;
+//            HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
+//            /* consulta de las evoluciones que pertenecen a la nota de ingreso */
+//            List<HcuEvolucion> hes= FindHcuEvolucions(evol.getIdInfoHistoriac(),hejc);
+//            /*
+//             * verifica si tiene evoluciones y toma la ultima listada.
+//             * el orden de la fecha es ascendente
+//             */
+//            if(!hes.isEmpty()){
+//                evoProcedimientos = hes.get(hes.size()-1).getHcuEvoProcedimientos();
+//                 /* verificamos si la ultima evolucion tiene procedimientos. 
+//                 *   --> si tiene procedimientos en la ultima evolucion hacemos la migracion
+//                 *   --> a la evolucion que se esta creando
+//                 */
+//                if(!evoProcedimientos.isEmpty() && evol.getFechaEvo().compareTo(hes.get(hes.size()-1).getFechaEvo())>0 ){
+//                    /* preguntamos si se desea hacer la migracion */
+////                    migrarProcedimToEvo(hes, evo, factory);//Se quito la funcionalidad de migrar de otra evolucion CAUCASIA 10/02/2014 A LAS 3:25 PM
+//                }
+//            }else{
+//                HcuEvoProcedimientoJpaController hepjc = new HcuEvoProcedimientoJpaController(factory);
+//                List<HcuEvoProcedimiento> heps = hepjc.ListFindInfoProcedimientoEvo(evol);
+//                /* verificamos que la hcu tiene procedimientos */
+//                if(!heps.isEmpty()){
+//                    migrarProcedimToEvo(heps, evo, factory);
+//                }
+//            }
+//        }
     }
     
-    private void migrarProcedimToEvo(Object proceds, boolean evo, EntityManagerFactory factory){//Se quito la funcionalidad de migrar de otra evolucion CAUCASIA 10/02/2014 A LAS 3:25 PM
-//        String mensaje = "¿Quiere continuar con los procedimientos de la Nota de Ingreso? ";
-        String mensaje = "Seleccione procedimiento";
-        if(evo)
-//            mensaje = "¿Quiere continuar con los procedimientos de la Evolución anterior? ";
-            mensaje = "Seleccione procedimiento";
-//        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Migración de procedimientos",JOptionPane.YES_NO_OPTION);
-        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Seleccion procedimiento",JOptionPane.DEFAULT_OPTION);
-        entrada = 1;
-        if(entrada==0){
-            if(evo){
-                List<HcuEvoProcedimiento> evoProceds = (List<HcuEvoProcedimiento>) proceds;
-                for(int i=0;i<evoProceds.size();i++){
-                    ModeloTabla.addRow(dato);
-                    ModeloTabla.setValueAt(evoProceds.get(i).getIdConfigCups(), i, 0);
-                    ModeloTabla.setValueAt(evoProceds.get(i).getIdConfigCups().getCodigo(), i, 1);
-                    ModeloTabla.setValueAt(evoProceds.get(i).getIdConfigCups().getDeSubcategoria(), i, 2);
-                    ModeloTabla.setValueAt(evoProceds.get(i).getObservacion(), i, 3);
-                    jTable1.getRowSorter().toggleSortOrder(1);
-                }
-            }else{
-                if(cupsJpaController==null)
-                    cupsJpaController=new ConfigCupsJpaController(factory);                
-                List<InfoProcedimientoHcu> infoProcedimientoHcus = (List<InfoProcedimientoHcu>) proceds;
-                for(int i=0;i<infoProcedimientoHcus.size();i++){
-                    ConfigCups cups = cupsJpaController.findConfigCups(infoProcedimientoHcus.get(i).getIdCups());
-                    ModeloTabla.addRow(dato);
-                    ModeloTabla.setValueAt(cups.getId(), i, 0);
-                    ModeloTabla.setValueAt(cups.getCodigo(), i, 1);
-                    ModeloTabla.setValueAt(cups.getDeSubcategoria(), i, 2);
-                    ModeloTabla.setValueAt(infoProcedimientoHcus.get(i).getObservacion(), i, 3);
-                    jTable1.getRowSorter().toggleSortOrder(1);
-                }
-            }
-        }
-    }
+//    public List<HcuEvolucion> FindHcuEvolucions(InfoHistoriac ihc,HcuEvolucionJpaController hejc){
+//        EntityManager em = hejc.getEntityManager();
+//        try {
+//            return em.createQuery("SELECT h FROM HcuEvolucion h WHERE h.idInfoHistoriac = :hc AND h.estado = '2' ORDER BY h.fechaEvo ASC")
+//            .setParameter("hc", ihc)
+//            .setHint("javax.persistence.cache.storeMode", "REFRESH")
+//            .getResultList();
+//        } finally {
+//            em.close();
+//        }
+//    }
+    
+//    private void migrarProcedimToEvo(Object proceds, boolean evo, EntityManagerFactory factory){//Se quito la funcionalidad de migrar de otra evolucion CAUCASIA 10/02/2014 A LAS 3:25 PM
+////        String mensaje = "¿Quiere continuar con los procedimientos de la Nota de Ingreso? ";
+//        String mensaje = "Seleccione procedimiento";
+//        if(evo)
+////            mensaje = "¿Quiere continuar con los procedimientos de la Evolución anterior? ";
+//            mensaje = "Seleccione procedimiento";
+////        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Migración de procedimientos",JOptionPane.YES_NO_OPTION);
+//        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Seleccion procedimiento",JOptionPane.DEFAULT_OPTION);
+//        entrada = 1;
+//        if(entrada==0){
+//            if(evo){
+//                List<HcuEvoProcedimiento> evoProceds = (List<HcuEvoProcedimiento>) proceds;
+//                for(int i=0;i<evoProceds.size();i++){
+//                    ModeloTabla.addRow(dato);
+//                    ModeloTabla.setValueAt(evoProceds.get(i).getIdConfigCups(), i, 0);
+//                    ModeloTabla.setValueAt(evoProceds.get(i).getIdConfigCups().getCodigo(), i, 1);
+//                    ModeloTabla.setValueAt(evoProceds.get(i).getIdConfigCups().getDeSubcategoria(), i, 2);
+//                    ModeloTabla.setValueAt(evoProceds.get(i).getObservacion(), i, 3);
+//                    jTable1.getRowSorter().toggleSortOrder(1);
+//                }
+//            }else{
+//                if(cupsJpaController==null)
+//                    cupsJpaController=new ConfigCupsJpaController(factory);                
+//                List<InfoProcedimientoHcu> infoProcedimientoHcus = (List<InfoProcedimientoHcu>) proceds;
+//                for(int i=0;i<infoProcedimientoHcus.size();i++){
+//                    ConfigCups cups = cupsJpaController.findConfigCups(infoProcedimientoHcus.get(i).getIdCups());
+//                    ModeloTabla.addRow(dato);
+//                    ModeloTabla.setValueAt(cups.getId(), i, 0);
+//                    ModeloTabla.setValueAt(cups.getCodigo(), i, 1);
+//                    ModeloTabla.setValueAt(cups.getDeSubcategoria(), i, 2);
+//                    ModeloTabla.setValueAt(infoProcedimientoHcus.get(i).getObservacion(), i, 3);
+//                    jTable1.getRowSorter().toggleSortOrder(1);
+//                }
+//            }
+//        }
+//    }
     
     public void formularioOpen(int tipo){
         dProcedimiento = new dSelectProcedimiento(null,true,tipo,evo);//0
