@@ -117,7 +117,7 @@ public class evoDestino extends javax.swing.JPanel {
         jPanel32.setBorder(javax.swing.BorderFactory.createTitledBorder("Destino"));
         jPanel32.setOpaque(false);
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "DOMICILIO", "FUGA", "REMISION", "HOSPITALIZACION", "UCI", "UCE" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "DOMICILIO", "FUGA", "REMISION", "HOSPITALIZACION", "UCI", "UCE", "CIRUGIA" }));
         jComboBox1.setSelectedIndex(-1);
 
         javax.swing.GroupLayout jPanel32Layout = new javax.swing.GroupLayout(jPanel32);
