@@ -364,6 +364,7 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
 //    }
     
     public void formularioOpen(int tipo){
+        System.out.println(tipo);
         dProcedimiento = new dSelectProcedimiento(null,true,tipo,evo);//0
         dProcedimiento.setVisible(true);
     }
