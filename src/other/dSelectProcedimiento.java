@@ -124,8 +124,19 @@ public class dSelectProcedimiento extends javax.swing.JDialog {
                     }else if(sec.getId()>0 && sec.getId()<=14){
                         sec.setDesCapitulo(renombrarString(sec.getDesCapitulo()));
                         dcbm.addElement(sec);
+                    }else if(sec.getId()==18){
+                        sec.setDesCapitulo("MEDICINA TRANSFUSIONAL Y BANCO DE SANGRE");
+                        dcbm.addElement(sec);
+                        setDatosTabla();
+                    }else if(sec.getId()==20){
+                        sec.setDesCapitulo("DESEMPEÑO FUNCIONAL Y REHABILITACION");
+                        dcbm.addElement(sec);
+                        setDatosTabla();
+                    }else if(sec.getId()!= 15 && sec.getId()!= 17){
+                        sec.setDesCapitulo(renombrarString(sec.getDesCapitulo()));
+                        dcbm.addElement(sec);
+                        setDatosTabla();
                     }
-                    
                 }                
             }
         }else{
