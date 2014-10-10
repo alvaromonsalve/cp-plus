@@ -162,7 +162,6 @@ public class pPlan extends javax.swing.JPanel {
         });
         jXTaskPane2.getContentPane().add(jLabel46);
 
-        jXTaskPane1.setExpanded(false);
         jXTaskPane1.setTitle("PROCEDIMIENTOS");
         jXTaskPane1.setAnimated(false);
         jXTaskPane1.setFocusable(false);
@@ -237,17 +236,17 @@ public class pPlan extends javax.swing.JPanel {
         jLabel51.setText("Otros Procedimientos");
         jLabel51.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jLabel51.setDoubleBuffered(true);
+        jLabel51.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel51MouseMoved(evt);
+            }
+        });
         jLabel51.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel51MouseClicked(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel51MouseExited(evt);
-            }
-        });
-        jLabel51.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel51MouseMoved(evt);
             }
         });
         jXTaskPane1.getContentPane().add(jLabel51);
@@ -457,7 +456,7 @@ public class pPlan extends javax.swing.JPanel {
                 .addComponent(jXTaskPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jXTaskPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(182, Short.MAX_VALUE))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
 
         jPanel1.setMaximumSize(new java.awt.Dimension(403, 386));
