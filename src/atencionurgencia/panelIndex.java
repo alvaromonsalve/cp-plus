@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package atencionurgencia;
 
 import static atencionurgencia.AtencionUrgencia.roles;
@@ -15,6 +11,7 @@ import atencionurgencia.ingreso.HC;
 import entidades.AccessRoles;
 import java.awt.Color;
 import java.awt.Font;
+import javax.persistence.EntityManagerFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,26 +23,42 @@ import tools.Funciones;
  * @author Alvaro Monsalve
  */
 public class panelIndex extends javax.swing.JPanel {
-    private enAtencion enatencion=null;
+
+    private enAtencion enatencion = null;
     public HC hc;
     public Evo evo;
-    public jDocumentos documentos;    
-    
-//    private PanelHilo panelHilo=null;
-    
-    
-    /**
-     * Creates new form panelIndex
-     */
-    public panelIndex() {
+    public jDocumentos documentos;
+    private final EntityManagerFactory factory;
+
+    public panelIndex(EntityManagerFactory factory) {
         initComponents();
+        this.factory = factory;
     }
-    
+
+    public void activeButton(boolean var) {
+        if (var == false) {
+            jButton1.setEnabled(false);
+            jButton1.setContentAreaFilled(false);
+            jButton2.setEnabled(false);
+            jButton2.setContentAreaFilled(false);
+            jButton3.setEnabled(false);
+            jButton3.setContentAreaFilled(false);
+            jButton4.setEnabled(false);
+            jButton4.setContentAreaFilled(false);
+        } else {
+            jButton1.setEnabled(true);
+            jButton2.setEnabled(true);
+            jButton3.setEnabled(true);
+            jButton4.setEnabled(true);
+        }
+    }
+
     /**
      * habilita o desabilita el formulario principal
-     * @param var indica el estado para habilitar o desabilitar 
+     *
+     * @param var indica el estado para habilitar o desabilitar
      */
-    public void FramEnable(boolean var){
+    public void FramEnable(boolean var) {
         JFrame casa = (JFrame) SwingUtilities.getWindowAncestor(this);
         casa.setEnabled(var);
     }
@@ -280,11 +293,11 @@ public class panelIndex extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton1MouseExited
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        jButton1.setEnabled(false);
+        activeButton(false);
         fListPacientes listaPacientes = null;
-        listaPacientes = new fListPacientes();
+        listaPacientes = new fListPacientes(factory);
         listaPacientes.setVisible(true);
-        jButton1.setContentAreaFilled(false);
+        listaPacientes.setAlwaysOnTop(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseExited
@@ -298,20 +311,13 @@ public class panelIndex extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton2MouseMoved
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if(enatencion==null){
-            enatencion = new enAtencion();
+        activeButton(false);
+        if (enatencion == null) {
+            enatencion = new enAtencion(factory);
         }
         enatencion.setVisible(true);
         enatencion.inicio();
         jButton2.setContentAreaFilled(false);
-//        if(panelHilo==null){
-//            panelHilo = new PanelHilo();
-//        }
-//        panelHilo.setBounds(0, 0, 764, 540);
-//        jpContainer.add(panelHilo);
-//        panelHilo.setVisible(true);
-////        card.show(jpContainer, "PANELHILO");
-//        jpContainer.repaint();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseExited
@@ -327,7 +333,7 @@ public class panelIndex extends javax.swing.JPanel {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         jButton3.setEnabled(false);
         fPacientesCamas pacientesCamas = null;
-        pacientesCamas = new fPacientesCamas();
+        pacientesCamas = new fPacientesCamas(factory);
         pacientesCamas.setVisible(true);
         pacientesCamas.inicio();
         jButton3.setContentAreaFilled(false);
@@ -346,17 +352,17 @@ public class panelIndex extends javax.swing.JPanel {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         jButton4.setEnabled(false);
         boolean accede = false;
-        for(AccessRoles ar:roles){
-            if(ar.getRuta()==10001){
-                fListinterconsulta listPacientes =null;
+        for (AccessRoles ar : roles) {
+            if (ar.getRuta() == 10001) {
+                fListinterconsulta listPacientes = null;
                 listPacientes = new fListinterconsulta();
                 listPacientes.setVisible(true);
                 jButton4.setContentAreaFilled(false);
-                accede =true;
+                accede = true;
                 break;
             }
         }
-        if(!accede){
+        if (!accede) {
             jpContainer.removeAll();
             JLabel label = new JLabel("CODIGO DE PERMISO: 10001");
             label.setForeground(Color.white);
@@ -387,7 +393,7 @@ public class panelIndex extends javax.swing.JPanel {
         this.jpContainer.validate();
         this.jpContainer.repaint();
     }//GEN-LAST:event_jButton5ActionPerformed
-   
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

@@ -19,9 +19,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JFileChooser;
@@ -88,12 +88,10 @@ public class HC extends javax.swing.JPanel {
     public pAnexo3 pAnexo31 = null;
     public Ftriaje ftriaje = null;
     private HcuDestino hcuDestino = null;
+    final long MILLSECS_PER_DAY = 24 * 60 * 60 * 1000; //Milisegundos al día 
     // </editor-fold>
 
-    /**
-     * Creates new form HC
-     */
-    public HC() {
+    public HC(EntityManagerFactory factory) {
         initComponents();
         TablaAyudDiag();
         inicio();
@@ -101,6 +99,7 @@ public class HC extends javax.swing.JPanel {
         map2.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK), "null");
         jLabel58.setVisible(false);
         jLabel59.setVisible(false);
+        this.factory = factory;
     }
 
     private void inicio() {
@@ -192,7 +191,6 @@ public class HC extends javax.swing.JPanel {
     }
 
     public void CrearHistoriaC() {
-        factory = Persistence.createEntityManagerFactory("ClipaEJBPU", AtencionUrgencia.props);
         saveHistoryClinic();
         saveFisicExplorer();
         saveHelpDiag();
@@ -272,17 +270,23 @@ public class HC extends javax.swing.JPanel {
         infohistoriac.setDiagnostico5(idDiag5);
         infohistoriac.setHallazgo(jTextArea19.getText().toUpperCase());
         infohistoriac.setTipoHc(0);//0 = urgencias; 
-        if(infohistoriac.getEstado()!=2) infohistoriac.setEstado(finalizar);
-        if(hcuDestino!=null){
+        //calcular tiempo de consulta
+        Date hoy = new Date();
+        long diferencia = (hoy.getTime() - infohistoriac.getFechaDato().getTime()) / MILLSECS_PER_DAY;
+        if (diferencia > 900000) {
+            diferencia = 900000;
+        }
+        infohistoriac.setTiempoConsulta(diferencia);
+        if (infohistoriac.getEstado() != 2) {
+            infohistoriac.setEstado(finalizar);
+        }
+        if (hcuDestino != null) {
             infohistoriac.setDestino(hcuDestino.saveChanges());
-            if(infohistoriac.getDestino().equals("DOMICILIO")){
+            if (infohistoriac.getDestino().equals("DOMICILIO")) {
                 infohistoriac.setEstado(2);
             }
         }
         infohistoriac.setIdConfigdecripcionlogin(AtencionUrgencia.configdecripcionlogin);
-
-            //Falta tiempo de consulta que se generara cuando finalize la consulta
-        //calculando desde fecha_dato
         Boolean active = false;
         if (infohistoriaJPA == null) {
             infohistoriaJPA = new InfoHistoriacJpaController(factory);
@@ -423,7 +427,6 @@ public class HC extends javax.swing.JPanel {
         jTextArea25.setText(infohistoriac.getAntFamiliar());
         jTextArea25.setCaretPosition(0);
         if (staticcie == null) {
-            factory = Persistence.createEntityManagerFactory("ClipaEJBPU", AtencionUrgencia.props);
             staticcie = new StaticCie10JpaController(factory);
         }
         if (infohistoriac.getDiagnostico() != 0 && infohistoriac.getDiagnostico() != 1) {
@@ -692,85 +695,87 @@ public class HC extends javax.swing.JPanel {
         String mensajeT = "";
         if (jComboBox1.getSelectedIndex() == -1) {
             mensaje.add("*Origen de la enfermedad o accidente*");
-            retorno=true;
+            retorno = true;
         }
         if (jTextArea10.getText().isEmpty()) {
             mensaje.add("*Motivo de Consulta*");
-            retorno=true;
+            retorno = true;
         }
         if (jTextArea13.getText().isEmpty()) {
             mensaje.add("*Enfermedad Actual*");
-            retorno=true;
+            retorno = true;
         }
         if (jTextArea3.getText().isEmpty()) {
             mensaje.add("*Aspectos Generales*");
-            retorno=true;
+            retorno = true;
         }
-        if(jTextField11.getText().isEmpty()){
+        if (jTextField11.getText().isEmpty()) {
             mensaje.add("*Diagnostico Medico*");
-            retorno=true;
+            retorno = true;
         }
-        if(getValidPanels(pMedic)==false && getValidPanels(pConsultDiag)==false 
-                && getValidPanels(pImagenologia)==false && getValidPanels(pLaboratorio)==false
-                && getValidPanels(pQuirurgico)==false && getValidPanels(pProcedimientos)==false 
-                && getValidPanels(pOtrasInterconsultas)==false && getValidPanels(pInterconsulta0)== false
-                && getValidPanels(pInterconsulta1)== false && getValidPanels(pInterconsulta2)== false
-                && getValidPanels(pInterconsulta3)== false && getValidPanels(pInterconsulta4)== false
-                && getValidPanels(pMedidaGeneral)==false){
+        if (getValidPanels(pMedic) == false && getValidPanels(pConsultDiag) == false
+                && getValidPanels(pImagenologia) == false && getValidPanels(pLaboratorio) == false
+                && getValidPanels(pQuirurgico) == false && getValidPanels(pProcedimientos) == false
+                && getValidPanels(pOtrasInterconsultas) == false && getValidPanels(pInterconsulta0) == false
+                && getValidPanels(pInterconsulta1) == false && getValidPanels(pInterconsulta2) == false
+                && getValidPanels(pInterconsulta3) == false && getValidPanels(pInterconsulta4) == false
+                && getValidPanels(pMedidaGeneral) == false) {
             mensaje.add("*Tratamientos e Indicaciones*");
-            retorno=true;
+            retorno = true;
         }
 
         for (String men : mensaje) {
             mensajeT += men + "\n";
         }
-        
-        if (!mensajeT.equals("")) JOptionPane.showMessageDialog(null, "Los siguientes campos no han sido diligenciados: \n" + mensajeT, "Campos Obligatorios", JOptionPane.DEFAULT_OPTION);
+
+        if (!mensajeT.equals("")) {
+            JOptionPane.showMessageDialog(null, "Los siguientes campos no han sido diligenciados: \n" + mensajeT, "Campos Obligatorios", JOptionPane.DEFAULT_OPTION);
+        }
         return retorno;
     }
-    
-    private boolean getValidPanels(JPanel jp){
-        if (jp != null){
-            if(jp instanceof pTratMedic){
-                if(((pTratMedic)jp).estadoTablas()==true){
-                    return true;
-                }                  
-            }else if(jp instanceof pTratPConsultDiag){
-                if(((pTratPConsultDiag)jp).estadoTablas()==true){
+
+    private boolean getValidPanels(JPanel jp) {
+        if (jp != null) {
+            if (jp instanceof pTratMedic) {
+                if (((pTratMedic) jp).estadoTablas() == true) {
                     return true;
                 }
-            }else if(jp instanceof pTratImagenologia){
-                if(((pTratImagenologia)jp).estadoTablas()==true){
+            } else if (jp instanceof pTratPConsultDiag) {
+                if (((pTratPConsultDiag) jp).estadoTablas() == true) {
                     return true;
                 }
-            }else if(jp instanceof pTratLaboratorio){
-                if(((pTratLaboratorio)jp).estadoTablas()==true){
-                    return true;
-                }            
-            }else if(jp instanceof pTratQuirurgico){
-                if(((pTratQuirurgico)jp).estadoTablas()==true){
+            } else if (jp instanceof pTratImagenologia) {
+                if (((pTratImagenologia) jp).estadoTablas() == true) {
                     return true;
                 }
-            }else if(jp instanceof pTratMasProcedimientos){
-                if(((pTratMasProcedimientos)jp).estadoTablas()==true){
+            } else if (jp instanceof pTratLaboratorio) {
+                if (((pTratLaboratorio) jp).estadoTablas() == true) {
                     return true;
                 }
-            }else if(jp instanceof pTratOtrasInterconsultas){
-                if(((pTratOtrasInterconsultas)jp).estadoTablas()==true){
+            } else if (jp instanceof pTratQuirurgico) {
+                if (((pTratQuirurgico) jp).estadoTablas() == true) {
                     return true;
                 }
-            }else if(jp instanceof pTratInterconsulta){
-                if(((pTratInterconsulta)jp).estadoTablas()==true){
+            } else if (jp instanceof pTratMasProcedimientos) {
+                if (((pTratMasProcedimientos) jp).estadoTablas() == true) {
                     return true;
                 }
-            }else if(jp instanceof pTratMedidaGeneral){
-                if(((pTratMedidaGeneral)jp).estadoTablas()==true){
+            } else if (jp instanceof pTratOtrasInterconsultas) {
+                if (((pTratOtrasInterconsultas) jp).estadoTablas() == true) {
                     return true;
                 }
-            }            
+            } else if (jp instanceof pTratInterconsulta) {
+                if (((pTratInterconsulta) jp).estadoTablas() == true) {
+                    return true;
+                }
+            } else if (jp instanceof pTratMedidaGeneral) {
+                if (((pTratMedidaGeneral) jp).estadoTablas() == true) {
+                    return true;
+                }
+            }
         }
-            return false;
-    }    
+        return false;
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -3951,7 +3956,7 @@ public class HC extends javax.swing.JPanel {
                 int n = JOptionPane.showOptionDialog(this, "¿Desea Finalizar la Nota de Ingreso?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
                 if (n == 0) {
-                    finalizar = 1;   
+                    finalizar = 1;
                     CrearHistoriaC();//guardo en hc
                     SaveAntPersonales();
                     impresionesHC imp = new impresionesHC();
@@ -4394,14 +4399,14 @@ public class HC extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton11MouseMoved
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        if(getValidaFirma()){
-                impresionesHC imp = new impresionesHC();
-                imp.setidHC(this.infohistoriac);
-                imp.setdestinoHc("OBSERVACION DE URGENCIAS");
-                imp.setLocationRelativeTo(null);
-                imp.setNoValido(true);
-                imp.setVisible(true);
-        }        
+        if (getValidaFirma()) {
+            impresionesHC imp = new impresionesHC();
+            imp.setidHC(this.infohistoriac);
+            imp.setdestinoHc("OBSERVACION DE URGENCIAS");
+            imp.setLocationRelativeTo(null);
+            imp.setNoValido(true);
+            imp.setVisible(true);
+        }
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jLabel44MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel44MouseReleased
@@ -4478,7 +4483,7 @@ public class HC extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel33MouseReleased
 
     private void jLabel60MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel60MouseClicked
-        
+
     }//GEN-LAST:event_jLabel60MouseClicked
 
     private void jLabel60MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel60MouseExited
@@ -4486,13 +4491,15 @@ public class HC extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabel60MouseExited
 
     private void jLabel60MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel60MouseMoved
-        
+
     }//GEN-LAST:event_jLabel60MouseMoved
 
     private void jLabel60MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel60MouseReleased
-        if(hcuDestino == null) hcuDestino =  new HcuDestino(infohistoriac); 
+        if (hcuDestino == null) {
+            hcuDestino = new HcuDestino(infohistoriac);
+        }
         jPanel35.removeAll();
-        hcuDestino.setBounds(0,0,380,420);
+        hcuDestino.setBounds(0, 0, 380, 420);
         jPanel35.add(hcuDestino);
         hcuDestino.setVisible(true);
         jPanel35.validate();

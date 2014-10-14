@@ -41,16 +41,14 @@ import tools.Funciones;
 public class fPacientesCamas extends javax.swing.JFrame {
     private DefaultTableModel modeloC;
     private DefaultTableModel modeloS;
-    private EntityManagerFactory factory;
+    private final EntityManagerFactory factory;
     private Timer timer;
     private InfoHistoriac historiac =null;
     
-    /**
-     * Creates new form fPacientesCamas
-     */
-    public fPacientesCamas() {
+    public fPacientesCamas(EntityManagerFactory factory) {
         initComponents();
-        jLabel1.setVisible(false);        
+        jLabel1.setVisible(false);  
+        this.factory=factory;
     }
     
     public void inicio(){
@@ -119,7 +117,6 @@ public class fPacientesCamas extends javax.swing.JFrame {
     }
     
     private void Datos(){
-        factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
         InfoCamasJpaController icjc = new InfoCamasJpaController(factory);
 
         List<InfoCamas> infocamasList = icjc.findInfoCamasEntities(1);

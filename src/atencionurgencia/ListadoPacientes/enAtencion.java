@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package atencionurgencia.ListadoPacientes;
 
 import atencionurgencia.AtencionUrgencia;
@@ -14,7 +10,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
@@ -28,29 +23,27 @@ import tools.Funciones;
  * @author Alvaro Monsalve
  */
 public class enAtencion extends javax.swing.JDialog {
-    
+
     private DefaultTableModel modelo;
-    private InfoAdmision infoadmision=null;
-    private InfoHistoriac infoHistoriac=null;
+    private InfoAdmision infoadmision = null;
+    private InfoHistoriac infoHistoriac = null;
     private InfoHistoriacJpaController infoHistoriacJPA = null;
-    private EntityManagerFactory factory;
+    private final EntityManagerFactory factory;
     private List<InfoHistoriac> listaHistoriaC;
     Object dato[] = null;
     private Timer timer;
 
-    /**
-     * Creates new form enAtencion
-     */
-    public enAtencion() {
+    public enAtencion(EntityManagerFactory factory) {
         initComponents();
         jLabel1.setVisible(false);
+        this.factory = factory;
     }
-    
-    public void inicio(){        
+
+    public void inicio() {
         ModeloListadoPaciente();
         TimerTask timerListar = new TimerTask() {
-        @Override
-        public void run() {
+            @Override
+            public void run() {
                 jLabel1.setVisible(true);
                 TimerInicio();
                 jLabel1.setVisible(false);
@@ -59,105 +52,103 @@ public class enAtencion extends javax.swing.JDialog {
         timer = new Timer();
         timer.schedule(timerListar, new Date());
     }
-    
-    private void TimerInicio(){
-        factory = Persistence.createEntityManagerFactory("ClipaEJBPU", AtencionUrgencia.props);
-        if(infoHistoriacJPA==null){
+
+    private void TimerInicio() {
+        if (infoHistoriacJPA == null) {
             infoHistoriacJPA = new InfoHistoriacJpaController(factory);
         }
         listaHistoriaC = infoHistoriacJPA.findinfoHistoriacs(0);
-        for(int i=0;i<listaHistoriaC.size();i++){
+        for (int i = 0; i < listaHistoriaC.size(); i++) {
             infoadmision = listaHistoriaC.get(i).getIdInfoAdmision();
             modelo.addRow(dato);
             modelo.setValueAt(listaHistoriaC.get(i).getId(), i, 0);
             modelo.setValueAt(infoadmision.getIdDatosPersonales().getNumDoc(), i, 1);
-            modelo.setValueAt(infoadmision.getIdDatosPersonales().getNombre1()+" "+infoadmision.getIdDatosPersonales().getApellido1(), i, 2);
-            modelo.setValueAt(listaHistoriaC.get(i).getIdConfigdecripcionlogin().getNombres()+" "+listaHistoriaC.get(i).getIdConfigdecripcionlogin().getApellidos(), i, 3);
+            modelo.setValueAt(infoadmision.getIdDatosPersonales().getNombre1() + " " + infoadmision.getIdDatosPersonales().getApellido1(), i, 2);
+            modelo.setValueAt(listaHistoriaC.get(i).getIdConfigdecripcionlogin().getNombres() + " " + listaHistoriaC.get(i).getIdConfigdecripcionlogin().getApellidos(), i, 3);
         }
         timer.cancel();
     }
-    
-    private void ModeloListadoPaciente(){
-         try {
-             modelo = new DefaultTableModel(
-                null, new String [] {"id","Documento", "Nombre", "Medico"}){
-                Class[] types = new Class [] {
-                    java.lang.String.class,
-                    java.lang.String.class,
-                    java.lang.String.class,
-                    java.lang.String.class
-                };
 
-                boolean[] canEdit = new boolean [] {
-                false,false,false,false
-                };
-                @Override
-                public Class getColumnClass(int columnIndex) {
-                   return types [columnIndex];
-                }
-                @Override
-                public boolean isCellEditable(int rowIndex, int colIndex){
-                   return canEdit [colIndex];
-                }
-            };
+    private void ModeloListadoPaciente() {
+        try {
+            modelo = new DefaultTableModel(
+                    null, new String[]{"id", "Documento", "Nombre", "Medico"}) {
+                        Class[] types = new Class[]{
+                            java.lang.String.class,
+                            java.lang.String.class,
+                            java.lang.String.class,
+                            java.lang.String.class
+                        };
+
+                        boolean[] canEdit = new boolean[]{
+                            false, false, false, false
+                        };
+
+                        @Override
+                        public Class getColumnClass(int columnIndex) {
+                            return types[columnIndex];
+                        }
+
+                        @Override
+                        public boolean isCellEditable(int rowIndex, int colIndex) {
+                            return canEdit[colIndex];
+                        }
+                    };
             jtListadoPacientes.setModel(modelo);
             jtListadoPacientes.getTableHeader().setReorderingAllowed(false);
             jtListadoPacientes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            Funciones.setOcultarColumnas(jtListadoPacientes,new int[]{0});
+            Funciones.setOcultarColumnas(jtListadoPacientes, new int[]{0});
             jtListadoPacientes.getColumnModel().getColumn(1).setMinWidth(80);
             jtListadoPacientes.getTableHeader().getColumnModel().getColumn(1).setMaxWidth(80);
             jtListadoPacientes.getColumnModel().getColumn(2).setMinWidth(180);
             jtListadoPacientes.getTableHeader().getColumnModel().getColumn(2).setMaxWidth(180);
             jtListadoPacientes.getColumnModel().getColumn(3).setMinWidth(210);
             jtListadoPacientes.getTableHeader().getColumnModel().getColumn(3).setMaxWidth(210);
-         } catch (Exception ex) {
-             JOptionPane.showMessageDialog(null, "10074:\n"+ex.getMessage(), enAtencion.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-         }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "10074:\n" + ex.getMessage(), enAtencion.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+        }
     }
-    
-    private class hiloConsulta extends Thread{
+
+    private class hiloConsulta extends Thread {
+
         JDialog jdialog;
-        
-        private hiloConsulta(JDialog jdialog){
+
+        private hiloConsulta(JDialog jdialog) {
             this.jdialog = jdialog;
         }
-        
+
         @Override
-        public void run(){
-            if(infoHistoriac!=null){
-                if(infoadmision!=null ){
+        public void run() {
+            if (infoHistoriac != null) {
+                if (infoadmision != null) {
                     jLabel1.setVisible(true);
-                   ((enAtencion)jdialog).jButton1.setEnabled(false);
-                    atencionurgencia.AtencionUrgencia.panelindex.jpContainer.removeAll();
-                    atencionurgencia.AtencionUrgencia.panelindex.hc = new HC();
-                    atencionurgencia.AtencionUrgencia.panelindex.hc.setBounds(0, 0, 764, 540);
-                    atencionurgencia.AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.hc);
-                    atencionurgencia.AtencionUrgencia.panelindex.hc.setVisible(true);
-                    atencionurgencia.AtencionUrgencia.panelindex.jpContainer.validate();
-                    atencionurgencia.AtencionUrgencia.panelindex.jpContainer.repaint();
-                    atencionurgencia.AtencionUrgencia.panelindex.hc.viewClinicHistory(infoHistoriac);
-                    atencionurgencia.AtencionUrgencia.panelindex.hc.DatosAntPersonales();//crear o mostrar antecedentes personales
-                    ((enAtencion)jdialog).jButton1.setEnabled(true);
+                    ((enAtencion) jdialog).jButton1.setEnabled(false);
+                    AtencionUrgencia.panelindex.jpContainer.removeAll();
+                    AtencionUrgencia.panelindex.hc = new HC(factory);
+                    AtencionUrgencia.panelindex.hc.setBounds(0, 0, 764, 540);
+                    AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.hc);
+                    AtencionUrgencia.panelindex.hc.setVisible(true);
+                    AtencionUrgencia.panelindex.jpContainer.validate();
+                    AtencionUrgencia.panelindex.jpContainer.repaint();
+                    AtencionUrgencia.panelindex.hc.viewClinicHistory(infoHistoriac);
+                    AtencionUrgencia.panelindex.hc.DatosAntPersonales();//crear o mostrar antecedentes personales
+                    ((enAtencion) jdialog).jButton1.setEnabled(true);
                     jLabel1.setVisible(false);
                 }
-                    closed();
-            }        
-            infoadmision=null;
+                closed();
+            }
+            infoadmision = null;
         }
     }
-    
-    private void closed(){
-            if(timer!=null){
-                timer.cancel();
-            }
-            this.dispose();
+
+    private void closed() {
+        if (timer != null) {
+            timer.cancel();
+        }
+        AtencionUrgencia.panelindex.activeButton(true);
+        this.dispose();
     }
-    
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -271,15 +262,14 @@ public class enAtencion extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jtListadoPacientesMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtListadoPacientesMouseReleased
-        if(SwingUtilities.isLeftMouseButton(evt)){
-            //JOptionPane.showMessageDialog(null,"oa");
-                int row = jtListadoPacientes.rowAtPoint(evt.getPoint());
-                infoHistoriac = infoHistoriacJPA.findInfoHistoriac(Integer.parseInt(modelo.getValueAt(row, 0).toString()));
+        if (SwingUtilities.isLeftMouseButton(evt)) {
+            int row = jtListadoPacientes.rowAtPoint(evt.getPoint());
+            infoHistoriac = infoHistoriacJPA.findInfoHistoriac(Integer.parseInt(modelo.getValueAt(row, 0).toString()));
         }
     }//GEN-LAST:event_jtListadoPacientesMouseReleased
 
     private void jtListadoPacientesKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtListadoPacientesKeyReleased
-        if((evt.getKeyCode() == KeyEvent.VK_UP) || (evt.getKeyCode() == KeyEvent.VK_DOWN)){
+        if ((evt.getKeyCode() == KeyEvent.VK_UP) || (evt.getKeyCode() == KeyEvent.VK_DOWN)) {
             infoHistoriac = infoHistoriacJPA.findInfoHistoriac(Integer.parseInt(modelo.getValueAt(jtListadoPacientes.getSelectedRow(), 0).toString()));
         }
     }//GEN-LAST:event_jtListadoPacientesKeyReleased
@@ -289,9 +279,9 @@ public class enAtencion extends javax.swing.JDialog {
     }//GEN-LAST:event_formWindowOpened
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       hiloConsulta ut = new hiloConsulta(this);
-       Thread thread = new Thread(ut);
-       thread.start();
+        hiloConsulta ut = new hiloConsulta(this);
+        Thread thread = new Thread(ut);
+        thread.start();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing

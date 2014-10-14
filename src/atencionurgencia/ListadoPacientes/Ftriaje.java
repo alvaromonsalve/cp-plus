@@ -1,29 +1,18 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package atencionurgencia.ListadoPacientes;
 
 import java.awt.event.KeyEvent;
 import atencionurgencia.*;
-import com.itextpdf.text.pdf.PdfCopyFields;
-import com.itextpdf.text.pdf.PdfReader;
 import entidades.InfoHistoriac;
-import java.awt.Desktop;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JOptionPane;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.JasperPrintManager;
+import net.sf.jasperreports.view.JasperViewer;
 import oldConnection.Database;
 
 /**
@@ -32,13 +21,10 @@ import oldConnection.Database;
  */
 public class Ftriaje extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Ftriaje
-     */
     public Ftriaje() {
         initComponents();
         this.setLocationRelativeTo(null);
-        jLabel1.setVisible(false);
+        jLabel1.setVisible(false);   
     }
     
         @Override
@@ -85,8 +71,6 @@ public class Ftriaje extends javax.swing.JFrame {
             ((Ftriaje)form).jLabel1.setVisible(true);
             ((Ftriaje)form).jButton1.setEnabled(false);
             try {
-                PdfReader reader2=null;
-                File archivoTemporal = File.createTempFile("Reporte_Triaje",".pdf");
                 String master = System.getProperty("user.dir")+"/reportes/reportTriage.jasper";
                 if(master!=null){
                     Database db = new Database(AtencionUrgencia.props);
@@ -98,28 +82,21 @@ public class Ftriaje extends javax.swing.JFrame {
                     param.put("codigo","R-FA-001");
                     param.put("servicio","URGENCIAS");
                     JasperPrint informe = JasperFillManager.fillReport(master, param,db.conexion);
-                    JRExporter exporter = new JRPdfExporter();
-                    exporter.setParameter(JRExporterParameter.JASPER_PRINT, informe);
-                    File tempFile = File.createTempFile("Reporte_Triaje",".pdf");
-                    exporter.setParameter(JRExporterParameter.OUTPUT_FILE,tempFile);
-                    exporter.exportReport();
-                    reader2 = new PdfReader(tempFile.getAbsolutePath());
-                    db.DesconectarBasedeDatos();
-                    tempFile.deleteOnExit();
-             }     
-                PdfCopyFields copy = new PdfCopyFields(new FileOutputStream(archivoTemporal));
-
-                if(reader2!=null) copy.addDocument(reader2);
-
-                try{
-                    copy.close();
-                    Desktop.getDesktop().open(archivoTemporal);
-                }catch (Exception ex){
-                    JOptionPane.showMessageDialog(null,"El documento no contiene paginas", "Clipa+", JOptionPane.INFORMATION_MESSAGE);
-                }
-                archivoTemporal.deleteOnExit();
-            } catch (JRException ex) {
-                JOptionPane.showMessageDialog(null, "10075:\n"+ex.getMessage(), Ftriaje.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                    Object[] objeto ={"Visualizar","Imprimir"};
+                    int n = JOptionPane.showOptionDialog(((Ftriaje)form), "Escoja la opción deseada", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
+                            JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+                    if(n==0){
+                        JasperViewer.viewReport(informe, false);
+                    }else{
+                        JasperPrintManager.printReport(informe, true);
+                    }
+                    Object[] objeto2 ={"Si","No"};
+                    n = JOptionPane.showOptionDialog(((Ftriaje)form), "¿Desea terminar este proceso de triaje?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
+                            JOptionPane.QUESTION_MESSAGE, null, objeto, objeto2[1]);
+                    if(n==0){
+                        ((Ftriaje)form).dispose();
+                    }
+             }                 
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "10076:\n"+ex.getMessage(), Ftriaje.class.getName(), JOptionPane.INFORMATION_MESSAGE);
             }
@@ -127,15 +104,8 @@ public class Ftriaje extends javax.swing.JFrame {
             AtencionUrgencia.panelindex.hc.cerrarPanel();
             ((Ftriaje)form).jLabel1.setVisible(false);
             ((Ftriaje)form).jButton1.setEnabled(true);
-            ((Ftriaje)form).dispose();
         }
     }
-
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -310,8 +280,12 @@ public class Ftriaje extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextArea10KeyTyped
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        //0 es observacion
+        //0 es observacion ---- 3 Hospitalizacion
         if(jComboBox1.getSelectedIndex()==0 || jComboBox1.getSelectedIndex()==3){
+            Object[] objeto ={"Si","No"};
+            int n= n = JOptionPane.showOptionDialog(this, "El paciente sera enviado a "+jComboBox1.getSelectedItem().toString()+"\n¿Desea seguir diligenciando la nota de ingreso?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
+                    JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+            if(n==0){
             AtencionUrgencia.panelindex.jpContainer.removeAll();
             AtencionUrgencia.panelindex.hc.setBounds(0, 0, 764, 514);
             AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.hc);
@@ -322,55 +296,26 @@ public class Ftriaje extends javax.swing.JFrame {
             AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());//nivel de triaje
             AtencionUrgencia.panelindex.FramEnable(true);
             generateHC(0,jComboBox1.getSelectedItem().toString());//el estado para observacion es 1 pero aun no se ha terminado la nota de ingreso
-            this.setVisible(false);            
-            //3 consulta externa
-        }else if(jComboBox1.getSelectedIndex()==1){
-//            Object[] objeto ={"Si","No","Cancelar"};
-//            int n = JOptionPane.showOptionDialog(this, "¿Desea continuar la atención como cita prioritaria?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
-//                    JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[2]);
-//            if(n==0){
-//                         
-//                JOptionPane.showMessageDialog(this, "El modulo de Historia Clinica para consulta externa aun se encuentra en desarrollo.\nDebe diligenciar la Historia Clínica manual.");
-//                
-//                //comienza el hilo para reporte
-//
-//                /**
-//                 * mostrar el panel de hc consulta externa y quitar el reporte de triaje
-//                 */
-//                AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());
-//                AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());
-//                AtencionUrgencia.panelindex.FramEnable(true);
-//                generateHC(3,jComboBox1.getSelectedItem().toString());//el estado para consulta externa
-//                
-//                
-//                
-//                
-////                hiloReporte ut = new hiloReporte(this,AtencionUrgencia.panelindex.hc.infohistoriac);
-////                Thread thread = new Thread(ut);
-////                thread.start();
-////                this.setVisible(false);                
-//            }else if(n==1){
-//                AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());
-//                AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());
-//                AtencionUrgencia.panelindex.FramEnable(true);
-//                generateHC(3,jComboBox1.getSelectedItem().toString());//el estado para consulta externa es 3
-////                this.setVisible(false);
-//                //debemos generar cita prioritaria para que sea visualizada en el formulario de consulta externa
-//                //para citas prioritarias y quitar el reporte de triaje asi como quitarle el destino del paciente 
-//                // es posible que no sea necesario generar el reporte de triaje
-//                hiloReporte ut = new hiloReporte(this,AtencionUrgencia.panelindex.hc.infohistoriac);
-//                Thread thread = new Thread(ut);
-//                thread.start();
-//            }                    
-        }else if(jComboBox1.getSelectedIndex()==2){
-            AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());
-            AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());
-            AtencionUrgencia.panelindex.FramEnable(true);
-            generateHC(2,jComboBox1.getSelectedItem().toString());//el estado para domicilio y generar reporte de triage
-            hiloReporte ut = new hiloReporte(this,AtencionUrgencia.panelindex.hc.infohistoriac);
-            Thread thread = new Thread(ut);
-            thread.start();
-//            this.setVisible(false);
+            this.setVisible(false);    
+            }
+            //3 consulta externa --- 2 Domicilio
+        }else if(jComboBox1.getSelectedIndex()==1 || jComboBox1.getSelectedIndex()==2){
+            Object[] objeto ={"Si","No"};
+            int n=0;
+            if(jComboBox1.isEnabled()==true){
+                n = JOptionPane.showOptionDialog(this, "Se generará la nota de triaje y no podrá realizar la nota de ingreso\n¿Desea continuar?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
+                    JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+            }            
+            if(n==0){
+                jComboBox1.setEnabled(false);
+                AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());
+                AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());
+                generateHC(2,jComboBox1.getSelectedItem().toString());//el estado para domicilio y generar reporte de triage
+                AtencionUrgencia.panelindex.FramEnable(true);
+                hiloReporte ut = new hiloReporte(this,AtencionUrgencia.panelindex.hc.infohistoriac);
+                Thread thread = new Thread(ut);
+                thread.start();
+            }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

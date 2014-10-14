@@ -937,6 +937,7 @@ public class Evo extends javax.swing.JPanel {
             jTree1.repaint();
             jTree1.validate();
         }
+        JOptionPane.showMessageDialog(null, "Datos Guardados");
     }
 
     private boolean getCamposObligatoriosVacios() {
@@ -5437,8 +5438,8 @@ public class Evo extends javax.swing.JPanel {
                         int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar Finalizacion", JOptionPane.YES_NO_OPTION);
                         if (entrada == 0) {
                             he.setEstado(4);
-                            he.getIdInfoHistoriac().getIdInfoAdmision().setEstado(4);
-                            iajc.edit(he.getIdInfoHistoriac().getIdInfoAdmision());
+//                            he.getIdInfoHistoriac().getIdInfoAdmision().setEstado(4);
+//                            iajc.edit(he.getIdInfoHistoriac().getIdInfoAdmision());
                             hcuEvolucionJpaController.edit(he);
                             imp.stateevo1 =3;
                             imp.setNoValido(false);
