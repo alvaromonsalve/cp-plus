@@ -5142,8 +5142,9 @@ public class Evo extends javax.swing.JPanel {
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
         if (getValidaFirma()) {
-            impresionesHC imp = new impresionesHC();
+            impresionesHC imp = new impresionesHC(factory);
             imp.setidHC(this.infohistoriac);
+            imp.activarLinks();
             imp.setdestinoHc("OBSERVACION DE URGENCIAS");
             imp.setLocationRelativeTo(null);
             imp.setNoValido(false);
