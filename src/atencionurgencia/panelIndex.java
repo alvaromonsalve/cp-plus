@@ -316,6 +316,7 @@ public class panelIndex extends javax.swing.JPanel {
             enatencion = new enAtencion(factory);
         }
         enatencion.setVisible(true);
+        enatencion.setAlwaysOnTop(true);
         enatencion.inicio();
         jButton2.setContentAreaFilled(false);
     }//GEN-LAST:event_jButton2ActionPerformed
