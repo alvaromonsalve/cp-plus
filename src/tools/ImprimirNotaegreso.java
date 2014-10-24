@@ -22,7 +22,7 @@ public class ImprimirNotaegreso {
      public PdfReader ImprimirNotaEgreso(){
         try{
             Map parametro = new HashMap();
-            parametro.put("IDEVOLUCION",""+getIdevolucion());
+            parametro.put("Idevolucion",""+getIdevolucion());
             parametro.put("NameReport",""+getNombrereport());
             parametro.put("codigo", ""+getCodigoReport());
             parametro.put("servicio",""+getServicioreport());

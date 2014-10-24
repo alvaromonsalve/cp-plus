@@ -147,6 +147,11 @@ public class pPlan extends javax.swing.JPanel {
         jLabel46.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Pills.png"))); // NOI18N
         jLabel46.setText("Medicamentos");
         jLabel46.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel46.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel46MouseMoved(evt);
+            }
+        });
         jLabel46.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel46MouseClicked(evt);
@@ -155,13 +160,9 @@ public class pPlan extends javax.swing.JPanel {
                 jLabel46MouseExited(evt);
             }
         });
-        jLabel46.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel46MouseMoved(evt);
-            }
-        });
         jXTaskPane2.getContentPane().add(jLabel46);
 
+        jXTaskPane1.setExpanded(false);
         jXTaskPane1.setTitle("PROCEDIMIENTOS");
         jXTaskPane1.setAnimated(false);
         jXTaskPane1.setFocusable(false);
@@ -172,18 +173,6 @@ public class pPlan extends javax.swing.JPanel {
             }
         });
 
-        jTextField1.setForeground(new java.awt.Color(204, 204, 204));
-        jTextField1.setText("BUSCAR POR CUPS...");
-        jTextField1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                jTextField1MousePressed(evt);
-            }
-        });
-        jTextField1.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                jTextField1FocusLost(evt);
-            }
-        });
         jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextField1KeyReleased(evt);
@@ -266,6 +255,11 @@ public class pPlan extends javax.swing.JPanel {
         jLabel48.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/surgeon_icon.png"))); // NOI18N
         jLabel48.setText("Cirugia General");
         jLabel48.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel48.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel48MouseMoved(evt);
+            }
+        });
         jLabel48.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel48MouseClicked(evt);
@@ -274,28 +268,23 @@ public class pPlan extends javax.swing.JPanel {
                 jLabel48MouseExited(evt);
             }
         });
-        jLabel48.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel48MouseMoved(evt);
-            }
-        });
         jXTaskPane3.getContentPane().add(jLabel48);
 
         jLabel52.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel52.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Female_icon.png"))); // NOI18N
         jLabel52.setText("Ginecología");
         jLabel52.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel52.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel52MouseMoved(evt);
+            }
+        });
         jLabel52.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel52MouseClicked(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel52MouseExited(evt);
-            }
-        });
-        jLabel52.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel52MouseMoved(evt);
             }
         });
         jXTaskPane3.getContentPane().add(jLabel52);
@@ -390,17 +379,17 @@ public class pPlan extends javax.swing.JPanel {
         jLabel47.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Edit.png"))); // NOI18N
         jLabel47.setText("Medidas generales");
         jLabel47.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel47.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel47MouseMoved(evt);
+            }
+        });
         jLabel47.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel47MouseClicked(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel47MouseExited(evt);
-            }
-        });
-        jLabel47.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel47MouseMoved(evt);
             }
         });
         jXTaskPane4.getContentPane().add(jLabel47);
@@ -419,17 +408,17 @@ public class pPlan extends javax.swing.JPanel {
         jLabel50.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Edit.png"))); // NOI18N
         jLabel50.setText("Destino y Recomendaciones");
         jLabel50.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel50.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel50MouseMoved(evt);
+            }
+        });
         jLabel50.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel50MouseClicked(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel50MouseExited(evt);
-            }
-        });
-        jLabel50.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel50MouseMoved(evt);
             }
         });
         jXTaskPane5.getContentPane().add(jLabel50);
@@ -456,7 +445,7 @@ public class pPlan extends javax.swing.JPanel {
                 .addComponent(jXTaskPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jXTaskPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(37, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel1.setMaximumSize(new java.awt.Dimension(403, 386));
@@ -809,18 +798,6 @@ public class pPlan extends javax.swing.JPanel {
         jXTaskPane5.setExpanded(false);
     }//GEN-LAST:event_jXTaskPane1MouseReleased
 
-    private void jTextField1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MousePressed
-        if(jTextField1.getText().equals("BUSCAR POR CUPS...")){
-            jTextField1.setText("");
-            jTextField1.setForeground(Color.BLACK);
-        }
-    }//GEN-LAST:event_jTextField1MousePressed
-
-    private void jTextField1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField1FocusLost
-        jTextField1.setText("BUSCAR POR CUPS...");
-        jTextField1.setForeground(new java.awt.Color(204, 204, 204));
-    }//GEN-LAST:event_jTextField1FocusLost
-
     private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
         if(evt.getKeyCode()==KeyEvent.VK_ENTER){
             JTextField field = (JTextField) evt.getComponent();
@@ -841,9 +818,6 @@ public class pPlan extends javax.swing.JPanel {
             }else{
                 JOptionPane.showMessageDialog(null, "El Codigo ["+field.getText()+"] no es valido");
             }
-            jTextField1.setText("BUSCAR POR CUPS...");
-            jTextField1.setForeground(new java.awt.Color(204, 204, 204));
-            jLabel45.requestFocus();
         }
         
     }//GEN-LAST:event_jTextField1KeyReleased
@@ -858,8 +832,8 @@ public class pPlan extends javax.swing.JPanel {
     private void jLabel50MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel50MouseClicked
         if(destino==null){
             destino = new evoDestino();
-        }
-        destino.showExistente(hcuEvolucion);
+            destino.showExistente(hcuEvolucion);
+        }        
         jPanel1.removeAll();
         destino.setBounds(0,0,403,386);//[403, 386]
         jPanel1.add(destino);

@@ -37,13 +37,17 @@ import tools.Funciones;
 public class fListPacientes extends javax.swing.JFrame {
     private DefaultTableModel modelo;
     private long idCambiosAdmision=0;
-    private final EntityManagerFactory factory;
     private Timer timer;
     private Timer reloj;
+    InfoAdmisionJpaController admision = null;
+    InfoOtrosdatosAdmisionJpaController oadmision = null;
+            InfoPacienteJpaController infopacienteJPA = null;
 
     public fListPacientes(EntityManagerFactory factory) {
         initComponents();
-        this.factory=factory;
+        admision = new InfoAdmisionJpaController(factory);
+        oadmision = new   InfoOtrosdatosAdmisionJpaController(factory);
+        infopacienteJPA = new InfoPacienteJpaController(factory);
         this.ModeloListadoPaciente();        
     }
     
@@ -101,8 +105,7 @@ public class fListPacientes extends javax.swing.JFrame {
         long var = FuncionesBD.verCambiosListPacientesTriage(AtencionUrgencia.props);
         while(idCambiosAdmision<var){
             idCambiosAdmision=var;
-            InfoAdmisionJpaController admision = new InfoAdmisionJpaController(factory);
-            InfoOtrosdatosAdmisionJpaController oadmision = new   InfoOtrosdatosAdmisionJpaController(factory);
+            
             Object dato[] = null;
             //1 es el numero del estado en la tabla de admisiones
             List<InfoAdmision> listaAdmision = admision.findInfoAdmisionActivado(1);
@@ -339,7 +342,7 @@ public class fListPacientes extends javax.swing.JFrame {
         jLabel1.setPreferredSize(new java.awt.Dimension(14, 14));
         jToolBar1.add(jLabel1);
 
-        jLabel2.setText("PRIORIDAD");
+        jLabel2.setText("MUCHO DOLOR");
         jToolBar1.add(jLabel2);
         jToolBar1.add(jSeparator1);
 
@@ -644,11 +647,8 @@ public class fListPacientes extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosing
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        InfoPacienteJpaController infopacienteJPA = new InfoPacienteJpaController(factory);
-        InfoAdmisionJpaController infoAdmisionJPA = new InfoAdmisionJpaController(factory);
         InfoAdmision ia = (InfoAdmision) jtable1.getValueAt(jtable1.getSelectedRow(), 7);
         if (jTextField1.getText()!=null && !jTextField1.getText().equals("") && !jTextField1.getText().equals("...")){  
-            AtencionUrgencia.panelindex.hc = new HC(factory);
             AtencionUrgencia.panelindex.hc.ftriaje = new Ftriaje();
             AtencionUrgencia.panelindex.hc.ftriaje.setTitle(ia.getIdDatosPersonales().getNombre1()+" "
                     +ia.getIdDatosPersonales().getApellido1()+" ["+ia.getIdDatosPersonales().getNumDoc()+"]");
@@ -657,7 +657,7 @@ public class fListPacientes extends javax.swing.JFrame {
             AtencionUrgencia.panelindex.hc.infopaciente = infopacienteJPA.findInfoPaciente(ia.getIdDatosPersonales().getId());
             ia.setEstado(5);
             try {
-                infoAdmisionJPA.edit(ia);
+                admision.edit(ia);
                 AtencionUrgencia.panelindex.hc.infoadmision=ia;
                 AtencionUrgencia.panelindex.hc.CrearHistoriaC();//creo la historia clinica de esa admision
                 AtencionUrgencia.panelindex.hc.DatosAntPersonales();//crear o mostrar antecedentes personales

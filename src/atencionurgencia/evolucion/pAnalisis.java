@@ -87,9 +87,10 @@ public class pAnalisis extends javax.swing.JPanel {
         }
     }
     
-    public List<String> estadoTablasVal(){
+    public List<String> estadoTablasVal(HcuEvolucion he){
         List<String> mensaje = new ArrayList<String>();
-        if(jTextPane1.getText().isEmpty() == true){
+        
+        if(he.getEstado()==1 & jTextPane1.getText().isEmpty() == true){
             mensaje.add("*Analisis*");
         }        
         if(jTextField1.getText().isEmpty()){
@@ -98,8 +99,8 @@ public class pAnalisis extends javax.swing.JPanel {
         return mensaje;
     }
     
-    public boolean estadoTablas(){
-        return estadoTablasVal().isEmpty();
+    public boolean estadoTablas(HcuEvolucion he){
+        return estadoTablasVal(he).isEmpty();
     }
     
     @SuppressWarnings("unchecked")

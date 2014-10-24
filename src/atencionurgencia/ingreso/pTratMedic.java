@@ -478,89 +478,89 @@ public class pTratMedic extends javax.swing.JPanel {
               ModeloTabla.setValueAt(evoPosologias.get(i).getCantidadTexto(), i, 6);
               ModeloTabla.setValueAt(evoPosologias.get(i).getCantidad(), i, 7);
           }
-          if(hcuEvomedicamentosJpa==null)
-              hcuEvomedicamentosJpa = new HcuEvoMezclasMedicamentosJpaController(factory);
-          List<HcuEvoMezclasMedicamentos> mezclasMedicamentos = hcuEvomedicamentosJpa.ListFindHcuMezclas(evol);
-          for(int i=0;i<mezclasMedicamentos.size();i++){
-              MTMezcla.addRow(dato);
-              MTMezcla.setValueAt(new JLabel(icon),i,2);
-              MTMezcla.setValueAt(mezclasMedicamentos.get(i).getVia(), i, 3);
-              MTMezcla.setValueAt(mezclasMedicamentos.get(i).getAdministracion(), i, 4);
-              medicCombinados = new addMedicCombinados(null, true);                
-              DefaultTableModel model= medicCombinados.getModeloMezcla();
-              medicCombinados.dispose();
-              for(int a=0;a<mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().size();a++){
-                  model.addRow(dato);
-                  model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getIdSuministro(), a, 0);
-                  model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getDosisN(), a, 1);
-                  model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getDosisU(), a, 2);
-                  model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getSolDiluir(), a, 3);
-              }
-              MTMezcla.setValueAt(model, i, 0);
-              MTMezcla.setValueAt(toHTMLMezcla(model,0), i, 1);
-              jTable2.setRowHeight(i, model.getRowCount()*16);
-          }
-          /* Comprobamos que la evolucion no contiene medicamentos */
-          if(evoPosologias.isEmpty()){
-              List<HcuEvoPosologia> posologias =null;
-              HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
-              /* consulta de las evoluciones que pertenecen a la nota de ingreso */
-              List<HcuEvolucion> hes= hejc.FindHcuEvolucions(evol.getIdInfoHistoriac());
-              /*
-              * verifica si tiene evoluciones y toma la ultima listada.
-              * el orden de la fecha es ascendente
-              */
-              if(!hes.isEmpty()){
-                  posologias = hes.get(hes.size()-1).getHcuEvoPosologias();
-                 /* verificamos si la ultima evolucion tiene medicamentos. 
-                 *   --> si tiene medicamentos en la ultima evolucion hacemos la migracion
-                 *   --> a la evolucion que se esta creando
-                 */
-                  if(!posologias.isEmpty() && evol.getFechaEvo().compareTo(hes.get(hes.size()-1).getFechaEvo())>0 ){
-                      /* preguntamos si se desea hacer la migracion */
-                      this.migrarPosologiaToEvo(posologias, true);
-                  }
-              }else{
-                  /* Si no tiene evoluciones buscamos las medidas de la hcu */
-                  InfoPosologiaHcuJpaController iphjc = new InfoPosologiaHcuJpaController(factory);
-                  List<InfoPosologiaHcu> hcus = iphjc.ListFindInfoPosologia(evol.getIdInfoHistoriac());
-                  /* verificamos que la hcu tiene medicamentos */
-                  if(!hcus.isEmpty()){
-                      this.migrarPosologiaToEvo(hcus, false);
-                  }
-              }
-          }
-          /* Comprobamos que la evolucion no contiene mezclas-medicamentos */
-          if(mezclasMedicamentos.isEmpty()){
-              List<HcuEvoMezclasMedicamentos> mezclasMedicamentoses = null;
-              HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
-              /* consulta de las evoluciones que pertenecen a la nota de ingreso */
-              List<HcuEvolucion> hes= hejc.FindHcuEvolucions(evol.getIdInfoHistoriac());
-              /*
-              * verifica si tiene evoluciones y toma la ultima listada.
-              * el orden de la fecha es ascendente
-              */
-              if(!hes.isEmpty()){
-                  mezclasMedicamentoses = hes.get(hes.size()-1).getHcuEvoMezclasMedicamentoses();
-                  /* verificamos si la ultima evolucion tiene mezclas-medicamentos. 
-                 *   --> si tiene mezclas-medicamentos en la ultima evolucion hacemos la migracion
-                 *   --> a la evolucion que se esta creando
-                 */
-                  if(!mezclasMedicamentoses.isEmpty() && evol.getFechaEvo().compareTo(hes.get(hes.size()-1).getFechaEvo())>0 ){
-                      /* preguntamos si se desea hacer la migracion */
-                      this.migrarMezclasMedicToEvo(mezclasMedicamentoses, true);
-                  }
-              }else{
-                  /* Si no tiene evoluciones buscamos las mezclas-medicamentos de la hcu */
-                  HcuMezclasMedicamentosJpaController hmmjc = new HcuMezclasMedicamentosJpaController(factory);
-                  List<HcuMezclasMedicamentos> hmms = hmmjc.ListFindHcuMezclas(evol.getIdInfoHistoriac());
-                  /* verificamos que la hcu tiene medicamentos */
-                  if(!hmms.isEmpty()){
-                      /* preguntamos si se desea hacer la migracion */
-                      this.migrarMezclasMedicToEvo(hmms, false);
-                  }
-              }
-          }
+//          if(hcuEvomedicamentosJpa==null)
+//              hcuEvomedicamentosJpa = new HcuEvoMezclasMedicamentosJpaController(factory);
+//          List<HcuEvoMezclasMedicamentos> mezclasMedicamentos = hcuEvomedicamentosJpa.ListFindHcuMezclas(evol);
+//          for(int i=0;i<mezclasMedicamentos.size();i++){
+//              MTMezcla.addRow(dato);
+//              MTMezcla.setValueAt(new JLabel(icon),i,2);
+//              MTMezcla.setValueAt(mezclasMedicamentos.get(i).getVia(), i, 3);
+//              MTMezcla.setValueAt(mezclasMedicamentos.get(i).getAdministracion(), i, 4);
+//              medicCombinados = new addMedicCombinados(null, true);                
+//              DefaultTableModel model= medicCombinados.getModeloMezcla();
+//              medicCombinados.dispose();
+//              for(int a=0;a<mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().size();a++){
+//                  model.addRow(dato);
+//                  model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getIdSuministro(), a, 0);
+//                  model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getDosisN(), a, 1);
+//                  model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getDosisU(), a, 2);
+//                  model.setValueAt(mezclasMedicamentos.get(i).getHcuEvoMezclasMedicamentosDescs().get(a).getSolDiluir(), a, 3);
+//              }
+//              MTMezcla.setValueAt(model, i, 0);
+//              MTMezcla.setValueAt(toHTMLMezcla(model,0), i, 1);
+//              jTable2.setRowHeight(i, model.getRowCount()*16);
+//          }
+//          /* Comprobamos que la evolucion no contiene medicamentos */
+//          if(evoPosologias.isEmpty()){
+//              List<HcuEvoPosologia> posologias =null;
+//              HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
+//              /* consulta de las evoluciones que pertenecen a la nota de ingreso */
+//              List<HcuEvolucion> hes= hejc.FindHcuEvolucions(evol.getIdInfoHistoriac());
+//              /*
+//              * verifica si tiene evoluciones y toma la ultima listada.
+//              * el orden de la fecha es ascendente
+//              */
+//              if(!hes.isEmpty()){
+//                  posologias = hes.get(hes.size()-1).getHcuEvoPosologias();
+//                 /* verificamos si la ultima evolucion tiene medicamentos. 
+//                 *   --> si tiene medicamentos en la ultima evolucion hacemos la migracion
+//                 *   --> a la evolucion que se esta creando
+//                 */
+//                  if(!posologias.isEmpty() && evol.getFechaEvo().compareTo(hes.get(hes.size()-1).getFechaEvo())>0 ){
+//                      /* preguntamos si se desea hacer la migracion */
+//                      this.migrarPosologiaToEvo(posologias, true);
+//                  }
+//              }else{
+//                  /* Si no tiene evoluciones buscamos las medidas de la hcu */
+//                  InfoPosologiaHcuJpaController iphjc = new InfoPosologiaHcuJpaController(factory);
+//                  List<InfoPosologiaHcu> hcus = iphjc.ListFindInfoPosologia(evol.getIdInfoHistoriac());
+//                  /* verificamos que la hcu tiene medicamentos */
+//                  if(!hcus.isEmpty()){
+//                      this.migrarPosologiaToEvo(hcus, false);
+//                  }
+//              }
+//          }
+//          /* Comprobamos que la evolucion no contiene mezclas-medicamentos */
+//          if(mezclasMedicamentos.isEmpty()){
+//              List<HcuEvoMezclasMedicamentos> mezclasMedicamentoses = null;
+//              HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
+//              /* consulta de las evoluciones que pertenecen a la nota de ingreso */
+//              List<HcuEvolucion> hes= hejc.FindHcuEvolucions(evol.getIdInfoHistoriac());
+//              /*
+//              * verifica si tiene evoluciones y toma la ultima listada.
+//              * el orden de la fecha es ascendente
+//              */
+//              if(!hes.isEmpty()){
+//                  mezclasMedicamentoses = hes.get(hes.size()-1).getHcuEvoMezclasMedicamentoses();
+//                  /* verificamos si la ultima evolucion tiene mezclas-medicamentos. 
+//                 *   --> si tiene mezclas-medicamentos en la ultima evolucion hacemos la migracion
+//                 *   --> a la evolucion que se esta creando
+//                 */
+//                  if(!mezclasMedicamentoses.isEmpty() && evol.getFechaEvo().compareTo(hes.get(hes.size()-1).getFechaEvo())>0 ){
+//                      /* preguntamos si se desea hacer la migracion */
+//                      this.migrarMezclasMedicToEvo(mezclasMedicamentoses, true);
+//                  }
+//              }else{
+//                  /* Si no tiene evoluciones buscamos las mezclas-medicamentos de la hcu */
+//                  HcuMezclasMedicamentosJpaController hmmjc = new HcuMezclasMedicamentosJpaController(factory);
+//                  List<HcuMezclasMedicamentos> hmms = hmmjc.ListFindHcuMezclas(evol.getIdInfoHistoriac());
+//                  /* verificamos que la hcu tiene medicamentos */
+//                  if(!hmms.isEmpty()){
+//                      /* preguntamos si se desea hacer la migracion */
+//                      this.migrarMezclasMedicToEvo(hmms, false);
+//                  }
+//              }
+//          }
       }
       
       /**

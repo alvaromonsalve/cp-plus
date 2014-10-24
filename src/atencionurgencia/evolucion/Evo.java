@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
@@ -61,7 +60,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import jpa.HcuEvolucionJpaController;
-import jpa.InfoAdmisionJpaController;
 import tools.JTreeRendererArbolEvo;
 import tools.MyDate;
 
@@ -114,6 +112,7 @@ public class Evo extends javax.swing.JPanel {
     private datosHCU cU;
     public int tipoEvo;
     public StaticEspecialidades staticEspecialidades = null;
+    public boolean auditoria=false;
 
     // </editor-fold>
     /**
@@ -122,9 +121,9 @@ public class Evo extends javax.swing.JPanel {
 //    private HcuEvolucion hcuEvolucion = null;
     private int est = 0;
 
-    public Evo() {
+    public Evo(EntityManagerFactory factory) {
         initComponents();
-        factory = Persistence.createEntityManagerFactory("ClipaEJBPU", AtencionUrgencia.props);
+        this.factory = factory;
         TablaAyudDiag();
         inicio();
         InputMap map2 = jTextArea10.getInputMap(JTextArea.WHEN_FOCUSED);
@@ -306,6 +305,36 @@ public class Evo extends javax.swing.JPanel {
         setHelpDiag();
         setJTreeEvo();
     }
+    
+    public void viewEvoEdit(HcuEvolucion evolucion){
+        this.infohistoriac = evolucion.getIdInfoHistoriac();
+        infoadmision = infohistoriac.getIdInfoAdmision();
+        infopaciente = infoadmision.getIdDatosPersonales();
+        jlbNombrePaciente.setText(infopaciente.getNombre1() + " " + infopaciente.getApellido1() + " [" + infopaciente.getNumDoc() + "]     [" + infohistoriac.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad() + "]");
+        evoSeleccion = evolucion;
+        if (evoSeleccion.getEstado() == 2) {
+            this.activarComponentes(evoSeleccion);
+            this.jButton13.setEnabled(false);
+            this.jButton12.setEnabled(false);
+            if (est == 1) {
+                this.jButton14.setEnabled(false);
+            }
+        } else {
+            if (evoSeleccion.getEstado() >= 3) {
+                this.activarComponentesEgreso(evoSeleccion);
+                this.jButton14.setEnabled(false);
+                this.jButton1.setEnabled(false);
+                if (evoSeleccion.getEstado() == 4) {
+                    this.jButton13.setEnabled(false);
+                    this.jButton1.setEnabled(false);
+                    this.jButton14.setEnabled(false);
+                    this.jButton12.setEnabled(true);
+                }
+            } else {
+                this.activarComponentes(evoSeleccion);
+            }
+        }
+    }
 
     private void setJTreeEvo() {
         if (hcuEvolucionJpaController == null) {
@@ -415,7 +444,6 @@ public class Evo extends javax.swing.JPanel {
         jTextArea25.setText(infohistoriac.getAntFamiliar());
         jTextArea25.setCaretPosition(0);
         if (staticcie == null) {
-            factory = Persistence.createEntityManagerFactory("ClipaEJBPU", AtencionUrgencia.props);
             staticcie = new StaticCie10JpaController(factory);
         }
         if (infohistoriac.getDiagnostico() != 0 && infohistoriac.getDiagnostico() != 1) {
@@ -967,16 +995,16 @@ public class Evo extends javax.swing.JPanel {
         }
         if (getValidPanels(analisis) == false) {
             if (analisis != null) {
-                for (String texto : analisis.estadoTablasVal()) {
+                for (String texto : analisis.estadoTablasVal(evoSeleccion)) {
                     mensaje.add(texto);
                 }
             }
             retorno = true;
         }
-        if (getValidPanels(pplan) == false) {
-            mensaje.add("*Tratamientos e Indicaciones*");
-            retorno = true;
-        }
+//        if (getValidPanels(pplan) == false) {
+//            mensaje.add("*Tratamientos e Indicaciones*");
+//            retorno = true;
+//        }
 
         for (String men : mensaje) {
             mensajeT += men + "\n";
@@ -1003,15 +1031,14 @@ public class Evo extends javax.swing.JPanel {
                     return true;
                 }
             } else if (jp instanceof pAnalisis) {
-                if (((pAnalisis) jp).estadoTablas() == true) {
+                if (((pAnalisis) jp).estadoTablas(evoSeleccion) == true) {
                     return true;
                 }
-            } else if (jp instanceof pPlan) {
-                if (((pPlan) jp).estadoTablas() == true) {
-                    return true;
-                }
-            }
-
+            } //else if (jp instanceof pPlan) {
+//                if (((pPlan) jp).estadoTablas() == true) {
+//                    return true;
+//                }
+//            }
         }
         return false;
     }
@@ -3538,14 +3565,14 @@ public class Evo extends javax.swing.JPanel {
         jButton11.setMinimumSize(new java.awt.Dimension(32, 32));
         jButton11.setPreferredSize(new java.awt.Dimension(32, 32));
         jButton11.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/images/print_22x22_1.png"))); // NOI18N
-        jButton11.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton11MouseExited(evt);
-            }
-        });
         jButton11.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton11MouseMoved(evt);
+            }
+        });
+        jButton11.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton11MouseExited(evt);
             }
         });
         jButton11.addActionListener(new java.awt.event.ActionListener() {
@@ -3721,14 +3748,14 @@ public class Evo extends javax.swing.JPanel {
         jButton14.setFocusable(false);
         jButton14.setOpaque(false);
         jButton14.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton14.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton14MouseExited(evt);
-            }
-        });
         jButton14.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton14MouseMoved(evt);
+            }
+        });
+        jButton14.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton14MouseExited(evt);
             }
         });
         jButton14.addActionListener(new java.awt.event.ActionListener() {
@@ -3745,14 +3772,14 @@ public class Evo extends javax.swing.JPanel {
         jButton12.setFocusable(false);
         jButton12.setOpaque(false);
         jButton12.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton12.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton12MouseExited(evt);
-            }
-        });
         jButton12.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton12MouseMoved(evt);
+            }
+        });
+        jButton12.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton12MouseExited(evt);
             }
         });
         jButton12.addActionListener(new java.awt.event.ActionListener() {
@@ -3769,14 +3796,14 @@ public class Evo extends javax.swing.JPanel {
         jButton5.setFocusable(false);
         jButton5.setOpaque(false);
         jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton5MouseExited(evt);
-            }
-        });
         jButton5.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton5MouseMoved(evt);
+            }
+        });
+        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton5MouseExited(evt);
             }
         });
         jButton5.addActionListener(new java.awt.event.ActionListener() {
@@ -3793,14 +3820,14 @@ public class Evo extends javax.swing.JPanel {
         jButton13.setFocusable(false);
         jButton13.setOpaque(false);
         jButton13.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton13.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton13MouseExited(evt);
-            }
-        });
         jButton13.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton13MouseMoved(evt);
+            }
+        });
+        jButton13.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton13MouseExited(evt);
             }
         });
         jButton13.addActionListener(new java.awt.event.ActionListener() {
@@ -3917,14 +3944,14 @@ public class Evo extends javax.swing.JPanel {
         jButton4.setFocusable(false);
         jButton4.setOpaque(false);
         jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton4MouseExited(evt);
-            }
-        });
         jButton4.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton4MouseMoved(evt);
+            }
+        });
+        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton4MouseExited(evt);
             }
         });
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -5145,7 +5172,7 @@ public class Evo extends javax.swing.JPanel {
             impresionesHC imp = new impresionesHC(factory);
             imp.setidHC(this.infohistoriac);
             imp.activarLinks();
-            imp.setdestinoHc("OBSERVACION DE URGENCIAS");
+            imp.setdestinoHc(this.infohistoriac.getDestino());
             imp.setLocationRelativeTo(null);
             imp.setNoValido(false);
             imp.setVisible(true);
@@ -5291,8 +5318,8 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        if (evoSeleccion.getEstado() != 0) {
-            imphcuEvo imEvo = new imphcuEvo(null, true);
+        if (evoSeleccion.getId() != null) {
+            imphcuEvo imEvo = new imphcuEvo(null, true,factory);
             imEvo.setLocationRelativeTo(null);
             imEvo.setEvolucion(evoSeleccion);
             if (evoSeleccion.getEstado() == 1 || evoSeleccion.getEstado() == 3) {
@@ -5300,10 +5327,10 @@ public class Evo extends javax.swing.JPanel {
             } else {
                 imEvo.setNoValido(false);
             }
-            imEvo.activeChec();
+            imEvo.activarLinks();
             imEvo.setVisible(true);
         } else {
-            JOptionPane.showMessageDialog(null, "No puede imprimir una nota borrador");
+            JOptionPane.showMessageDialog(null, "Debe guardar antes de imprimir");
         }
     }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -5404,17 +5431,53 @@ public class Evo extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+        if (evoSeleccion.getId() != null) {
+            if (getCamposObligatoriosVacios() == false) {
+                if (hcuEvolucionJpaController == null) {
+                    hcuEvolucionJpaController = new HcuEvolucionJpaController(factory);
+                }
+                HcuEvolucion he = null;
+                imphcuEvo imp = new imphcuEvo(null, true, factory);
+                try {
+                    he = evoSeleccion;
+                    if (he.getEstado() == 1) {
+                        String mensaje = "¿Si finaliza la nota de Evolución no podra modificarla posteriormente? ";
+                        int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar finalizacion", JOptionPane.YES_NO_OPTION);
+                        if (entrada == 0) {
+                        he.setEstado(2);
+                        hcuEvolucionJpaController.edit(he);
+                        imp.setNoValido(false);
+                        imp.setEvolucion(he);
+                        imp.stateevo1 =1;
+                        imp.generarConsecutivos();
+                        jButton13.setEnabled(false);
+                        jButton12.setEnabled(false);
+                        if (est == 1) {
+                            jButton14.setEnabled(false);
+                        }
+                        }
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage() + ": No puede finalizar la nota de Evolución sin haber guardado");
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Debe guardar antes de finalizar");
+        }
+        
+        
+        
         if (getCamposObligatoriosVacios() == false) {
-            InfoAdmisionJpaController iajc = null;
+//            InfoAdmisionJpaController iajc = null;
             if (hcuEvolucionJpaController == null) {
                 hcuEvolucionJpaController = new HcuEvolucionJpaController(factory);
-                iajc = new InfoAdmisionJpaController(factory);
+//                iajc = new InfoAdmisionJpaController(factory);
             }
             HcuEvolucion he = null;
-            imphcuEvo imp = new imphcuEvo(null, true);
+            imphcuEvo imp = new imphcuEvo(null, true,factory);
             try {
                 he = evoSeleccion;
-                saveEvolucion();
+//                saveEvolucion();
                 if (he.getEstado() == 1) {
                     String mensaje = "¿Si finaliza la nota de Evolución no podra modificarla posteriormente? ";
                     int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar finalizacion", JOptionPane.YES_NO_OPTION);
@@ -5431,35 +5494,35 @@ public class Evo extends javax.swing.JPanel {
                             jButton14.setEnabled(false);
                         }
                     }
-                } else if (he.getEstado() == 0) {
-                    JOptionPane.showMessageDialog(null, "No se puede finalizar Notas en estado Borrador");
-                } else if (he.getEstado() == 3) {
-                    if (he.getHcuEvoEgreso().size() > 0) {
-                        String mensaje = "¿Si finaliza la nota de Egreso no podra modificarla posteriormente? ";
-                        int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar Finalizacion", JOptionPane.YES_NO_OPTION);
-                        if (entrada == 0) {
-                            he.setEstado(4);
-//                            he.getIdInfoHistoriac().getIdInfoAdmision().setEstado(4);
-//                            iajc.edit(he.getIdInfoHistoriac().getIdInfoAdmision());
-                            hcuEvolucionJpaController.edit(he);
-                            imp.stateevo1 =3;
-                            imp.setNoValido(false);
-                            imp.setEvolucion(he);
-                            imp.imprimir();
-                            jButton13.setEnabled(false);
-                            jButton12.setEnabled(false);
-                            if (est == 1) {
-                                jButton14.setEnabled(false);
-                            }
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "No existe destino del paciente relacionado al egreso");
-                    }
-                } else if (he.getEstado() > 1) {
-                    JOptionPane.showMessageDialog(null, "Esta Nota ya se encuentra finalizada");
+//                } else if (he.getEstado() == 0) {
+//                    JOptionPane.showMessageDialog(null, "No se puede finalizar Notas en estado Borrador");
+//                } else if (he.getEstado() == 3) {
+//                    if (he.getHcuEvoEgreso().size() > 0) {
+//                        String mensaje = "¿Si finaliza la nota de Egreso no podra modificarla posteriormente? ";
+//                        int entrada = JOptionPane.showConfirmDialog(null, mensaje, "Confirmar Finalizacion", JOptionPane.YES_NO_OPTION);
+//                        if (entrada == 0) {
+//                            he.setEstado(4);
+////                            he.getIdInfoHistoriac().getIdInfoAdmision().setEstado(4);
+////                            iajc.edit(he.getIdInfoHistoriac().getIdInfoAdmision());
+//                            hcuEvolucionJpaController.edit(he);
+//                            imp.stateevo1 =3;
+//                            imp.setNoValido(false);
+//                            imp.setEvolucion(he);
+//                            imp.imprimir();
+//                            jButton13.setEnabled(false);
+//                            jButton12.setEnabled(false);
+//                            if (est == 1) {
+//                                jButton14.setEnabled(false);
+//                            }
+//                        }
+//                    } else {
+//                        JOptionPane.showMessageDialog(null, "No existe destino del paciente relacionado al egreso");
+//                    }
+//                } else if (he.getEstado() > 1) {
+//                    JOptionPane.showMessageDialog(null, "Esta Nota ya se encuentra finalizada");
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null,ex.getMessage()+ ": No puede finalizar la nota de Evolución sin haber guardado");
+                JOptionPane.showMessageDialog(null,ex.getMessage()+ "lol: No puede finalizar la nota de Evolución sin haber guardado");
             }
         }
     }//GEN-LAST:event_jButton13ActionPerformed
@@ -5748,7 +5811,7 @@ public class Evo extends javax.swing.JPanel {
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
-    private javax.swing.JTabbedPane jTabbedPane3;
+    public javax.swing.JTabbedPane jTabbedPane3;
     private javax.swing.JTabbedPane jTabbedPane4;
     private javax.swing.JTabbedPane jTabbedPane5;
     private javax.swing.JTabbedPane jTabbedPane6;

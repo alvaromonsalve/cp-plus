@@ -13,7 +13,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
@@ -41,10 +40,11 @@ public class fListinterconsulta extends javax.swing.JFrame {
 
     /**
      * Creates new form fListinterconsulta
+     * @param factory
      */
-    public fListinterconsulta( ) {
-        initComponents();
-        factory = Persistence.createEntityManagerFactory("ClipaEJBPU",AtencionUrgencia.props);
+    public fListinterconsulta(EntityManagerFactory factory) {
+        initComponents();        
+        this.factory = factory;
         TablaModeloTabla();
         showEspecialidades();
         jLabel1.setVisible(false);
@@ -179,7 +179,7 @@ public class fListinterconsulta extends javax.swing.JFrame {
     
     private void select() {
         AtencionUrgencia.panelindex.jpContainer.removeAll();
-        AtencionUrgencia.panelindex.evo = new Evo();
+        AtencionUrgencia.panelindex.evo = new Evo(factory);
         AtencionUrgencia.panelindex.evo.setBounds(0, 0, 764, 514);
         AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.evo);
         AtencionUrgencia.panelindex.evo.setVisible(true);

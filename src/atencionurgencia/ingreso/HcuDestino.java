@@ -2,15 +2,12 @@
 package atencionurgencia.ingreso;
 
 import entidades.InfoHistoriac;
-import jpa.InfoHistoriacJpaController;
 
 /**
  *
  * @author Alvaro Monsalve
  */
 public class HcuDestino extends javax.swing.JPanel {
-    private InfoHistoriacJpaController ihjc;
-    private InfoHistoriac infoHistoriac;
 
     /**
      * Creates new form HcuDestino
@@ -18,7 +15,6 @@ public class HcuDestino extends javax.swing.JPanel {
      */
     public HcuDestino(InfoHistoriac historiac) {
         initComponents();
-        this.infoHistoriac=historiac;
         if(historiac.getDestino()!=null){
             jComboBox1.setSelectedItem(historiac.getDestino());
         }
@@ -48,7 +44,7 @@ public class HcuDestino extends javax.swing.JPanel {
         jPanel32.setBorder(javax.swing.BorderFactory.createTitledBorder("Destino"));
         jPanel32.setOpaque(false);
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "OBSERVACION", "CONSULTA EXTERNA (CITA PRIORITARIA)", "DOMICILIO", "HOSPITALIZACION" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "OBSERVACION", "HOSPITALIZACION" }));
 
         javax.swing.GroupLayout jPanel32Layout = new javax.swing.GroupLayout(jPanel32);
         jPanel32.setLayout(jPanel32Layout);

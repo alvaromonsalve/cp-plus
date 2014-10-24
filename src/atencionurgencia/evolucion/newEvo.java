@@ -239,7 +239,7 @@ public class newEvo extends javax.swing.JPanel {
             if(!jTextField7.getText().isEmpty()) hcuEvolucion.setTas(Short.parseShort(jTextField7.getText().toString()));
             if(!jTextField6.getText().isEmpty()) hcuEvolucion.setTad(Short.parseShort(jTextField6.getText().toString()));
             if(!jTextArea2.getText().isEmpty()) hcuEvolucion.setOtrossignos(jTextArea2.getText().toUpperCase());
-            hcuEvolucion.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+            if(AtencionUrgencia.panelindex.evo.auditoria==false) hcuEvolucion.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
             try {
                 if(hcuEvolucion.getId()==null){
                     jpaController.create(hcuEvolucion);
@@ -251,7 +251,7 @@ public class newEvo extends javax.swing.JPanel {
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "10130:\n"+ex.getMessage(), newEvo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
             }
-         }else if(hcuEvolucion.getEstado()==2){
+        }else if(hcuEvolucion.getEstado()==2){
             JOptionPane.showMessageDialog(this, "La Evolución fue finalizada y no puede ser modificada");
         }
         return sigue;

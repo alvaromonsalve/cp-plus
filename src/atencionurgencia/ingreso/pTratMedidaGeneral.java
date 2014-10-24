@@ -85,11 +85,14 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
     public void cargaDato(){
         int rowIndex = ModeloTabla.getRowCount();
         if(!jTextArea27.getText().equals("")){
-            ModeloTabla.addRow(dato);
-            ModeloTabla.setValueAt(jTextArea27.getText().toUpperCase(), rowIndex, 0);
-            ModeloTabla.setValueAt("", rowIndex, 1);
-            jTextArea27.setText("");
-        
+            if(jTextArea27.getText().length()>=100){
+                JOptionPane.showMessageDialog(this, "El título es muy extenso.");
+            }else{
+                ModeloTabla.addRow(dato);
+                ModeloTabla.setValueAt(jTextArea27.getText().toUpperCase(), rowIndex, 0);
+                ModeloTabla.setValueAt("", rowIndex, 1);
+                jTextArea27.setText("");
+            }
         }
     }
     
@@ -229,67 +232,67 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
             ModeloTabla.setValueAt(evoMedidasgs.get(i).getObservacion(), i, 1);
         }
         /* Comprobamos que la evolucion no contiene medidas generales */
-        if(evoMedidasgs.isEmpty()){
-            List<HcuEvoMedidasg> medidasgs=null;
-            HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
-            /* consulta de las evoluciones que pertenecen a la nota de ingreso */
-            List<HcuEvolucion> hes= hejc.FindHcuEvolucions(evol.getIdInfoHistoriac());            
-            /*
-             * verifica si tiene evoluciones y toma la ultima listada.
-             * el orden de la fecha es ascendente
-             */
-            if(!hes.isEmpty()){
-                medidasgs = hes.get(hes.size()-1).getHcuEvoMedidasgs();
-                /* verificamos si la ultima evolucion tiene medidas generales. 
-                 *   --> si tiene medidasG en la ultima evolucion hacemos la migracion
-                 *   --> a la evolucion que se esta creando
-                 */
-                if(!medidasgs.isEmpty() && evol.getFechaEvo().compareTo(hes.get(hes.size()-1).getFechaEvo())>0 ){
-                    /* preguntamos si se desea hacer la migracion */
-                    this.migrarMediGeneToEvo(medidasgs, true);
-                    
-                }
-            }else{
-                /* Si no tiene evoluciones buscamos las medidas de la hcu */
-                InfoMedidasgHcuJpaController imhjc = new InfoMedidasgHcuJpaController(factory);
-                List<InfoMedidasgHcu> imh = imhjc.ListFindInfoMedidasGHcu(evol.getIdInfoHistoriac());
-                /* verificamos que la hcu tiene medidasG */
-                if(!imh.isEmpty()){
-                    this.migrarMediGeneToEvo(imh, false);
-                }
-            }
-        }
+//        if(evoMedidasgs.isEmpty()){
+//            List<HcuEvoMedidasg> medidasgs=null;
+//            HcuEvolucionJpaController hejc = new HcuEvolucionJpaController(factory);
+//            /* consulta de las evoluciones que pertenecen a la nota de ingreso */
+//            List<HcuEvolucion> hes= hejc.FindHcuEvolucions(evol.getIdInfoHistoriac());            
+//            /*
+//             * verifica si tiene evoluciones y toma la ultima listada.
+//             * el orden de la fecha es ascendente
+//             */
+//            if(!hes.isEmpty()){
+//                medidasgs = hes.get(hes.size()-1).getHcuEvoMedidasgs();
+//                /* verificamos si la ultima evolucion tiene medidas generales. 
+//                 *   --> si tiene medidasG en la ultima evolucion hacemos la migracion
+//                 *   --> a la evolucion que se esta creando
+//                 */
+//                if(!medidasgs.isEmpty() && evol.getFechaEvo().compareTo(hes.get(hes.size()-1).getFechaEvo())>0 ){
+//                    /* preguntamos si se desea hacer la migracion */
+//                    this.migrarMediGeneToEvo(medidasgs, true);
+//                    
+//                }
+//            }else{
+//                /* Si no tiene evoluciones buscamos las medidas de la hcu */
+//                InfoMedidasgHcuJpaController imhjc = new InfoMedidasgHcuJpaController(factory);
+//                List<InfoMedidasgHcu> imh = imhjc.ListFindInfoMedidasGHcu(evol.getIdInfoHistoriac());
+//                /* verificamos que la hcu tiene medidasG */
+//                if(!imh.isEmpty()){
+//                    this.migrarMediGeneToEvo(imh, false);
+//                }
+//            }
+//        }
     }
     
-    /**
-     * 
-     * @param medidas List de medidaGhcu or medidaEvo
-     * @param evo true si viene de evolucion; false si viene de hcu
-     */
-    private void migrarMediGeneToEvo(Object medidas, boolean evo){
-        String mensaje = "¿Quiere continuar con las medidas generales de la Nota de Ingreso? ";
-        if(evo){
-            mensaje = "¿Quiere continuar con las medidas generales de la Evolución anterior? ";
-        }
-        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Migración de medidas generales",JOptionPane.YES_NO_OPTION);
-        if(entrada==0){
-            if(evo){
-                List<HcuEvoMedidasg> medidasgs = (List<HcuEvoMedidasg>) medidas;
-                for(int i=0;i<medidasgs.size();i++){
-                    ModeloTabla.addRow(dato);
-                    ModeloTabla.setValueAt(medidasgs.get(i).getMedidag(), i, 0);
-                    ModeloTabla.setValueAt(medidasgs.get(i).getObservacion(), i, 1);
-                }
-            }else{
-                List<InfoMedidasgHcu> imh = (List<InfoMedidasgHcu>) medidas;
-                for(int i=0;i<imh.size();i++){
-                    ModeloTabla.addRow(dato);
-                    ModeloTabla.setValueAt(imh.get(i).getMedidag(), i, 0);
-                    ModeloTabla.setValueAt(imh.get(i).getObservacion(), i, 1);
-                }
-            }
-        }
-    }
+//    /**
+//     * 
+//     * @param medidas List de medidaGhcu or medidaEvo
+//     * @param evo true si viene de evolucion; false si viene de hcu
+//     */
+//    private void migrarMediGeneToEvo(Object medidas, boolean evo){
+//        String mensaje = "¿Quiere continuar con las medidas generales de la Nota de Ingreso? ";
+//        if(evo){
+//            mensaje = "¿Quiere continuar con las medidas generales de la Evolución anterior? ";
+//        }
+//        int entrada = JOptionPane.showConfirmDialog(null, mensaje,"Migración de medidas generales",JOptionPane.YES_NO_OPTION);
+//        if(entrada==0){
+//            if(evo){
+//                List<HcuEvoMedidasg> medidasgs = (List<HcuEvoMedidasg>) medidas;
+//                for(int i=0;i<medidasgs.size();i++){
+//                    ModeloTabla.addRow(dato);
+//                    ModeloTabla.setValueAt(medidasgs.get(i).getMedidag(), i, 0);
+//                    ModeloTabla.setValueAt(medidasgs.get(i).getObservacion(), i, 1);
+//                }
+//            }else{
+//                List<InfoMedidasgHcu> imh = (List<InfoMedidasgHcu>) medidas;
+//                for(int i=0;i<imh.size();i++){
+//                    ModeloTabla.addRow(dato);
+//                    ModeloTabla.setValueAt(imh.get(i).getMedidag(), i, 0);
+//                    ModeloTabla.setValueAt(imh.get(i).getObservacion(), i, 1);
+//                }
+//            }
+//        }
+//    }
 
     /**
      * Retorna el estado sobre los registros de las tablas

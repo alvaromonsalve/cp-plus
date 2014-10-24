@@ -36,6 +36,7 @@ public class AtencionUrgencia {
     public static List<AccessRoles> roles;
     public static AccessConfigUser configUser=null;
     public static CmProfesionales cep=null;
+    public static boolean isAdministrador=false;
 
     /**
      * 
@@ -63,20 +64,34 @@ public class AtencionUrgencia {
             DseleccionarACU aCU = new DseleccionarACU(null,true);
             aCU.setACU(ACU);
             aCU.setLocationRelativeTo(null);
-            aCU.setVisible(true);            
+            aCU.setVisible(true);       
             configUser = aCU.configUser;
         }else if(ACU.size()==1){
             configUser = ACU.get(0);
         }
         if(configUser!=null){
+            boolean varEntrada=false;
             roles = configUser.getIdPerfiles().getAccessRolesList();
+            for (AccessConfigUser ACU1 : ACU) {
+                if(ACU1.getIdPerfiles().getNombre().equals("SYSTEM")){
+                    varEntrada = true;
+                    isAdministrador=true;
+                    break;
+                }
+            }
             for(AccessRoles ar:roles){
                 if(ar.getRuta()==10000){
-                    panelindex = new panelIndex(factory);
-                    if(configUser.getIdPerfiles().getId()!=3) panelindex.jButton4.setVisible(false);//3 es el id del perfil de especialista de urgencia
-                    AtencionUrgencia.props =props;       
-                    jPanel = panelindex;
+                    varEntrada=true;
+                    break;
                 }
+            }
+            if(varEntrada==true){
+                panelindex = new panelIndex(factory);
+                if (configUser.getIdPerfiles().getId() == 3 || configUser.getIdPerfiles().getId() == 7) {
+                    panelindex.jButton4.setVisible(true);//3 es el id del perfil de especialista de urgencia y 7 es el administrador
+                }
+                AtencionUrgencia.props = props;
+                jPanel = panelindex;
             }
         }
         return jPanel;

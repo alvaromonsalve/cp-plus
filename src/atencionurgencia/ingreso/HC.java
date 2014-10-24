@@ -3156,14 +3156,14 @@ public class HC extends javax.swing.JPanel {
         jButton1.setMinimumSize(new java.awt.Dimension(32, 32));
         jButton1.setPreferredSize(new java.awt.Dimension(32, 32));
         jButton1.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Save1.png"))); // NOI18N
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton1MouseExited(evt);
-            }
-        });
         jButton1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton1MouseMoved(evt);
+            }
+        });
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton1MouseExited(evt);
             }
         });
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -3180,14 +3180,14 @@ public class HC extends javax.swing.JPanel {
         jButton9.setMinimumSize(new java.awt.Dimension(32, 32));
         jButton9.setPreferredSize(new java.awt.Dimension(32, 32));
         jButton9.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/images/editdelete1.png"))); // NOI18N
-        jButton9.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton9MouseExited(evt);
-            }
-        });
         jButton9.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton9MouseMoved(evt);
+            }
+        });
+        jButton9.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton9MouseExited(evt);
             }
         });
         jButton9.addActionListener(new java.awt.event.ActionListener() {
@@ -3228,14 +3228,14 @@ public class HC extends javax.swing.JPanel {
         jButton11.setMinimumSize(new java.awt.Dimension(32, 32));
         jButton11.setPreferredSize(new java.awt.Dimension(32, 32));
         jButton11.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/images/print_22x22_1.png"))); // NOI18N
-        jButton11.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton11MouseExited(evt);
-            }
-        });
         jButton11.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton11MouseMoved(evt);
+            }
+        });
+        jButton11.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton11MouseExited(evt);
             }
         });
         jButton11.addActionListener(new java.awt.event.ActionListener() {
@@ -3248,17 +3248,17 @@ public class HC extends javax.swing.JPanel {
         jLabel44.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel44.setText(" Motivo de Consulta");
         jLabel44.setOpaque(true);
+        jLabel44.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel44MouseMoved(evt);
+            }
+        });
         jLabel44.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel44MouseExited(evt);
             }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 jLabel44MouseReleased(evt);
-            }
-        });
-        jLabel44.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel44MouseMoved(evt);
             }
         });
 
@@ -3962,7 +3962,7 @@ public class HC extends javax.swing.JPanel {
                     impresionesHC imp = new impresionesHC(factory);
                     imp.setidHC(this.infohistoriac);
                     imp.activarLinks();
-                    imp.setdestinoHc("OBSERVACION DE URGENCIAS");
+                    imp.setdestinoHc(this.infohistoriac.getDestino());
                     imp.setLocationRelativeTo(null);
                     imp.setNoValido(false);
                     imp.setVisible(true);
@@ -4404,7 +4404,11 @@ public class HC extends javax.swing.JPanel {
             impresionesHC imp = new impresionesHC(factory);
             imp.setidHC(this.infohistoriac);
             imp.activarLinks();
-            imp.setdestinoHc("OBSERVACION DE URGENCIAS");
+            if(infohistoriac.getDestino()==null){
+                imp.setdestinoHc("");
+            }else{
+                imp.setdestinoHc(infohistoriac.getDestino());
+            }            
             imp.setLocationRelativeTo(null);
             imp.setNoValido(true);
             imp.setVisible(true);
@@ -4513,7 +4517,7 @@ public class HC extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton10;
+    public javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;

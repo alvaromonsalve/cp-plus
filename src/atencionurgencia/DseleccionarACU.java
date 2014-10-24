@@ -29,7 +29,7 @@ public class DseleccionarACU extends javax.swing.JDialog {
                 null, new String [] {"ACU","ACU Asociadas"}){
                 Class[] types = new Class [] {
                      AccessConfigUser.class,
-                     java.lang.String.class,
+                     java.lang.String.class
                 };
 
                 boolean[] canEdit = new boolean [] {

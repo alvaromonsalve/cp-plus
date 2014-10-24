@@ -15,7 +15,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import other.hcuAdministrador;
 import tools.Funciones;
 
 /**
@@ -33,6 +35,9 @@ public class panelIndex extends javax.swing.JPanel {
     public panelIndex(EntityManagerFactory factory) {
         initComponents();
         this.factory = factory;
+        hc = new HC(factory);
+        this.jButton4.setVisible(false);
+        this.jButton5.setVisible(false);
     }
 
     public void activeButton(boolean var) {
@@ -73,6 +78,7 @@ public class panelIndex extends javax.swing.JPanel {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
         jToolBar1 = new javax.swing.JToolBar();
         jLabel1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JToolBar.Separator();
@@ -95,14 +101,14 @@ public class panelIndex extends javax.swing.JPanel {
         jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jButton1.setDoubleBuffered(true);
         jButton1.setFocusable(false);
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton1MouseExited(evt);
-            }
-        });
         jButton1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton1MouseMoved(evt);
+            }
+        });
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton1MouseExited(evt);
             }
         });
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -117,14 +123,14 @@ public class panelIndex extends javax.swing.JPanel {
         jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jButton2.setDoubleBuffered(true);
         jButton2.setFocusable(false);
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton2MouseExited(evt);
-            }
-        });
         jButton2.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton2MouseMoved(evt);
+            }
+        });
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton2MouseExited(evt);
             }
         });
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -142,14 +148,14 @@ public class panelIndex extends javax.swing.JPanel {
         jButton3.setMaximumSize(new java.awt.Dimension(46, 46));
         jButton3.setMinimumSize(new java.awt.Dimension(46, 46));
         jButton3.setPreferredSize(new java.awt.Dimension(46, 46));
-        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton3MouseExited(evt);
-            }
-        });
         jButton3.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton3MouseMoved(evt);
+            }
+        });
+        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton3MouseExited(evt);
             }
         });
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -167,14 +173,14 @@ public class panelIndex extends javax.swing.JPanel {
         jButton4.setMaximumSize(new java.awt.Dimension(46, 46));
         jButton4.setMinimumSize(new java.awt.Dimension(46, 46));
         jButton4.setPreferredSize(new java.awt.Dimension(46, 46));
-        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton4MouseExited(evt);
-            }
-        });
         jButton4.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton4MouseMoved(evt);
+            }
+        });
+        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton4MouseExited(evt);
             }
         });
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -209,6 +215,31 @@ public class panelIndex extends javax.swing.JPanel {
             }
         });
 
+        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/ic_add.png"))); // NOI18N
+        jButton6.setToolTipText("OPCIONES ADMINISTRATIVAS");
+        jButton6.setContentAreaFilled(false);
+        jButton6.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jButton6.setDoubleBuffered(true);
+        jButton6.setFocusable(false);
+        jButton6.setMaximumSize(new java.awt.Dimension(46, 46));
+        jButton6.setMinimumSize(new java.awt.Dimension(46, 46));
+        jButton6.setPreferredSize(new java.awt.Dimension(46, 46));
+        jButton6.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton6MouseMoved(evt);
+            }
+        });
+        jButton6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton6MouseExited(evt);
+            }
+        });
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelImage1Layout = new javax.swing.GroupLayout(panelImage1);
         panelImage1.setLayout(panelImage1Layout);
         panelImage1Layout.setHorizontalGroup(
@@ -218,6 +249,7 @@ public class panelIndex extends javax.swing.JPanel {
             .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         panelImage1Layout.setVerticalGroup(
             panelImage1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -232,6 +264,8 @@ public class panelIndex extends javax.swing.JPanel {
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -353,17 +387,22 @@ public class panelIndex extends javax.swing.JPanel {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         jButton4.setEnabled(false);
         boolean accede = false;
+        if (AtencionUrgencia.isAdministrador == true) {
+            accede = true;
+        }
         for (AccessRoles ar : roles) {
             if (ar.getRuta() == 10001) {
-                fListinterconsulta listPacientes = null;
-                listPacientes = new fListinterconsulta();
-                listPacientes.setVisible(true);
-                jButton4.setContentAreaFilled(false);
+
                 accede = true;
                 break;
             }
         }
-        if (!accede) {
+        if (accede == true) {
+            fListinterconsulta listPacientes = null;
+            listPacientes = new fListinterconsulta(factory);
+            listPacientes.setVisible(true);
+            jButton4.setContentAreaFilled(false);
+        } else {
             jpContainer.removeAll();
             JLabel label = new JLabel("CODIGO DE PERMISO: 10001");
             label.setForeground(Color.white);
@@ -395,12 +434,47 @@ public class panelIndex extends javax.swing.JPanel {
         this.jpContainer.repaint();
     }//GEN-LAST:event_jButton5ActionPerformed
 
+    private void jButton6MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseMoved
+        jlInfo.setText(jButton6.getToolTipText());
+        jButton6.setContentAreaFilled(true);
+    }//GEN-LAST:event_jButton6MouseMoved
+
+    private void jButton6MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseExited
+        Funciones.setLabelInfo();
+        jButton6.setContentAreaFilled(false);
+    }//GEN-LAST:event_jButton6MouseExited
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        jButton6.setEnabled(false);
+        jButton6.setContentAreaFilled(false);
+        boolean accede = false;
+        if(AtencionUrgencia.isAdministrador==true){
+            accede = true;
+        }
+        for (AccessRoles ar : roles) {
+            if (ar.getRuta() == 10002) {
+                accede = true;
+                break;
+            }
+        }
+        hcuAdministrador hcuAdministrador1 = new hcuAdministrador((JFrame) SwingUtilities.getWindowAncestor(this),factory);
+        if (accede==true) {            
+            hcuAdministrador1.setLocationRelativeTo(this);
+            hcuAdministrador1.setVisible(true);
+            jButton6.setEnabled(true);
+            jButton6.setContentAreaFilled(true);
+        }else{
+            JOptionPane.showMessageDialog(this, "mensaje de no entrar");
+        }        
+    }//GEN-LAST:event_jButton6ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     public javax.swing.JButton jButton3;
     public javax.swing.JButton jButton4;
     public javax.swing.JButton jButton5;
+    public javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar jToolBar1;

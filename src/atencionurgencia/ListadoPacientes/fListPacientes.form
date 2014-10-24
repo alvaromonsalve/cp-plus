@@ -179,7 +179,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel2">
               <Properties>
-                <Property name="text" type="java.lang.String" value="PRIORIDAD"/>
+                <Property name="text" type="java.lang.String" value="MUCHO DOLOR"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JToolBar$Separator" name="jSeparator1">

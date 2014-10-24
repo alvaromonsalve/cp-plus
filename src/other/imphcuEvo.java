@@ -21,11 +21,21 @@ import java.awt.Dialog;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import jpa.HcuEvoProcedimientoJpaController;
+import jpa.HcuEvolucionJpaController;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperPrintManager;
+import net.sf.jasperreports.view.JasperViewer;
 import oldConnection.Database;
 import tools.ImprimirEvolucion;
 import tools.ImprimirNotaegreso;
@@ -49,16 +59,77 @@ public class imphcuEvo extends javax.swing.JDialog {
     private Imprimirautorizacionlaboratorio impautlab;
     private ImprimirautorizacionlaboratorioFinal implabf;
     public int stateevo1;
+    private HcuEvolucionJpaController hejc=null;
 
-    public imphcuEvo(java.awt.Frame parent, boolean modal) {
+    public imphcuEvo(java.awt.Frame parent, boolean modal,EntityManagerFactory factory) {
         super(parent, modal);
-        initComponents();
+        initComponents();        
+        this.factory = factory;
+        this.enabledLink(false);
         jLabel1.setVisible(false);
     }
+    
+    private void enabledLink(boolean var){
+        jLabel3.setEnabled(var);
+        jLabel5.setEnabled(var);
+        jLabel6.setEnabled(var);
+        jLabel7.setEnabled(var);
+        jLabel8.setEnabled(var);
+        jLabel9.setEnabled(var);
+        jLabel10.setEnabled(var);
+    }
+    
+    public void activarLinks(){        
+        if (procedimientoJpa == null) {
+            procedimientoJpa = new HcuEvoProcedimientoJpaController(factory);
+            hejc = new HcuEvolucionJpaController(factory);
+        }
+        List<HcuEvoProcedimiento> hcuEvoProcedimientos = procedimientoJpa.ListFindInfoProcedimientoEvo(hcuEvolucion);
+        HcuEvolucion he = hejc.findHcuEvolucion(hcuEvolucion.getId());
+        List<HcuEvoProcedimiento> listInfoProcedimientoHcuLabfilter = new ArrayList<HcuEvoProcedimiento>();
+        List<HcuEvoProcedimiento> listInfoProcedimientoHcuRxfilter = new ArrayList<HcuEvoProcedimiento>();
+        List<HcuEvoProcedimiento> listInfoProcedimientoHcuOtherfilter = new ArrayList<HcuEvoProcedimiento>();
+        for(HcuEvoProcedimiento hep:hcuEvoProcedimientos){
+            if(hep.getIdConfigCups().getIdEstructuraCups().getId()==17 || hep.getIdConfigCups().getIdEstructuraCups().getId()==18){
+                listInfoProcedimientoHcuLabfilter.add(hep);
+            }else if(hep.getIdConfigCups().getId()==15){
+                listInfoProcedimientoHcuRxfilter.add(hep);
+            }else{
+                listInfoProcedimientoHcuOtherfilter.add(hep);
+            }
+        }
+        if (listInfoProcedimientoHcuLabfilter != null & listInfoProcedimientoHcuLabfilter.size() > 0) {
+            jLabel3.setEnabled(true);
+        }
+        if (listInfoProcedimientoHcuRxfilter != null & listInfoProcedimientoHcuRxfilter.size() > 0) {
+            jLabel5.setEnabled(true);
+        }
+        if(he.getEstado()==1 || he.getEstado()==3){
+            noValido=true;
+        }else if(he.getEstado()!=0){
+            noValido=false;
+        }else{
+            noValido=true;
+        }
+        if(he.getEstado()==2 || he.getEstado()==1){
+            jLabel6.setEnabled(true);
+        }else if(he.getEstado()==3 || he.getEstado()==4){
+            jLabel7.setEnabled(true);
+            if(noValido==false){
+                jLabel8.setEnabled(true);
+                if(!he.getHcuEvoPosologias().isEmpty()){
+                    jLabel9.setEnabled(true);
+                }
+                if(he.getHcuEvoEgreso().get(0).getIncapacidad()==1){
+                    jLabel10.setEnabled(true);
+                }
+            }
+        }
+    }
+    
 
     public void activeChec() {
         if (procedimientoJpa == null) {
-            factory = Persistence.createEntityManagerFactory("ClipaEJBPU", AtencionUrgencia.props);
             procedimientoJpa = new HcuEvoProcedimientoJpaController(factory);
         }
         //LAB
@@ -323,6 +394,76 @@ public class imphcuEvo extends javax.swing.JDialog {
             ((imphcuEvo) form).dispose();
         }
     }
+    
+    public void generarConsecutivos(){
+        if (procedimientoJpa == null) {
+            procedimientoJpa = new HcuEvoProcedimientoJpaController(factory);
+        }
+        List<HcuEvoProcedimiento> hcuEvoProcedimientos = procedimientoJpa.ListFindInfoProcedimientoEvo(hcuEvolucion);
+        List<HcuEvoProcedimiento> listInfoProcedimientoHcuLabfilter = new ArrayList<HcuEvoProcedimiento>();
+        List<HcuEvoProcedimiento> listInfoProcedimientoHcuRxfilter = new ArrayList<HcuEvoProcedimiento>();
+        for(HcuEvoProcedimiento hep:hcuEvoProcedimientos){
+            if(hep.getIdConfigCups().getIdEstructuraCups().getId()==17 || hep.getIdConfigCups().getIdEstructuraCups().getId()==18){
+                listInfoProcedimientoHcuLabfilter.add(hep);
+            }else if(hep.getIdConfigCups().getId()==15){
+                listInfoProcedimientoHcuRxfilter.add(hep);            
+            }
+        }
+        if (listInfoProcedimientoHcuLabfilter != null & listInfoProcedimientoHcuLabfilter.size() > 0) {
+            Database db = new Database(AtencionUrgencia.props);
+            try {
+                Map param = new HashMap();
+                String master;
+                if (stateevo1 == 1 || stateevo1 == 3) {
+                    master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientolab.jasper";
+                    param.put("novalido", setValueValidoInt(noValido));
+                } else {
+                    master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientolabpost.jasper";
+                }
+                if (master != null) {
+                    db.Conectar();
+                    param.put("idevu", hcuEvolucion.getId().toString());
+                    param.put("codigo", "R-FA-008");
+                    if (noValido == true) {
+                        param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO (NO VALIDO)");
+                    } else {
+                        param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
+                    }
+                    param.put("version", "1.0");
+                    param.put("servicio", "URGENCIAS");
+                }
+                JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
+//                
+//                
+//                
+//                
+//                
+//                Object[] objeto = {"Visualizar", "Imprimir"};
+//                int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "LABORATORIO", JOptionPane.YES_NO_CANCEL_OPTION,
+//                        JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+//                
+//                
+//                
+//                
+//                hiloReporte2 ut = new hiloReporte2(this, informe, n);
+//                Thread thread = new Thread(ut);
+//                thread.start();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), imphcuEvo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }finally{
+                db.DesconectarBasedeDatos();
+            }
+            
+            
+            
+            
+            
+            
+        }
+        if (listInfoProcedimientoHcuRxfilter != null & listInfoProcedimientoHcuRxfilter.size() > 0) {
+            jLabel5.setEnabled(true);
+        }
+    }
 
     public void imprimir() {
         if (procedimientoJpa == null) {
@@ -529,6 +670,33 @@ public class imphcuEvo extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
         }
     }
+    
+    private class hiloReporte2 extends Thread{
+        JDialog form=null;
+        JasperPrint informe;
+        int n;
+        
+        public hiloReporte2(JDialog form,JasperPrint informe, int n){
+            this.form =form;
+            this.informe=informe;
+            this.n=n;
+        }
+        
+        @Override
+        public void run(){
+            ((imphcuEvo)form).jLabel1.setVisible(true);
+            if (n == 0) {
+                JasperViewer.viewReport(informe, false);
+            } else if(n == 1) {
+                try {                    
+                    JasperPrintManager.printReport(informe, true);
+                } catch (JRException ex) {
+                    JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), imphcuEvo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+            ((imphcuEvo)form).jLabel1.setVisible(false);
+        }
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -547,6 +715,13 @@ public class imphcuEvo extends javax.swing.JDialog {
         jCheckBox8 = new javax.swing.JCheckBox();
         jCheckBox9 = new javax.swing.JCheckBox();
         jCheckBox10 = new javax.swing.JCheckBox();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -613,6 +788,118 @@ public class imphcuEvo extends javax.swing.JDialog {
         jCheckBox10.setFocusable(false);
         jCheckBox10.setOpaque(false);
 
+        jLabel3.setText("LABORATORIOS");
+        jLabel3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel3.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel3MouseMoved(evt);
+            }
+        });
+        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel3MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel3MouseReleased(evt);
+            }
+        });
+
+        jLabel5.setText("IMAGENOLOGIA");
+        jLabel5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel5.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel5MouseMoved(evt);
+            }
+        });
+        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel5MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel5MouseReleased(evt);
+            }
+        });
+
+        jLabel6.setText("NOTA EVOLUCION");
+        jLabel6.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel6.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel6MouseMoved(evt);
+            }
+        });
+        jLabel6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel6MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel6MouseReleased(evt);
+            }
+        });
+
+        jLabel7.setText("NOTA EGRESO");
+        jLabel7.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel7.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel7MouseMoved(evt);
+            }
+        });
+        jLabel7.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel7MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel7MouseReleased(evt);
+            }
+        });
+
+        jLabel8.setText("EPICRISIS");
+        jLabel8.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel8.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel8MouseMoved(evt);
+            }
+        });
+        jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel8MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel8MouseReleased(evt);
+            }
+        });
+
+        jLabel9.setText("RECETA MEDICA");
+        jLabel9.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel9.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel9MouseMoved(evt);
+            }
+        });
+        jLabel9.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel9MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel9MouseReleased(evt);
+            }
+        });
+
+        jLabel10.setText("INCAPACIDAD");
+        jLabel10.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel10.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel10MouseMoved(evt);
+            }
+        });
+        jLabel10.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel10MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel10MouseReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -628,18 +915,28 @@ public class imphcuEvo extends javax.swing.JDialog {
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jCheckBox5, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(jCheckBox6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addComponent(jCheckBox4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addComponent(jCheckBox2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jCheckBox8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jCheckBox9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jCheckBox10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jCheckBox5, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(jCheckBox6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                    .addComponent(jCheckBox4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(jCheckBox2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(jCheckBox8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(jCheckBox9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jCheckBox10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 76, Short.MAX_VALUE))
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -652,7 +949,24 @@ public class imphcuEvo extends javax.swing.JDialog {
                 .addComponent(jLabel2)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
+                        .addGap(6, 6, 6)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel10)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jCheckBox5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox6)
@@ -665,11 +979,7 @@ public class imphcuEvo extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox9)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox10)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jCheckBox10)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
@@ -707,6 +1017,313 @@ public class imphcuEvo extends javax.swing.JDialog {
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jLabel3MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseMoved
+        if(jLabel3.isEnabled()==true){
+            jLabel3.setText("<html><a href=''>LABORATORIOS</a></html>");
+        }
+    }//GEN-LAST:event_jLabel3MouseMoved
+
+    private void jLabel3MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseExited
+        jLabel3.setText("LABORATORIOS");
+    }//GEN-LAST:event_jLabel3MouseExited
+
+    private void jLabel3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseReleased
+        if (jLabel3.isEnabled() == true) {
+            Database db = new Database(AtencionUrgencia.props);
+            try {
+                Map param = new HashMap();
+                String master;
+                if (stateevo1 == 1 || stateevo1 == 3) {
+                    master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientolab.jasper";
+                    param.put("novalido", setValueValidoInt(noValido));
+                } else {
+                    master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientolabpost.jasper";
+                }
+                if (master != null) {
+                    db.Conectar();
+                    param.put("idevu", hcuEvolucion.getId().toString());
+                    param.put("codigo", "R-FA-008");
+                    if (noValido == true) {
+                        param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO (NO VALIDO)");
+                    } else {
+                        param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
+                    }
+                    param.put("version", "1.0");
+                    param.put("servicio", "URGENCIAS");
+                }
+                JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
+                Object[] objeto = {"Visualizar", "Imprimir"};
+                int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "LABORATORIO", JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+                hiloReporte2 ut = new hiloReporte2(this, informe, n);
+                Thread thread = new Thread(ut);
+                thread.start();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), imphcuEvo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }finally{
+                db.DesconectarBasedeDatos();
+            }
+        }
+    }//GEN-LAST:event_jLabel3MouseReleased
+
+    private void jLabel5MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseMoved
+        if(jLabel5.isEnabled()==true){
+            jLabel5.setText("<html><a href=''>IMAGENOLOGIA</a></html>");
+        }
+    }//GEN-LAST:event_jLabel5MouseMoved
+
+    private void jLabel5MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseExited
+        jLabel5.setText("IMAGENOLOGIA");
+    }//GEN-LAST:event_jLabel5MouseExited
+
+    private void jLabel5MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseReleased
+        if(jLabel5.isEnabled()==true){
+            Database db = new Database(AtencionUrgencia.props);
+            try {
+                Map param = new HashMap();
+                String master;
+                if (stateevo1 == 1 || stateevo1 == 3) {
+                    master = System.getProperty("user.dir") + "/Reportes/solicitudprocedimientoimage.jasper";
+                    param.put("novalido", setValueValidoInt(noValido));
+                } else {
+                    master = System.getProperty("user.dir") + "/Reportes/solicitudprocedimientorxpost.jasper";
+                }
+                if (master != null) {
+                    db.Conectar();
+                    param.put("idevu", hcuEvolucion.getId().toString());
+                    param.put("codigo", "R-FA-009");
+                    if (noValido == true) {
+                        param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS DE IMAGENOLOGIA (NO VALIDO)");
+                    } else {
+                        param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS DE IMAGENOLOGIA");
+                    }
+                    param.put("version", "1.0");
+                    param.put("servicio", "URGENCIAS");
+                }
+                JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
+                Object[] objeto = {"Visualizar", "Imprimir"};
+                int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "IMAGENOLOGIA", JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+                hiloReporte2 ut = new hiloReporte2(this, informe, n);
+                Thread thread = new Thread(ut);
+                thread.start();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), imphcuEvo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }finally{
+                db.DesconectarBasedeDatos();
+            }
+        }
+    }//GEN-LAST:event_jLabel5MouseReleased
+
+    private void jLabel6MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseMoved
+        if(jLabel6.isEnabled()==true){
+            jLabel6.setText("<html><a href=''>NOTA EVOLUCION</a></html>");
+        }
+    }//GEN-LAST:event_jLabel6MouseMoved
+
+    private void jLabel6MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseExited
+        jLabel6.setText("NOTA EVOLUCION");
+    }//GEN-LAST:event_jLabel6MouseExited
+
+    private void jLabel6MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseReleased
+        if(jLabel6.isEnabled()==true){
+            Database db = new Database(AtencionUrgencia.props);
+            try {
+                Map param = new HashMap();
+                String master= System.getProperty("user.dir") + "/Reportes/Evolucion.jasper";                
+                if (master != null) {
+                    db.Conectar();
+                    param.put("IDEVOLUCION", hcuEvolucion.getId().toString());
+                    param.put("codigo", "R-FA-009");
+                    if (noValido == true) {
+                        param.put("NameReport", "NOTA DE EVOLUCION (NO VALIDO) "+tools.MyDate.yyyyMMddHHmm2.format(hcuEvolucion.getFechaEvo()));
+                    } else {
+                        param.put("NameReport", "NOTA DE EVOLUCION "+tools.MyDate.yyyyMMddHHmm2.format(hcuEvolucion.getFechaEvo()));
+                    }
+                    param.put("version", "1.0");
+                    param.put("servicio", "URGENCIAS");
+                }
+                JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
+                Object[] objeto = {"Visualizar", "Imprimir"};
+                int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "NOTA DE EVOLUCION", JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+                hiloReporte2 ut = new hiloReporte2(this, informe, n);
+                Thread thread = new Thread(ut);
+                thread.start();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), imphcuEvo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }finally{
+                db.DesconectarBasedeDatos();
+            }
+        }
+    }//GEN-LAST:event_jLabel6MouseReleased
+
+    private void jLabel7MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel7MouseMoved
+        if(jLabel7.isEnabled()==true){
+            jLabel7.setText("<html><a href=''>NOTA EGRESO</a></html>");
+        }
+    }//GEN-LAST:event_jLabel7MouseMoved
+
+    private void jLabel7MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel7MouseExited
+        jLabel7.setText("NOTA EGRESO");
+    }//GEN-LAST:event_jLabel7MouseExited
+
+    private void jLabel7MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel7MouseReleased
+        if(jLabel7.isEnabled()==true){
+            Database db = new Database(AtencionUrgencia.props);
+            try {
+                Map param = new HashMap();
+                String master= System.getProperty("user.dir") + "/Reportes/NotaEgreso.jasper";                
+                if (master != null) {
+                    db.Conectar();
+                    param.put("IDEVOLUCION", hcuEvolucion.getId().toString());
+                    param.put("codigo", "R-FA-012");
+                    if (noValido == true) {
+                        param.put("NameReport", "NOTA DE EGRESO (NO VALIDO) "+tools.MyDate.yyyyMMddHHmm2.format(hcuEvolucion.getFechaEvo()));
+                    } else {
+                        param.put("NameReport", "NOTA DE EGRESO "+tools.MyDate.yyyyMMddHHmm2.format(hcuEvolucion.getFechaEvo()));
+                    }
+                    param.put("version", "1.0");
+                    param.put("servicio", "URGENCIAS");
+                }
+                JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
+                Object[] objeto = {"Visualizar", "Imprimir"};
+                int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "NOTA EGRESO", JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+                hiloReporte2 ut = new hiloReporte2(this, informe, n);
+                Thread thread = new Thread(ut);
+                thread.start();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), imphcuEvo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }finally{
+                db.DesconectarBasedeDatos();
+            }
+        }
+    }//GEN-LAST:event_jLabel7MouseReleased
+
+    private void jLabel8MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseMoved
+        if(jLabel8.isEnabled()==true){
+            jLabel8.setText("<html><a href=''>EPICRISIS</a></html>");
+        }
+    }//GEN-LAST:event_jLabel8MouseMoved
+
+    private void jLabel8MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseExited
+        jLabel8.setText("EPICRISIS");
+    }//GEN-LAST:event_jLabel8MouseExited
+
+    private void jLabel8MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseReleased
+        if(jLabel8.isEnabled()==true){
+            Database db = new Database(AtencionUrgencia.props);
+            try {
+                Map param = new HashMap();
+                String master= System.getProperty("user.dir") + "/Reportes/Epicrisis.jasper";                
+                if (master != null) {
+                    db.Conectar();
+                    param.put("idHC", hcuEvolucion.getIdInfoHistoriac().getId().toString());
+                    param.put("codigo", "R-FA-011");
+                    param.put("NameReport", "EPICRISIS");                    
+                    param.put("version", "1.0");
+                    param.put("servicio", "URGENCIAS");
+                    param.put("DestinoHC",hcuEvolucion.getIdInfoHistoriac().getDestino());
+                    if(hcuEvolucion.getIdInfoHistoriac().getCausaExterna().equals("ACCIDENTE DE TRANSITO")){
+                        param.put("soat","1");
+                    }else{
+                        param.put("soat","0");
+                    }                    
+                }
+                JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
+                Object[] objeto = {"Visualizar", "Imprimir"};
+                int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "EPICRISIS", JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+                hiloReporte2 ut = new hiloReporte2(this, informe, n);
+                Thread thread = new Thread(ut);
+                thread.start();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), imphcuEvo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }finally{
+                db.DesconectarBasedeDatos();
+            }
+        }
+    }//GEN-LAST:event_jLabel8MouseReleased
+
+    private void jLabel9MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel9MouseMoved
+        if(jLabel9.isEnabled()==true){
+            jLabel9.setText("<html><a href=''>RECETA MEDICA</a></html>");
+        }
+    }//GEN-LAST:event_jLabel9MouseMoved
+
+    private void jLabel9MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel9MouseExited
+        jLabel9.setText("RECETA MEDICA");
+    }//GEN-LAST:event_jLabel9MouseExited
+
+    private void jLabel9MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel9MouseReleased
+        if(jLabel9.isEnabled()==true){
+            Database db = new Database(AtencionUrgencia.props);
+            try {
+                Map param = new HashMap();
+                String master= System.getProperty("user.dir") + "/Reportes/Receta.jasper";                
+                if (master != null) {
+                    db.Conectar();
+                    param.put("idHC", hcuEvolucion.getId().toString());
+                    param.put("codigo", "R-FA-013");
+                    param.put("NameReport", "PRESCRIPCION MEDICA");                    
+                    param.put("version", "1.0");
+                    param.put("servicio", "URGENCIAS");                  
+                }
+                JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
+                Object[] objeto = {"Visualizar", "Imprimir"};
+                int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "PRESCRIPCION MEDICA", JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+                hiloReporte2 ut = new hiloReporte2(this, informe, n);
+                Thread thread = new Thread(ut);
+                thread.start();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), imphcuEvo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }finally{
+                db.DesconectarBasedeDatos();
+            }
+        }
+    }//GEN-LAST:event_jLabel9MouseReleased
+
+    private void jLabel10MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel10MouseMoved
+        if(jLabel10.isEnabled()==true){
+            jLabel10.setText("<html><a href=''>INCAPACIDAD</a></html>");
+        }
+    }//GEN-LAST:event_jLabel10MouseMoved
+
+    private void jLabel10MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel10MouseExited
+        jLabel10.setText("INCAPACIDAD");
+    }//GEN-LAST:event_jLabel10MouseExited
+
+    private void jLabel10MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel10MouseReleased
+        if(jLabel10.isEnabled()==true){
+            Database db = new Database(AtencionUrgencia.props);
+            try {
+                Map param = new HashMap();
+                String master= System.getProperty("user.dir") + "/Reportes/incapacidad.jasper";                
+                if (master != null) {
+                    db.Conectar();
+                    param.put("idHC", hcuEvolucion.getId().toString());
+                    param.put("codigo", "R-FA-012");
+                    param.put("NameReport", "INCAPACIDAD");                    
+                    param.put("version", "1.0");
+                    param.put("servicio", "URGENCIAS");                  
+                }
+                JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
+                Object[] objeto = {"Visualizar", "Imprimir"};
+                int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "INCAPACIDAD", JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+                hiloReporte2 ut = new hiloReporte2(this, informe, n);
+                Thread thread = new Thread(ut);
+                thread.start();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), imphcuEvo.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }finally{
+                db.DesconectarBasedeDatos();
+            }
+        }
+    }//GEN-LAST:event_jLabel10MouseReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -718,8 +1335,15 @@ public class imphcuEvo extends javax.swing.JDialog {
     private javax.swing.JCheckBox jCheckBox8;
     private javax.swing.JCheckBox jCheckBox9;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel49;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }

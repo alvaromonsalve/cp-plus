@@ -17,11 +17,25 @@ import java.util.List;
  * @author Alvaro Monsalve
  */
 public class MyDate {
-    
+    /**
+     * dd/MM/yyyy
+     */
     public static SimpleDateFormat ddMMyyyy = new SimpleDateFormat("dd/MM/yyyy");
+    /**
+     * yyyy-MM-dd HH:mm
+     */
     public static SimpleDateFormat yyyyMMddHHmm = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    /**
+     * dd-MM-yyyy
+     */
     public static SimpleDateFormat ddMMyyyy2 = new SimpleDateFormat("dd-MM-yyyy");
+    /**
+     * HH:mm
+     */
     public static SimpleDateFormat HHmm = new SimpleDateFormat("HH:mm");
+    /**
+     * dd/MM/yyyy HH:mm
+     */
     public static SimpleDateFormat yyyyMMddHHmm2 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     
     

@@ -847,7 +847,7 @@ public class fPacientesCamas extends javax.swing.JFrame {
             }
             StaticEspecialidadesJpaController sejc = new StaticEspecialidadesJpaController(factory);
             AtencionUrgencia.panelindex.jpContainer.removeAll();
-            AtencionUrgencia.panelindex.evo = new Evo();
+            AtencionUrgencia.panelindex.evo = new Evo(factory);
             AtencionUrgencia.panelindex.evo.setBounds(0, 0, 764, 514);
             AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.evo);
             AtencionUrgencia.panelindex.evo.setVisible(true);            

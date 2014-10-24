@@ -53,10 +53,8 @@ public class Ftriaje extends javax.swing.JFrame {
         AtencionUrgencia.panelindex.hc.infohistoriac.setDestino(destino);
         AtencionUrgencia.panelindex.hc.finalizar = tipo;
         AtencionUrgencia.panelindex.hc.CrearHistoriaC();
-        AtencionUrgencia.panelindex.hc.saveHistoryClinic();
     }
     
-
     private class hiloReporte extends Thread{
         Frame form=null;
         InfoHistoriac idHC;

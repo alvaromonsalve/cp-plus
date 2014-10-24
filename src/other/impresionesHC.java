@@ -51,6 +51,7 @@ public class impresionesHC extends javax.swing.JFrame {
         this.setAlwaysOnTop(true);
         this.factory = factory;       
         enabledLink(false);
+        this.pack();
     }
 
     public void setidHC(InfoHistoriac idHC) {
@@ -147,18 +148,16 @@ public class impresionesHC extends javax.swing.JFrame {
         @Override
         public void run(){
             ((impresionesHC)form).jLabel1.setVisible(true);
-            ((impresionesHC)form).jButton2.setEnabled(false);
             if (n == 0) {
                 JasperViewer.viewReport(informe, false);
             } else if(n == 1) {
                 try {                    
                     JasperPrintManager.printReport(informe, true);
                 } catch (JRException ex) {
-                    JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "10076:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
                 }
             }
             ((impresionesHC)form).jLabel1.setVisible(false);
-            ((impresionesHC)form).jButton2.setEnabled(true);
         }
     }
 
@@ -168,7 +167,6 @@ public class impresionesHC extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel49 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -178,9 +176,10 @@ public class impresionesHC extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(344, 210));
         setMinimumSize(new java.awt.Dimension(344, 210));
+        setPreferredSize(new java.awt.Dimension(344, 210));
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -200,14 +199,6 @@ public class impresionesHC extends javax.swing.JFrame {
         jLabel49.setMaximumSize(new java.awt.Dimension(190, 32));
         jLabel49.setMinimumSize(new java.awt.Dimension(190, 32));
         jLabel49.setPreferredSize(new java.awt.Dimension(190, 32));
-
-        jButton2.setText("Cerrar");
-        jButton2.setFocusable(false);
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/loader.gif"))); // NOI18N
@@ -319,20 +310,18 @@ public class impresionesHC extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -359,9 +348,7 @@ public class impresionesHC extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(18, 18, 18)
-                .addComponent(jButton2)
-                .addContainerGap())
+                .addGap(52, 52, 52))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -391,16 +378,9 @@ public class impresionesHC extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_formWindowClosing
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if (!noValido) {
-            AtencionUrgencia.panelindex.FramEnable(true);
-            AtencionUrgencia.panelindex.hc.cerrarPanel();
-        }
-        this.dispose();
-    }//GEN-LAST:event_jButton2ActionPerformed
-
     private void jLabel3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseReleased
         if(jLabel3.isEnabled()==true){
+            Database db = new Database(AtencionUrgencia.props);
             try {
                 Map param = new HashMap();
                 String master;
@@ -414,8 +394,7 @@ public class impresionesHC extends javax.swing.JFrame {
                     //reporte que no genera consecutivo
                     master = System.getProperty("user.dir") + "/reportes/solicitudmedicamentos.jasper";
                 }
-                if (master != null) {
-                    Database db = new Database(AtencionUrgencia.props);
+                if (master != null) {                    
                     db.Conectar();
                     param.put("id_hc", idHC.getId().toString());
                     if(noValido==true){
@@ -433,15 +412,19 @@ public class impresionesHC extends javax.swing.JFrame {
                     hiloReporte ut = new hiloReporte(this,informe,n);
                     Thread thread = new Thread(ut);
                     thread.start();
+                    db.DesconectarBasedeDatos();
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "10075:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }finally{
+                db.DesconectarBasedeDatos();
             }
         }
     }//GEN-LAST:event_jLabel3MouseReleased
 
     private void jLabel4MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseReleased
         if (jLabel4.isEnabled() == true) {
+            Database db = new Database(AtencionUrgencia.props);
             try {
                 Map param = new HashMap();
                 String master;
@@ -453,8 +436,7 @@ public class impresionesHC extends javax.swing.JFrame {
                     //reporte que no genera consecutivo
                     master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientolabposthcu.jasper";
                 }
-                if (master != null) {
-                    Database db = new Database(AtencionUrgencia.props);
+                if (master != null) {                    
                     db.Conectar();
                     param.put("id_hc", idHC.getId().toString());
                     if(noValido==true){
@@ -475,13 +457,16 @@ public class impresionesHC extends javax.swing.JFrame {
                     thread.start();
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "100??:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "10075:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }finally{
+                db.DesconectarBasedeDatos();
             }
         }
     }//GEN-LAST:event_jLabel4MouseReleased
 
     private void jLabel5MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseReleased
         if(jLabel5.isEnabled()==true){
+            Database db = new Database(AtencionUrgencia.props);
             try {
                 Map param = new HashMap();
                 String master;
@@ -492,8 +477,7 @@ public class impresionesHC extends javax.swing.JFrame {
                 }else{
                     //reporte que no genera consecutivo
                      master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientorxposthcu.jasper";
-                }if (master != null) {
-                    Database db = new Database(AtencionUrgencia.props);
+                }if (master != null) {                    
                     db.Conectar();
                     param.put("id_hc", idHC.getId().toString());
                     if(noValido==true){
@@ -515,13 +499,16 @@ public class impresionesHC extends javax.swing.JFrame {
                     thread.start();
                 }                     
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "100??:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "10075:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }finally{
+                db.DesconectarBasedeDatos();
             }
         }
     }//GEN-LAST:event_jLabel5MouseReleased
 
     private void jLabel6MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseReleased
         if(jLabel6.isEnabled()==true){
+            Database db = new Database(AtencionUrgencia.props);
             try {
                 Map param = new HashMap();
                 String master;
@@ -533,8 +520,7 @@ public class impresionesHC extends javax.swing.JFrame {
                     //reporte que no genera consecutivo
                     master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientos.jasper";
                 }
-                if (master != null) {
-                    Database db = new Database(AtencionUrgencia.props);
+                if (master != null) {                    
                     db.Conectar();
                     param.put("id_hc", idHC.getId().toString());
                     param.put("id_hc", idHC.getId());
@@ -556,18 +542,20 @@ public class impresionesHC extends javax.swing.JFrame {
                     thread.start();
                 }                     
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "100??:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "10075:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }finally{
+                db.DesconectarBasedeDatos();
             }
         }
     }//GEN-LAST:event_jLabel6MouseReleased
 
     private void jLabel7MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel7MouseReleased
         if(jLabel7.isEnabled()==true){
+            Database db = new Database(AtencionUrgencia.props);
             try {
                 Map param = new HashMap();
                 String master = System.getProperty("user.dir") + "/reportes/solValoracion.jasper";
-                if (master != null) {
-                    Database db = new Database(AtencionUrgencia.props);
+                if (master != null) {                    
                     db.Conectar();
                     param.put("id_hc", idHC.getId());
                     param.put("entidadadmision", idHC.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad());
@@ -588,18 +576,20 @@ public class impresionesHC extends javax.swing.JFrame {
                     thread.start();
                 }                     
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "100??:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "10075:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }finally{
+                db.DesconectarBasedeDatos();
             }
         }
     }//GEN-LAST:event_jLabel7MouseReleased
 
     private void jLabel8MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseReleased
         if(jLabel8.isEnabled()==true){
+            Database db = new Database(AtencionUrgencia.props);
             try {
                 Map param = new HashMap();
                 String master = System.getProperty("user.dir") + "/reportes/HClinica.jasper";
-                if (master != null) {
-                    Database db = new Database(AtencionUrgencia.props);
+                if (master != null) {                    
                     db.Conectar();
                     param.put("idHC", idHC.getId());
                     if(noValido==true){
@@ -616,10 +606,12 @@ public class impresionesHC extends javax.swing.JFrame {
                             JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
                     hiloReporte ut = new hiloReporte(this,informe,n);
                     Thread thread = new Thread(ut);
-                    thread.start();
+                    thread.start();                    
                 }                     
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "100??:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "10075:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }finally{
+                db.DesconectarBasedeDatos();
             }
         }
     }//GEN-LAST:event_jLabel8MouseReleased
@@ -685,7 +677,6 @@ public class impresionesHC extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel8MouseMoved
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
