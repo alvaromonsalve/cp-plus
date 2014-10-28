@@ -4,6 +4,7 @@ package atencionurgencia.ingreso;
 import atencionurgencia.AtencionUrgencia;
 import atencionurgencia.ListadoPacientes.Ftriaje;
 import atencionurgencia.ListadoPacientes.addMedicamentos;
+import entidades.HcuHistoriac2;
 import entidades.InfoAdmision;
 import entidades.InfoAntPersonales;
 import entidades.InfoHcExpfisica;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
@@ -34,12 +36,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import jpa.HcuHistoriac2JpaController;
 import jpa.InfoAntPersonalesJpaController;
 import jpa.InfoHcExpfisicaJpaController;
 import jpa.InfoHistoriacJpaController;
 import jpa.InfoPruebasComplementJpaController;
 import jpa.StaticCie10JpaController;
-import jpa.exceptions.IllegalOrphanException;
 import jpa.exceptions.NonexistentEntityException;
 import other.*;
 import tools.Funciones;
@@ -61,7 +63,7 @@ public class HC extends javax.swing.JPanel {
     private StaticCie10 staticCie10 = null;
     private StaticCie10JpaController staticcie = null;
     private InfoPruebasComplement infoPruebasComplement = null;
-    private EntityManagerFactory factory;
+    private final EntityManagerFactory factory;
     private InfoHistoriacJpaController infohistoriaJPA = null;
     private InfoHcExpfisicaJpaController infohsfisicoJPA = null;
     private InfoPruebasComplementJpaController infoPruebasComplementJPA = null;
@@ -89,6 +91,8 @@ public class HC extends javax.swing.JPanel {
     public Ftriaje ftriaje = null;
     private HcuDestino hcuDestino = null;
     final long MILLSECS_PER_DAY = 24 * 60 * 60 * 1000; //Milisegundos al día 
+    private HcuHistoriac2 hcuHistoriac2;
+    private HcuHistoriac2JpaController hcuHistoriac2JpaC = null;
     // </editor-fold>
 
     public HC(EntityManagerFactory factory) {
@@ -100,6 +104,8 @@ public class HC extends javax.swing.JPanel {
         jLabel58.setVisible(false);
         jLabel59.setVisible(false);
         this.factory = factory;
+        infohistoriaJPA = new InfoHistoriacJpaController(factory);
+        hcuHistoriac2JpaC = new HcuHistoriac2JpaController(factory);
     }
 
     private void inicio() {
@@ -269,14 +275,18 @@ public class HC extends javax.swing.JPanel {
         infohistoriac.setDiagnostico4(idDiag4);
         infohistoriac.setDiagnostico5(idDiag5);
         infohistoriac.setHallazgo(jTextArea19.getText().toUpperCase());
-        infohistoriac.setTipoHc(0);//0 = urgencias; 
+        infohistoriac.setTipoHc(0);//0 = urgencias;
         //calcular tiempo de consulta
-        Date hoy = new Date();
-        long diferencia = (hoy.getTime() - infohistoriac.getFechaDato().getTime()) / MILLSECS_PER_DAY;
-        if (diferencia > 900000) {
-            diferencia = 900000;
-        }
-        infohistoriac.setTiempoConsulta(diferencia);
+//        if(infohistoriac.getId()!=null){
+//            Date hoy = new Date();
+//            long diferencia = (hoy.getTime() - infohistoriac.getFechaDato().getTime()) / MILLSECS_PER_DAY;
+//            if (diferencia > 900000) {
+//                diferencia = 900000;
+//            }
+//            infohistoriac.setTiempoConsulta(diferencia);
+//        }else{
+//            infohistoriac.setTiempoConsulta(Long.parseLong("0"));
+//        }
         if (infohistoriac.getEstado() != 2) {
             infohistoriac.setEstado(finalizar);
         }
@@ -287,29 +297,35 @@ public class HC extends javax.swing.JPanel {
             }
         }
         infohistoriac.setIdConfigdecripcionlogin(AtencionUrgencia.configdecripcionlogin);
-        Boolean active = false;
-        if (infohistoriaJPA == null) {
-            infohistoriaJPA = new InfoHistoriacJpaController(factory);
-            if (!edite) {
+        try {
+            if (edite == false) {
                 infohistoriaJPA.create(this.infohistoriac);
+                hcuHistoriac2 = new HcuHistoriac2();
+                hcuHistoriac2.setIdInfoHistoriac(infohistoriac);
+                hcuHistoriac2.setFIngreso(new Date());
+                hcuHistoriac2.setTiempoConsulta(0);
+                hcuHistoriac2JpaC.create(hcuHistoriac2);
             } else {
-                active = true;
-            }
-        } else {
-            active = true;
-        }
-        if (active) {
-            try {
+                hcuHistoriac2 = this.FindHcuHistoriac2(infohistoriac);
+                
                 infohistoriaJPA.edit(this.infohistoriac);
-            } catch (IllegalOrphanException ex) {
-                JOptionPane.showMessageDialog(null, "10053:\n" + ex.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            } catch (NonexistentEntityException ex) {
-                JOptionPane.showMessageDialog(null, "10054:\n" + ex.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "10055:\n" + ex.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
             }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "10055:\n" + ex.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
         }
     }
+    
+    public HcuHistoriac2 FindHcuHistoriac2(InfoHistoriac ihc){
+        EntityManager em = hcuHistoriac2JpaC.getEntityManager();
+        try {
+            return (HcuHistoriac2) em.createQuery("SELECT h FROM HcuHistoriac2 h WHERE h.idInfoHistoriac = :hc")
+            .setParameter("hc", ihc)
+            .setHint("javax.persistence.cache.storeMode", "REFRESH")
+            .getSingleResult();
+        } finally {
+            em.close();
+        }
+   }
 
     public void DatosAntPersonales() {
         if (antPersonalesJPA == null) {
@@ -540,7 +556,7 @@ public class HC extends javax.swing.JPanel {
         Boolean active = false;
         if (infohsfisicoJPA == null) {
             infohsfisicoJPA = new InfoHcExpfisicaJpaController(factory);
-            if (!edite) {
+            if (edite==false) {
                 infohsfisicoJPA.create(infoexploracion);
             } else {
                 active = true;
@@ -796,39 +812,41 @@ public class HC extends javax.swing.JPanel {
         buttonGroup1 = new javax.swing.ButtonGroup();
         jpAntPersonales = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
+        jLabel38 = new javax.swing.JLabel();
+        jTabbedPane3 = new javax.swing.JTabbedPane();
+        jPanel30 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextArea11 = new javax.swing.JTextArea();
+        jPanel33 = new javax.swing.JPanel();
+        jScrollPane8 = new javax.swing.JScrollPane();
+        jTextArea12 = new javax.swing.JTextArea();
+        jPanel34 = new javax.swing.JPanel();
+        jScrollPane21 = new javax.swing.JScrollPane();
+        jTextArea22 = new javax.swing.JTextArea();
+        jPanel36 = new javax.swing.JPanel();
+        jScrollPane22 = new javax.swing.JScrollPane();
+        jTextArea23 = new javax.swing.JTextArea();
+        jTabbedPane4 = new javax.swing.JTabbedPane();
+        jPanel8 = new javax.swing.JPanel();
         jCheckBox1 = new javax.swing.JCheckBox();
         jCheckBox2 = new javax.swing.JCheckBox();
         jCheckBox3 = new javax.swing.JCheckBox();
+        jLabel39 = new javax.swing.JLabel();
         jScrollPane7 = new javax.swing.JScrollPane();
         jTextArea5 = new javax.swing.JTextArea();
-        jLabel39 = new javax.swing.JLabel();
-        jPanel6 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
         jCheckBox7 = new javax.swing.JCheckBox();
         jCheckBox8 = new javax.swing.JCheckBox();
         jCheckBox9 = new javax.swing.JCheckBox();
+        jLabel9 = new javax.swing.JLabel();
         jScrollPane9 = new javax.swing.JScrollPane();
         jTextArea7 = new javax.swing.JTextArea();
-        jLabel9 = new javax.swing.JLabel();
-        jPanel8 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea11 = new javax.swing.JTextArea();
-        jPanel9 = new javax.swing.JPanel();
-        jScrollPane8 = new javax.swing.JScrollPane();
-        jTextArea12 = new javax.swing.JTextArea();
         jPanel19 = new javax.swing.JPanel();
-        jScrollPane21 = new javax.swing.JScrollPane();
-        jTextArea22 = new javax.swing.JTextArea();
-        jPanel20 = new javax.swing.JPanel();
-        jScrollPane22 = new javax.swing.JScrollPane();
-        jTextArea23 = new javax.swing.JTextArea();
-        jPanel21 = new javax.swing.JPanel();
         jScrollPane23 = new javax.swing.JScrollPane();
         jTextArea24 = new javax.swing.JTextArea();
-        jPanel31 = new javax.swing.JPanel();
+        jPanel20 = new javax.swing.JPanel();
         jScrollPane25 = new javax.swing.JScrollPane();
         jTextArea25 = new javax.swing.JTextArea();
-        jLabel38 = new javax.swing.JLabel();
         jpEnfActual = new javax.swing.JPanel();
         jPanel10 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -1128,144 +1146,10 @@ public class HC extends javax.swing.JPanel {
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "HTA, DM, DISLIPIDEMIA", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 10))); // NOI18N
-        jPanel4.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jPanel4.setOpaque(false);
+        jLabel38.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel38.setText("ANTECEDENTES PERSONALES");
 
-        jCheckBox1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jCheckBox1.setText("HTA");
-        jCheckBox1.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
-        jCheckBox1.setOpaque(false);
-
-        jCheckBox2.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jCheckBox2.setText("DM");
-        jCheckBox2.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
-        jCheckBox2.setOpaque(false);
-
-        jCheckBox3.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jCheckBox3.setText("DISLIPIDEMIA");
-        jCheckBox3.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
-        jCheckBox3.setOpaque(false);
-
-        jTextArea5.setColumns(20);
-        jTextArea5.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jTextArea5.setForeground(new java.awt.Color(0, 102, 255));
-        jTextArea5.setLineWrap(true);
-        jTextArea5.setRows(2);
-        jTextArea5.setDoubleBuffered(true);
-        jTextArea5.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTextArea5KeyPressed(evt);
-            }
-        });
-        jScrollPane7.setViewportView(jTextArea5);
-
-        jLabel39.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel39.setText("Observacion:");
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(jCheckBox1)
-                .addGap(18, 18, 18)
-                .addComponent(jCheckBox2)
-                .addGap(18, 18, 18)
-                .addComponent(jCheckBox3)
-                .addContainerGap(38, Short.MAX_VALUE))
-            .addComponent(jScrollPane7)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(jLabel39)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox1)
-                    .addComponent(jCheckBox2)
-                    .addComponent(jCheckBox3))
-                .addGap(4, 4, 4)
-                .addComponent(jLabel39)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE))
-        );
-
-        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Hábitos Tóxicos"));
-        jPanel6.setFocusable(false);
-        jPanel6.setOpaque(false);
-
-        jCheckBox7.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jCheckBox7.setText("Tabaco");
-        jCheckBox7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jCheckBox7.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
-        jCheckBox7.setOpaque(false);
-
-        jCheckBox8.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jCheckBox8.setText("Alcohol");
-        jCheckBox8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jCheckBox8.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
-        jCheckBox8.setOpaque(false);
-
-        jCheckBox9.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jCheckBox9.setText("Drogas de Abuso");
-        jCheckBox9.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jCheckBox9.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
-        jCheckBox9.setOpaque(false);
-
-        jTextArea7.setColumns(20);
-        jTextArea7.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jTextArea7.setForeground(new java.awt.Color(0, 102, 255));
-        jTextArea7.setLineWrap(true);
-        jTextArea7.setRows(1);
-        jTextArea7.setDoubleBuffered(true);
-        jTextArea7.setMaximumSize(new java.awt.Dimension(104, 30));
-        jTextArea7.setMinimumSize(new java.awt.Dimension(104, 30));
-        jTextArea7.setPreferredSize(new java.awt.Dimension(164, 30));
-        jTextArea7.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTextArea7KeyPressed(evt);
-            }
-        });
-        jScrollPane9.setViewportView(jTextArea7);
-
-        jLabel9.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel9.setText("Otros:");
-
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane9)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel9)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jCheckBox7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox9)))
-                .addContainerGap(46, Short.MAX_VALUE))
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox7)
-                    .addComponent(jCheckBox8)
-                    .addComponent(jCheckBox9))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel9)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
-        jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder("Alergias a Medicamentos"));
-        jPanel8.setOpaque(false);
+        jPanel30.setOpaque(false);
 
         jScrollPane2.setMaximumSize(new java.awt.Dimension(164, 20));
         jScrollPane2.setMinimumSize(new java.awt.Dimension(164, 20));
@@ -1294,21 +1178,20 @@ public class HC extends javax.swing.JPanel {
         });
         jScrollPane2.setViewportView(jTextArea11);
 
-        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
-        jPanel8.setLayout(jPanel8Layout);
-        jPanel8Layout.setHorizontalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout jPanel30Layout = new javax.swing.GroupLayout(jPanel30);
+        jPanel30.setLayout(jPanel30Layout);
+        jPanel30Layout.setHorizontalGroup(
+            jPanel30Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        jPanel8Layout.setVerticalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        jPanel30Layout.setVerticalGroup(
+            jPanel30Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
         );
 
-        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Ingresos previos y cirugías"));
-        jPanel9.setOpaque(false);
+        jTabbedPane3.addTab("Alergias a Medicamentos", jPanel30);
+
+        jPanel33.setOpaque(false);
 
         jScrollPane8.setMaximumSize(new java.awt.Dimension(164, 20));
         jScrollPane8.setMinimumSize(new java.awt.Dimension(164, 20));
@@ -1337,19 +1220,20 @@ public class HC extends javax.swing.JPanel {
         });
         jScrollPane8.setViewportView(jTextArea12);
 
-        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
-        jPanel9.setLayout(jPanel9Layout);
-        jPanel9Layout.setHorizontalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout jPanel33Layout = new javax.swing.GroupLayout(jPanel33);
+        jPanel33.setLayout(jPanel33Layout);
+        jPanel33Layout.setHorizontalGroup(
+            jPanel33Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        jPanel9Layout.setVerticalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
+        jPanel33Layout.setVerticalGroup(
+            jPanel33Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
         );
 
-        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("Traumatismos, accidentes"));
-        jPanel19.setOpaque(false);
+        jTabbedPane3.addTab("Ingresos previos y cirugías", jPanel33);
+
+        jPanel34.setOpaque(false);
 
         jScrollPane21.setMaximumSize(new java.awt.Dimension(164, 20));
         jScrollPane21.setMinimumSize(new java.awt.Dimension(164, 20));
@@ -1378,19 +1262,20 @@ public class HC extends javax.swing.JPanel {
         });
         jScrollPane21.setViewportView(jTextArea22);
 
-        javax.swing.GroupLayout jPanel19Layout = new javax.swing.GroupLayout(jPanel19);
-        jPanel19.setLayout(jPanel19Layout);
-        jPanel19Layout.setHorizontalGroup(
-            jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout jPanel34Layout = new javax.swing.GroupLayout(jPanel34);
+        jPanel34.setLayout(jPanel34Layout);
+        jPanel34Layout.setHorizontalGroup(
+            jPanel34Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        jPanel19Layout.setVerticalGroup(
-            jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane21, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
+        jPanel34Layout.setVerticalGroup(
+            jPanel34Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane21, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
         );
 
-        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Tratamientos habituales"));
-        jPanel20.setOpaque(false);
+        jTabbedPane3.addTab("Traumatismos, accidentes", jPanel34);
+
+        jPanel36.setOpaque(false);
 
         jScrollPane22.setMaximumSize(new java.awt.Dimension(164, 20));
         jScrollPane22.setMinimumSize(new java.awt.Dimension(164, 20));
@@ -1419,19 +1304,156 @@ public class HC extends javax.swing.JPanel {
         });
         jScrollPane22.setViewportView(jTextArea23);
 
-        javax.swing.GroupLayout jPanel20Layout = new javax.swing.GroupLayout(jPanel20);
-        jPanel20.setLayout(jPanel20Layout);
-        jPanel20Layout.setHorizontalGroup(
-            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout jPanel36Layout = new javax.swing.GroupLayout(jPanel36);
+        jPanel36.setLayout(jPanel36Layout);
+        jPanel36Layout.setHorizontalGroup(
+            jPanel36Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        jPanel20Layout.setVerticalGroup(
-            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane22, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        jPanel36Layout.setVerticalGroup(
+            jPanel36Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane22, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
         );
 
-        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("Situación basal (crónicos)"));
-        jPanel21.setOpaque(false);
+        jTabbedPane3.addTab("Tratamientos habituales", jPanel36);
+
+        jPanel8.setOpaque(false);
+
+        jCheckBox1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jCheckBox1.setText("HTA");
+        jCheckBox1.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jCheckBox1.setOpaque(false);
+
+        jCheckBox2.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jCheckBox2.setText("DM");
+        jCheckBox2.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jCheckBox2.setOpaque(false);
+
+        jCheckBox3.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jCheckBox3.setText("DISLIPIDEMIA");
+        jCheckBox3.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jCheckBox3.setOpaque(false);
+
+        jLabel39.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel39.setText("Observacion:");
+
+        jTextArea5.setColumns(20);
+        jTextArea5.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jTextArea5.setForeground(new java.awt.Color(0, 102, 255));
+        jTextArea5.setLineWrap(true);
+        jTextArea5.setRows(2);
+        jTextArea5.setDoubleBuffered(true);
+        jTextArea5.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextArea5KeyPressed(evt);
+            }
+        });
+        jScrollPane7.setViewportView(jTextArea5);
+
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jCheckBox1)
+                        .addGap(18, 18, 18)
+                        .addComponent(jCheckBox2)
+                        .addGap(18, 18, 18)
+                        .addComponent(jCheckBox3))
+                    .addComponent(jLabel39))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jCheckBox1)
+                    .addComponent(jCheckBox2)
+                    .addComponent(jCheckBox3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel39)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE))
+        );
+
+        jTabbedPane4.addTab("HTA, DM, DISLIPIDEMIA", jPanel8);
+
+        jPanel9.setOpaque(false);
+
+        jCheckBox7.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jCheckBox7.setText("Tabaco");
+        jCheckBox7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jCheckBox7.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jCheckBox7.setOpaque(false);
+
+        jCheckBox8.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jCheckBox8.setText("Alcohol");
+        jCheckBox8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jCheckBox8.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jCheckBox8.setOpaque(false);
+
+        jCheckBox9.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jCheckBox9.setText("Drogas de Abuso");
+        jCheckBox9.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jCheckBox9.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jCheckBox9.setOpaque(false);
+
+        jLabel9.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel9.setText("Otros:");
+
+        jTextArea7.setColumns(20);
+        jTextArea7.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jTextArea7.setForeground(new java.awt.Color(0, 102, 255));
+        jTextArea7.setLineWrap(true);
+        jTextArea7.setRows(1);
+        jTextArea7.setDoubleBuffered(true);
+        jTextArea7.setMaximumSize(new java.awt.Dimension(104, 30));
+        jTextArea7.setMinimumSize(new java.awt.Dimension(104, 30));
+        jTextArea7.setPreferredSize(new java.awt.Dimension(164, 30));
+        jTextArea7.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextArea7KeyPressed(evt);
+            }
+        });
+        jScrollPane9.setViewportView(jTextArea7);
+
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addComponent(jCheckBox7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jCheckBox8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jCheckBox9))
+                    .addComponent(jLabel9))
+                .addContainerGap(324, Short.MAX_VALUE))
+            .addComponent(jScrollPane9, javax.swing.GroupLayout.Alignment.TRAILING)
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jCheckBox7)
+                    .addComponent(jCheckBox8)
+                    .addComponent(jCheckBox9))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE))
+        );
+
+        jTabbedPane4.addTab("Hábitos Tóxicos", jPanel9);
+
+        jPanel19.setOpaque(false);
 
         jScrollPane23.setMaximumSize(new java.awt.Dimension(164, 20));
         jScrollPane23.setMinimumSize(new java.awt.Dimension(164, 20));
@@ -1460,19 +1482,20 @@ public class HC extends javax.swing.JPanel {
         });
         jScrollPane23.setViewportView(jTextArea24);
 
-        javax.swing.GroupLayout jPanel21Layout = new javax.swing.GroupLayout(jPanel21);
-        jPanel21.setLayout(jPanel21Layout);
-        jPanel21Layout.setHorizontalGroup(
-            jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        javax.swing.GroupLayout jPanel19Layout = new javax.swing.GroupLayout(jPanel19);
+        jPanel19.setLayout(jPanel19Layout);
+        jPanel19Layout.setHorizontalGroup(
+            jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane23, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)
         );
-        jPanel21Layout.setVerticalGroup(
-            jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane23, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
+        jPanel19Layout.setVerticalGroup(
+            jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane23, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
         );
 
-        jPanel31.setBorder(javax.swing.BorderFactory.createTitledBorder("Antecedentes Familiares de Interes"));
-        jPanel31.setOpaque(false);
+        jTabbedPane4.addTab("Situación basal (crónicos)", jPanel19);
+
+        jPanel20.setOpaque(false);
 
         jScrollPane25.setMaximumSize(new java.awt.Dimension(164, 20));
         jScrollPane25.setMinimumSize(new java.awt.Dimension(164, 20));
@@ -1501,19 +1524,18 @@ public class HC extends javax.swing.JPanel {
         });
         jScrollPane25.setViewportView(jTextArea25);
 
-        javax.swing.GroupLayout jPanel31Layout = new javax.swing.GroupLayout(jPanel31);
-        jPanel31.setLayout(jPanel31Layout);
-        jPanel31Layout.setHorizontalGroup(
-            jPanel31Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout jPanel20Layout = new javax.swing.GroupLayout(jPanel20);
+        jPanel20.setLayout(jPanel20Layout);
+        jPanel20Layout.setHorizontalGroup(
+            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane25, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        jPanel31Layout.setVerticalGroup(
-            jPanel31Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane25, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
+        jPanel20Layout.setVerticalGroup(
+            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane25, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
         );
 
-        jLabel38.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel38.setText("ANTECEDENTES PERSONALES");
+        jTabbedPane4.addTab("Antecedentes Familiares de Interes", jPanel20);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -1522,19 +1544,9 @@ public class HC extends javax.swing.JPanel {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel19, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel20, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel31, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(jLabel38, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jTabbedPane3)
+                    .addComponent(jLabel38, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jTabbedPane4))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -1542,21 +1554,9 @@ public class HC extends javax.swing.JPanel {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jLabel38, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel20, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jTabbedPane4)
                 .addContainerGap())
         );
 
@@ -4606,7 +4606,6 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel20;
-    private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel23;
     private javax.swing.JPanel jPanel24;
@@ -4616,12 +4615,13 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel28;
     private javax.swing.JPanel jPanel29;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel31;
+    private javax.swing.JPanel jPanel30;
     private javax.swing.JPanel jPanel32;
+    private javax.swing.JPanel jPanel33;
+    private javax.swing.JPanel jPanel34;
     private javax.swing.JPanel jPanel35;
-    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel36;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
@@ -4653,6 +4653,8 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
+    private javax.swing.JTabbedPane jTabbedPane3;
+    private javax.swing.JTabbedPane jTabbedPane4;
     public javax.swing.JTextArea jTextArea10;
     private javax.swing.JTextArea jTextArea11;
     private javax.swing.JTextArea jTextArea12;

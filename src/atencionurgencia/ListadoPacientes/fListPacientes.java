@@ -32,7 +32,7 @@ import tools.Funciones;
 
 /**
  *
- * @author AlvaroVirtual
+ * @author Alvaro Monsalve
  */
 public class fListPacientes extends javax.swing.JFrame {
     private DefaultTableModel modelo;
@@ -105,7 +105,6 @@ public class fListPacientes extends javax.swing.JFrame {
         long var = FuncionesBD.verCambiosListPacientesTriage(AtencionUrgencia.props);
         while(idCambiosAdmision<var){
             idCambiosAdmision=var;
-            
             Object dato[] = null;
             //1 es el numero del estado en la tabla de admisiones
             List<InfoAdmision> listaAdmision = admision.findInfoAdmisionActivado(1);
@@ -639,7 +638,7 @@ public class fListPacientes extends javax.swing.JFrame {
             }
         };
         timer = new Timer();
-        timer.scheduleAtFixedRate(timerListar, new Date(), 5000);
+        timer.scheduleAtFixedRate(timerListar, new Date(), 1000);
     }//GEN-LAST:event_formWindowOpened
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -661,12 +660,8 @@ public class fListPacientes extends javax.swing.JFrame {
                 AtencionUrgencia.panelindex.hc.infoadmision=ia;
                 AtencionUrgencia.panelindex.hc.CrearHistoriaC();//creo la historia clinica de esa admision
                 AtencionUrgencia.panelindex.hc.DatosAntPersonales();//crear o mostrar antecedentes personales
-            } 
-            catch (IllegalOrphanException ex) {
-                JOptionPane.showMessageDialog(null, "10048:\n"+ex.getMessage(), fListPacientes.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            } catch (NonexistentEntityException ex) {
-                JOptionPane.showMessageDialog(null, "10049:\n"+ex.getMessage(), fListPacientes.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "10050:\n"+ex.getMessage(), fListPacientes.class.getName(), JOptionPane.INFORMATION_MESSAGE);
             }
             AtencionUrgencia.panelindex.hc.jlbNombrePaciente.setText(jTextField2.getText()+" ["+jTextField1.getText()+"]    ["+jTextField5.getText()+"]");
