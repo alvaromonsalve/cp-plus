@@ -53,6 +53,12 @@ public class Ftriaje extends javax.swing.JFrame {
         AtencionUrgencia.panelindex.hc.infohistoriac.setDestino(destino);
         AtencionUrgencia.panelindex.hc.finalizar = tipo;
         AtencionUrgencia.panelindex.hc.CrearHistoriaC();
+        if(AtencionUrgencia.panelindex.hc.infoadmision.getCausaExterna().equals("01")){//ACCIDENTE DE TRABAJO
+            AtencionUrgencia.panelindex.hc.jComboBox1.setSelectedItem("ACCIDENTE DE TRABAJO");
+        }else if(AtencionUrgencia.panelindex.hc.infoadmision.getCausaExterna().equals("02")){
+            AtencionUrgencia.panelindex.hc.jComboBox1.setSelectedItem("ACCIDENTE DE TRANSITO");
+        }
+        
     }
     
     private class hiloReporte extends Thread{
