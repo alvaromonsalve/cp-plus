@@ -118,7 +118,9 @@ public class pTratInterconsulta extends javax.swing.JPanel {
                 interconsultaHcu.setJustificacion(jTextArea25.getText().toUpperCase());
                 /** id 5129 de codigo cups 890702 - CONSULTA DE URGENCIAS, POR MEDICINA ESPECIALIZADA */
                 interconsultaHcu.setIdConfigCups(5129);
-                interconsultaHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                if(AtencionUrgencia.panelindex.hc.auditoria==false){
+                    interconsultaHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                }                
                 interconsultaHcuJPA.create(interconsultaHcu);
             }
         }else{
@@ -133,7 +135,9 @@ public class pTratInterconsulta extends javax.swing.JPanel {
                     try {
                         interconsultaHcu.setIdEspecialidades(especialidades.getId());
                         interconsultaHcu.setJustificacion(jTextArea25.getText().toUpperCase());
-                        interconsultaHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        if(AtencionUrgencia.panelindex.hc.auditoria==false){
+                            interconsultaHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        }                        
                         interconsultaHcuJPA.edit(interconsultaHcu);
                     } catch (NonexistentEntityException ex) {
                         JOptionPane.showMessageDialog(null, "10095:\n"+ex.getMessage(), pTratInterconsulta.class.getName(), JOptionPane.INFORMATION_MESSAGE);
@@ -158,7 +162,9 @@ public class pTratInterconsulta extends javax.swing.JPanel {
                 evoInterconsulta.setIdHcuEvolucion(evol);
                 evoInterconsulta.setJustificacion(jTextArea25.getText().toUpperCase());
                 evoInterconsulta.setIdConfigCups(new ConfigCups(5129));
-                evoInterconsulta.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                if(AtencionUrgencia.panelindex.evo.auditoria==false){
+                    evoInterconsulta.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                }                
                 evoInterconsulta.setEstado(1);//registro activo
                 evoInterconsultaJpa.create(evoInterconsulta);
                 List<HcuEvoInterconsulta> evoInterconsultas = new ArrayList<HcuEvoInterconsulta>();
@@ -178,7 +184,9 @@ public class pTratInterconsulta extends javax.swing.JPanel {
                     try {
                         evoInterconsulta.setIdStaticEspecialidades(especialidades);
                         evoInterconsulta.setJustificacion(jTextArea25.getText().toUpperCase());
-                        evoInterconsulta.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        if(AtencionUrgencia.panelindex.evo.auditoria==false){
+                            evoInterconsulta.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        }                        
                         evoInterconsultaJpa.edit(evoInterconsulta);
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, "10124:\n"+ex.getMessage(), pTratInterconsulta.class.getName(), JOptionPane.INFORMATION_MESSAGE);

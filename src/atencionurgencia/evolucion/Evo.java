@@ -334,6 +334,11 @@ public class Evo extends javax.swing.JPanel {
                 this.activarComponentes(evoSeleccion);
             }
         }
+        if(auditoria==true){
+            this.jButton1.setEnabled(false);
+            this.jButton14.setEnabled(false);
+            this.jButton12.setEnabled(true);
+        }
     }
 
     private void setJTreeEvo() {
@@ -955,8 +960,9 @@ public class Evo extends javax.swing.JPanel {
             evoSeleccion.setEstado(1);
         }
         boolean sigue = evol.saveChanged(factory, evoSeleccion);
-        if (evoSeleccion != null && evoSeleccion.getEstado() != 2 && sigue) {
-            if (evoSeleccion.getEstado() != 3) {
+        if ((evoSeleccion != null && evoSeleccion.getEstado() != 2 && sigue) | AtencionUrgencia.panelindex.evo.auditoria == true){
+            
+            if (evoSeleccion.getEstado() != 3 && evoSeleccion.getEstado() != 4) {
                 subjetivo.saveChanged(factory, evoSeleccion);
             }
             objetivo.saveChanged(factory, evoSeleccion);
@@ -5487,7 +5493,8 @@ public class Evo extends javax.swing.JPanel {
                         imp.setNoValido(false);
                         imp.setEvolucion(he);
                         imp.stateevo1 =1;
-                        imp.imprimir();
+//                        imp.imprimir();
+                        //generar los documentos
                         jButton13.setEnabled(false);
                         jButton12.setEnabled(false);
                         if (est == 1) {

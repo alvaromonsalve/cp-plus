@@ -116,14 +116,18 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
                 hcu.setIdHistoriac(ihc.getId());
                 hcu.setMedidag((String)ModeloTabla.getValueAt(i, 0));
                 hcu.setObservacion((String)ModeloTabla.getValueAt(i, 1));
-                hcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                if(AtencionUrgencia.panelindex.hc.auditoria==false){
+                    hcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                }                
                 medidasgHcuJPA.create(hcu);
             }else{
                 if(hcu!=null){
                     try {
                         hcu.setMedidag((String)ModeloTabla.getValueAt(i, 0));
                         hcu.setObservacion((String)ModeloTabla.getValueAt(i, 1));
-                        hcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        if(AtencionUrgencia.panelindex.hc.auditoria==false){
+                            hcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        }                        
                         medidasgHcuJPA.edit(hcu);
                     } catch (NonexistentEntityException ex) {
                         JOptionPane.showMessageDialog(null, "10100:\n"+ex.getMessage(), pTratMedidaGeneral.class.getName(), JOptionPane.INFORMATION_MESSAGE);
@@ -172,7 +176,9 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
                 hem.setIdHcuEvolucion(evol);
                 hem.setMedidag((String)ModeloTabla.getValueAt(i, 0));
                 hem.setObservacion((String)ModeloTabla.getValueAt(i, 1));
-                hem.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                if(AtencionUrgencia.panelindex.evo.auditoria==false){
+                    hem.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                }                
                 hem.setEstado(1);//1 es activo
                 hcuEvoMedidasgJpa.create(hem);
                 evoMedidasgs.add(hem);
@@ -182,7 +188,9 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
                     try {
                         hem.setMedidag((String)ModeloTabla.getValueAt(i, 0));
                         hem.setObservacion((String)ModeloTabla.getValueAt(i, 1));
-                        hem.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        if(AtencionUrgencia.panelindex.evo.auditoria==false){
+                            hem.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        }                        
                         hcuEvoMedidasgJpa.edit(hem);
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, "10117:\n"+ex.getMessage(), pTratMedidaGeneral.class.getName(), JOptionPane.INFORMATION_MESSAGE);

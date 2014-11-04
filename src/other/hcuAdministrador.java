@@ -182,7 +182,6 @@ public class hcuAdministrador extends javax.swing.JDialog {
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setFocusable(false);
 
-        jTextField1.setText("1038112701");
         jTextField1.setMaximumSize(new java.awt.Dimension(330, 20));
         jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -316,10 +315,11 @@ public class hcuAdministrador extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel1)
+                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -333,8 +333,6 @@ public class hcuAdministrador extends javax.swing.JDialog {
                     .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
-
-        jLabel6.getAccessibleContext().setAccessibleName("Ver Evolución");
 
         jTabbedPane1.addTab("Auditoria", jPanel2);
 
@@ -471,6 +469,7 @@ public class hcuAdministrador extends javax.swing.JDialog {
                 AtencionUrgencia.panelindex.jpContainer.validate();
                 AtencionUrgencia.panelindex.jpContainer.repaint();
                 AtencionUrgencia.panelindex.hc.viewClinicHistory(historiac);
+                AtencionUrgencia.panelindex.hc.auditoria=true;
                 AtencionUrgencia.panelindex.hc.DatosAntPersonales();
                 AtencionUrgencia.panelindex.hc.jButton10.setEnabled(false);
                 this.dispose();
@@ -494,10 +493,12 @@ public class hcuAdministrador extends javax.swing.JDialog {
             AtencionUrgencia.panelindex.evo.setBounds(0, 0, 764, 514);
             AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.evo);
             AtencionUrgencia.panelindex.evo.jTabbedPane3.remove(0);
+            AtencionUrgencia.panelindex.evo.auditoria = true;
             AtencionUrgencia.panelindex.evo.viewEvoEdit(evolucion);
             AtencionUrgencia.panelindex.evo.setVisible(true); 
+            
             AtencionUrgencia.panelindex.jpContainer.validate();
-            AtencionUrgencia.panelindex.jpContainer.repaint();
+            AtencionUrgencia.panelindex.jpContainer.repaint();    
             
             this.dispose();
         }

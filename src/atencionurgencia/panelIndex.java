@@ -9,16 +9,24 @@ import atencionurgencia.documentos.jDocumentos;
 import atencionurgencia.evolucion.Evo;
 import atencionurgencia.ingreso.HC;
 import entidades.AccessRoles;
+import entidades.InfoHistoriac;
 import java.awt.Color;
 import java.awt.Font;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import jpa.InfoHistoriacJpaController;
 import other.hcuAdministrador;
 import tools.Funciones;
+
 
 /**
  *
@@ -31,6 +39,10 @@ public class panelIndex extends javax.swing.JPanel {
     public Evo evo;
     public jDocumentos documentos;
     private final EntityManagerFactory factory;
+    private Timer timer;
+    private int tiempo=1;
+    private InfoHistoriacJpaController infoHistoriacJpaC;
+    
 
     public panelIndex(EntityManagerFactory factory) {
         initComponents();
@@ -38,8 +50,9 @@ public class panelIndex extends javax.swing.JPanel {
         hc = new HC(factory);
         this.jButton4.setVisible(false);
         this.jButton5.setVisible(false);
+        infoHistoriacJpaC = new InfoHistoriacJpaController(factory);
     }
-
+    
     public void activeButton(boolean var) {
         if (var == false) {
             jButton1.setEnabled(false);
@@ -66,6 +79,7 @@ public class panelIndex extends javax.swing.JPanel {
     public void FramEnable(boolean var) {
         JFrame casa = (JFrame) SwingUtilities.getWindowAncestor(this);
         casa.setEnabled(var);
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -464,10 +478,51 @@ public class panelIndex extends javax.swing.JPanel {
             jButton6.setEnabled(true);
             jButton6.setContentAreaFilled(true);
         }else{
-            JOptionPane.showMessageDialog(this, "mensaje de no entrar");
+            //codigo para los no modificadores            
         }        
     }//GEN-LAST:event_jButton6ActionPerformed
+        
+    public void recordatorio() {
+        TimerTask timerListar = new TimerTask() {
+            @Override
+            public void run() {
+                int mod = (tiempo - 1200) % 1200;
+                if (mod == 0) {
+                    List<InfoHistoriac>  hcs = findinfoHistoriacs(0);
+                    if(hcs.size()<=0){
+                        cancel();
+                        Object[] opciones = {"Aceptar"};
 
+                        int eleccion = JOptionPane.showOptionDialog((JFrame) SwingUtilities.getWindowAncestor(
+                                AtencionUrgencia.panelindex), "Usted tiene " + hcs.size() + " \"Notas de Ingreso\" sin finalizar.", "Recordatorio",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE, null, opciones, "Aceptar");
+                        if (eleccion == 0 || eleccion == -1) {
+                            recordatorio();
+                        }
+                    }
+                }
+                tiempo++;
+            }
+        };
+        timer = new Timer();
+        timer.scheduleAtFixedRate(timerListar, new Date(), 1000);
+    }
+
+    private List<InfoHistoriac> findinfoHistoriacs(int estado ){
+        EntityManager em = infoHistoriacJpaC.getEntityManager();
+        try {
+            return em.createQuery("SELECT i FROM InfoHistoriac i WHERE i.estado = :estado AND i.idConfigdecripcionlogin = :c")
+                    .setParameter("estado", estado)
+                    .setParameter("c", AtencionUrgencia.configdecripcionlogin)
+                    .setHint("javax.persistence.cache.storeMode", "REFRESH")
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

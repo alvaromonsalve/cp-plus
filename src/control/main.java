@@ -35,7 +35,7 @@ public class main extends javax.swing.JFrame {
     private void ParametrosBD(){
         props.put("javax.persistence.jdbc.user", "root");
         props.put("javax.persistence.jdbc.password", "9RLH5QEwQ4dF");
-        props.put("javax.persistence.jdbc.url", "jdbc:mysql://192.168.1.102:3306/database_test");
+        props.put("javax.persistence.jdbc.url", "jdbc:mysql://192.168.1.102:3306/database");
         props.put("javax.persistence.jdbc.driver","com.mysql.jdbc.Driver");
     }
 

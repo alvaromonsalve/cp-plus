@@ -161,13 +161,17 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
                 procedimientoHcu.setIdCups(((ConfigCups)ModeloTabla.getValueAt(i, 0)).getId());
                 procedimientoHcu.setIdHistoriac(ihc.getId());
                 procedimientoHcu.setObservacion(ModeloTabla.getValueAt(i, 3).toString());
-                procedimientoHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                if(AtencionUrgencia.panelindex.hc.auditoria==false){
+                    procedimientoHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                }                
                 procedimientoHcu.setEstado(0);//estado inicial
                 infoProcedimientoHcuJPA.create(procedimientoHcu);
             }else{
                 if(procedimientoHcu!=null){
                     procedimientoHcu.setObservacion(ModeloTabla.getValueAt(i, 3).toString());
-                    procedimientoHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                    if(AtencionUrgencia.panelindex.hc.auditoria==false){
+                        procedimientoHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                    }                    
                     try {
                         infoProcedimientoHcuJPA.edit(procedimientoHcu);
                     } catch (NonexistentEntityException ex){
@@ -221,7 +225,10 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
                 hcuEvoProcedimiento.setIdConfigCups((ConfigCups)ModeloTabla.getValueAt(i, 0));
                 hcuEvoProcedimiento.setIdHcuEvolucion(evo);
                 hcuEvoProcedimiento.setObservacion(ModeloTabla.getValueAt(i, 3).toString());
-                hcuEvoProcedimiento.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                if(AtencionUrgencia.panelindex.evo.auditoria==false){
+                    hcuEvoProcedimiento.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                }
+                
                 hcuEvoProcedimiento.setEstado(1);//estado activo                
                 hcuEvoProcedimientoJpa.create(hcuEvoProcedimiento);
                 listInfoProcedimientoEvo.add(hcuEvoProcedimiento);
@@ -230,7 +237,9 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
                 if(hcuEvoProcedimiento!=null){
                     try {                        
                         hcuEvoProcedimiento.setObservacion(ModeloTabla.getValueAt(i, 3).toString());
-                        hcuEvoProcedimiento.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        if(AtencionUrgencia.panelindex.evo.auditoria==false){
+                            hcuEvoProcedimiento.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        }                        
                         hcuEvoProcedimientoJpa.edit(hcuEvoProcedimiento);
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, "10127:\n"+ex.getMessage(), pTratMasProcedimientos.class.getName(), JOptionPane.INFORMATION_MESSAGE);

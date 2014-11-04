@@ -172,7 +172,9 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
                 if(exist){
                     try {
                         interconsultaHcu.setJustificacion((String)ModeloTabla.getValueAt(i, 3));
-                        interconsultaHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        if(AtencionUrgencia.panelindex.hc.auditoria==false){
+                            interconsultaHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        }                        
                         interconsultaHcuJPA.edit(interconsultaHcu);
                     } catch (NonexistentEntityException ex) {
                         JOptionPane.showMessageDialog(null, "10097:\n"+ex.getMessage(), pTratOtrasInterconsultas.class.getName(), JOptionPane.INFORMATION_MESSAGE);
@@ -185,7 +187,9 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
                     interconsultaHcu.setIdHistoriac(ih.getId());
                     interconsultaHcu.setJustificacion((String)ModeloTabla.getValueAt(i, 3));
                     interconsultaHcu.setIdConfigCups(5129);// id 5129 de codigo cups 890702 - CONSULTA DE URGENCIAS, POR MEDICINA ESPECIALIZADA
-                    interconsultaHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                    if(AtencionUrgencia.panelindex.hc.auditoria==false){
+                        interconsultaHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                    }                    
                     interconsultaHcuJPA.create(interconsultaHcu);
                 }
             }else{
@@ -226,7 +230,10 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
                 if(exist){
                     try {
                         evoInter.setJustificacion((String)ModeloTabla.getValueAt(i, 3));
-                        evoInter.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        if(AtencionUrgencia.panelindex.evo.auditoria==false){
+                            evoInter.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                        }
+                        
                         evoInterconsultaJpa.edit(evoInter);
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, "10125:\n"+ex.getMessage(), pTratOtrasInterconsultas.class.getName(), JOptionPane.INFORMATION_MESSAGE);
@@ -237,7 +244,10 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
                     evoInter.setIdHcuEvolucion(evol);
                     evoInter.setJustificacion((String)ModeloTabla.getValueAt(i, 3));
                     evoInter.setIdConfigCups(new ConfigCups(5129));
-                    evoInter.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                    if(AtencionUrgencia.panelindex.evo.auditoria==false){
+                        evoInter.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                    }
+                    
                     evoInter.setEstado(1);
                     evoInterconsultaJpa.create(evoInter);    
                     listInterconsultaEvo.add(evoInter);

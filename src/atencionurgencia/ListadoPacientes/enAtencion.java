@@ -2,6 +2,7 @@ package atencionurgencia.ListadoPacientes;
 
 import atencionurgencia.AtencionUrgencia;
 import atencionurgencia.ingreso.HC;
+import entidades.HcuHistoriac2;
 import entidades.InfoAdmision;
 import entidades.InfoHistoriac;
 import java.awt.event.KeyEvent;
@@ -9,12 +10,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import jpa.HcuHistoriac2JpaController;
 import jpa.InfoHistoriacJpaController;
 import tools.Funciones;
 
@@ -28,6 +31,7 @@ public class enAtencion extends javax.swing.JDialog {
     private InfoAdmision infoadmision = null;
     private InfoHistoriac infoHistoriac = null;
     private InfoHistoriacJpaController infoHistoriacJPA = null;
+    private HcuHistoriac2JpaController hcuHistoriac2JpaC;
     private final EntityManagerFactory factory;
     private List<InfoHistoriac> listaHistoriaC;
     Object dato[] = null;
@@ -56,6 +60,7 @@ public class enAtencion extends javax.swing.JDialog {
     private void TimerInicio() {
         if (infoHistoriacJPA == null) {
             infoHistoriacJPA = new InfoHistoriacJpaController(factory);
+            hcuHistoriac2JpaC = new HcuHistoriac2JpaController(factory);
         }
         listaHistoriaC = infoHistoriacJPA.findinfoHistoriacs(0);
         for (int i = 0; i < listaHistoriaC.size(); i++) {
@@ -65,15 +70,41 @@ public class enAtencion extends javax.swing.JDialog {
             modelo.setValueAt(infoadmision.getIdDatosPersonales().getNumDoc(), i, 1);
             modelo.setValueAt(infoadmision.getIdDatosPersonales().getNombre1() + " " + infoadmision.getIdDatosPersonales().getApellido1(), i, 2);
             modelo.setValueAt(listaHistoriaC.get(i).getIdConfigdecripcionlogin().getNombres() + " " + listaHistoriaC.get(i).getIdConfigdecripcionlogin().getApellidos(), i, 3);
+            HcuHistoriac2 hh = findHcuHistoriac2(listaHistoriaC.get(i).getId());
+            Date hoy = new Date();
+            long diferencia;
+            String difString;
+            if(hh!=null){                
+                diferencia = (hoy.getTime() - hh.getFIngreso().getTime())/ 1000/60;
+                difString = String.format("%.2f", diferencia);
+                
+            }else{
+                diferencia = (hoy.getTime() -listaHistoriaC.get(i).getFechaDato()  .getTime())/ 1000/60;
+                difString = String.format("%.2f", diferencia);
+            }
+            modelo.setValueAt(difString, i, 4);
         }
         timer.cancel();
+    }
+    
+    private HcuHistoriac2 findHcuHistoriac2(int info_historiac ){
+        EntityManager em = hcuHistoriac2JpaC.getEntityManager();
+        try {
+            return (HcuHistoriac2) em.createQuery("SELECT h FROM HcuHistoriac2 h WHERE h.idInfoHistoriac = :hc")
+                    .setParameter("hc", info_historiac)
+                    .setHint("javax.persistence.cache.storeMode", "REFRESH")
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
     }
 
     private void ModeloListadoPaciente() {
         try {
             modelo = new DefaultTableModel(
-                    null, new String[]{"id", "Documento", "Nombre", "Medico"}) {
+                    null, new String[]{"id", "Documento", "Nombre", "Medico","Tiempo"}) {
                         Class[] types = new Class[]{
+                            java.lang.String.class,
                             java.lang.String.class,
                             java.lang.String.class,
                             java.lang.String.class,
@@ -81,7 +112,7 @@ public class enAtencion extends javax.swing.JDialog {
                         };
 
                         boolean[] canEdit = new boolean[]{
-                            false, false, false, false
+                            false, false, false, false, false
                         };
 
                         @Override
@@ -98,12 +129,12 @@ public class enAtencion extends javax.swing.JDialog {
             jtListadoPacientes.getTableHeader().setReorderingAllowed(false);
             jtListadoPacientes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             Funciones.setOcultarColumnas(jtListadoPacientes, new int[]{0});
-            jtListadoPacientes.getColumnModel().getColumn(1).setMinWidth(80);
-            jtListadoPacientes.getTableHeader().getColumnModel().getColumn(1).setMaxWidth(80);
-            jtListadoPacientes.getColumnModel().getColumn(2).setMinWidth(180);
-            jtListadoPacientes.getTableHeader().getColumnModel().getColumn(2).setMaxWidth(180);
-            jtListadoPacientes.getColumnModel().getColumn(3).setMinWidth(210);
-            jtListadoPacientes.getTableHeader().getColumnModel().getColumn(3).setMaxWidth(210);
+            jtListadoPacientes.getColumnModel().getColumn(1).setMinWidth(70);
+            jtListadoPacientes.getTableHeader().getColumnModel().getColumn(1).setMaxWidth(70);
+            jtListadoPacientes.getColumnModel().getColumn(2).setMinWidth(160);
+            jtListadoPacientes.getTableHeader().getColumnModel().getColumn(2).setMaxWidth(160);
+            jtListadoPacientes.getColumnModel().getColumn(3).setMinWidth(180);
+            jtListadoPacientes.getTableHeader().getColumnModel().getColumn(3).setMaxWidth(180);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "10074:\n" + ex.getMessage(), enAtencion.class.getName(), JOptionPane.INFORMATION_MESSAGE);
         }

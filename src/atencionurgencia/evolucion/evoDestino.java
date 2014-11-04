@@ -33,7 +33,9 @@ public class evoDestino extends javax.swing.JPanel {
             HcuEvoEgreso egreso = new HcuEvoEgreso();
             egreso.setIdHcuEvolucion(evol);
             if(jComboBox1.getSelectedIndex()!=-1) egreso.setDestino(jComboBox1.getSelectedIndex());
-            egreso.setUsuario(AtencionUrgencia.idUsuario);
+            if(AtencionUrgencia.panelindex.evo.auditoria==false){
+                egreso.setUsuario(AtencionUrgencia.idUsuario);
+            }            
             egreso.setObservaciones(jTextArea26.getText().toUpperCase());
             if(jCheckBox1.isSelected()==true){
                 egreso.setIncapacidad(1);
@@ -51,7 +53,9 @@ public class evoDestino extends javax.swing.JPanel {
             try {
                 HcuEvoEgreso egreso = evoEgresos.get(0);
                 egreso.setDestino(jComboBox1.getSelectedIndex());
-                egreso.setUsuario(AtencionUrgencia.idUsuario);
+                if(AtencionUrgencia.panelindex.evo.auditoria==false){
+                    egreso.setUsuario(AtencionUrgencia.idUsuario);
+                }                
                 egreso.setObservaciones(jTextArea26.getText().toUpperCase());
                 if(jCheckBox1.isSelected()==true){
                     egreso.setIncapacidad(1);

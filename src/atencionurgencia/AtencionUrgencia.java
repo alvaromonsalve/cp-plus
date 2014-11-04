@@ -90,6 +90,7 @@ public class AtencionUrgencia {
                 if (configUser.getIdPerfiles().getId() == 3 || configUser.getIdPerfiles().getId() == 7) {
                     panelindex.jButton4.setVisible(true);//3 es el id del perfil de especialista de urgencia y 7 es el administrador
                 }
+                panelindex.recordatorio();
                 AtencionUrgencia.props = props;
                 jPanel = panelindex;
             }

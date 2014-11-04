@@ -4,6 +4,7 @@
  */
 package atencionurgencia.ingreso;
 
+import atencionurgencia.AtencionUrgencia;
 import entidades.ConfigCups;
 import entidades.InfoHistoriac;
 import entidades.InfoProcedimientoHcu;
@@ -111,13 +112,17 @@ public class pTratQuirurgico extends javax.swing.JPanel {
                 procedimientoHcu.setIdCups(((ConfigCups)ModeloTabla.getValueAt(i, 0)).getId());
                 procedimientoHcu.setIdHistoriac(ihc.getId());
                 procedimientoHcu.setObservacion(ModeloTabla.getValueAt(i, 3).toString());
-                procedimientoHcu.setIdUsuario(atencionurgencia.AtencionUrgencia.configdecripcionlogin.getId());
+                if(AtencionUrgencia.panelindex.hc.auditoria==false){
+                    procedimientoHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+                }                
                 procedimientoHcu.setEstado(0);//estado inicial
                 infoProcedimientoHcuJPA.create(procedimientoHcu);
             }else{
                 if(procedimientoHcu!=null){
                     procedimientoHcu.setObservacion(ModeloTabla.getValueAt(i, 3).toString());
-                    procedimientoHcu.setIdUsuario(atencionurgencia.AtencionUrgencia.configdecripcionlogin.getId());
+                    if(AtencionUrgencia.panelindex.hc.auditoria==false){
+                        procedimientoHcu.setIdUsuario(atencionurgencia.AtencionUrgencia.configdecripcionlogin.getId());
+                    }                    
                     try {
                         infoProcedimientoHcuJPA.edit(procedimientoHcu);
                     } catch (NonexistentEntityException ex) {

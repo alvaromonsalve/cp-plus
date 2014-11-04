@@ -227,7 +227,7 @@ public class newEvo extends javax.swing.JPanel {
         boolean sigue=false;
         if(jpaController==null) jpaController = new HcuEvolucionJpaController(factory);
 //        HcuEvolucion editEvolucion = hcuEvolucion;
-        if(validAll() && hcuEvolucion.getEstado()!=2){            
+        if((validAll() && hcuEvolucion.getEstado()!=2) |  AtencionUrgencia.panelindex.evo.auditoria ==true){
             if(jComboBox1.getSelectedIndex()>-1) hcuEvolucion.setConciencia((short) jComboBox1.getSelectedIndex());
             if(jComboBox2.getSelectedIndex()>-1) hcuEvolucion.setAperturaOcular((short)(jComboBox2.getSelectedIndex()));
             if(jComboBox3.getSelectedIndex()>-1) hcuEvolucion.setRespuestaVerbal((short)jComboBox3.getSelectedIndex());
@@ -239,7 +239,9 @@ public class newEvo extends javax.swing.JPanel {
             if(!jTextField7.getText().isEmpty()) hcuEvolucion.setTas(Short.parseShort(jTextField7.getText().toString()));
             if(!jTextField6.getText().isEmpty()) hcuEvolucion.setTad(Short.parseShort(jTextField6.getText().toString()));
             if(!jTextArea2.getText().isEmpty()) hcuEvolucion.setOtrossignos(jTextArea2.getText().toUpperCase());
-            if(AtencionUrgencia.panelindex.evo.auditoria==false) hcuEvolucion.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+            if(AtencionUrgencia.panelindex.evo.auditoria==false){
+                hcuEvolucion.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
+            }
             try {
                 if(hcuEvolucion.getId()==null){
                     jpaController.create(hcuEvolucion);

@@ -1,11 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package atencionurgencia.ListadoPacientes;
 
 import atencionurgencia.AtencionUrgencia;
-import atencionurgencia.ingreso.HC;
 import ejb.FuncionesBD;
 import entidades.InfoAdmision;
 import entidades.InfoOtrosdatosAdmision;
@@ -25,8 +21,6 @@ import javax.swing.table.DefaultTableModel;
 import jpa.InfoAdmisionJpaController;
 import jpa.InfoOtrosdatosAdmisionJpaController;
 import jpa.InfoPacienteJpaController;
-import jpa.exceptions.IllegalOrphanException;
-import jpa.exceptions.NonexistentEntityException;
 import tools.CausasExternas;
 import tools.Funciones;
 
@@ -647,27 +641,28 @@ public class fListPacientes extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         InfoAdmision ia = (InfoAdmision) jtable1.getValueAt(jtable1.getSelectedRow(), 7);
-        if (jTextField1.getText()!=null && !jTextField1.getText().equals("") && !jTextField1.getText().equals("...")){  
+        if (jTextField1.getText() != null && !jTextField1.getText().equals("") && !jTextField1.getText().equals("...")) {
             AtencionUrgencia.panelindex.hc.ftriaje = new Ftriaje();
-            AtencionUrgencia.panelindex.hc.ftriaje.setTitle(ia.getIdDatosPersonales().getNombre1()+" "
-                    +ia.getIdDatosPersonales().getApellido1()+" ["+ia.getIdDatosPersonales().getNumDoc()+"]");
+            AtencionUrgencia.panelindex.hc.ftriaje.setTitle(ia.getIdDatosPersonales().getNombre1() + " "
+                    + ia.getIdDatosPersonales().getApellido1() + " [" + ia.getIdDatosPersonales().getNumDoc() + "]");
             AtencionUrgencia.panelindex.hc.ftriaje.setVisible(true);
             AtencionUrgencia.panelindex.FramEnable(false);
             AtencionUrgencia.panelindex.hc.infopaciente = infopacienteJPA.findInfoPaciente(ia.getIdDatosPersonales().getId());
             ia.setEstado(5);
             try {
                 admision.edit(ia);
-                AtencionUrgencia.panelindex.hc.infoadmision=ia;
+                AtencionUrgencia.panelindex.hc.infoadmision = ia;
+                AtencionUrgencia.panelindex.hc.edite = false;
+                AtencionUrgencia.panelindex.hc.auditoria=false;
                 AtencionUrgencia.panelindex.hc.CrearHistoriaC();//creo la historia clinica de esa admision
                 AtencionUrgencia.panelindex.hc.DatosAntPersonales();//crear o mostrar antecedentes personales
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "10050:\n" + ex.getMessage(), fListPacientes.class.getName(), JOptionPane.INFORMATION_MESSAGE);
             }
-            catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "10050:\n"+ex.getMessage(), fListPacientes.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            }
-            AtencionUrgencia.panelindex.hc.jlbNombrePaciente.setText(jTextField2.getText()+" ["+jTextField1.getText()+"]    ["+jTextField5.getText()+"]");
+            AtencionUrgencia.panelindex.hc.jlbNombrePaciente.setText(jTextField2.getText() + " [" + jTextField1.getText() + "]    [" + jTextField5.getText() + "]");
             closed();
             this.dispose();
-            }
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

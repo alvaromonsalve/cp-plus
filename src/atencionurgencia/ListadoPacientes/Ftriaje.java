@@ -58,7 +58,7 @@ public class Ftriaje extends javax.swing.JFrame {
         }else if(AtencionUrgencia.panelindex.hc.infoadmision.getCausaExterna().equals("02")){
             AtencionUrgencia.panelindex.hc.jComboBox1.setSelectedItem("ACCIDENTE DE TRANSITO");
         }
-        
+//        
     }
     
     private class hiloReporte extends Thread{
