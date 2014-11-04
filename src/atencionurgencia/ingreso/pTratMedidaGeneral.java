@@ -116,9 +116,8 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
                 hcu.setIdHistoriac(ihc.getId());
                 hcu.setMedidag((String)ModeloTabla.getValueAt(i, 0));
                 hcu.setObservacion((String)ModeloTabla.getValueAt(i, 1));
-                if(AtencionUrgencia.panelindex.hc.auditoria==false){
                     hcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
-                }                
+                          
                 medidasgHcuJPA.create(hcu);
             }else{
                 if(hcu!=null){
@@ -176,9 +175,8 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
                 hem.setIdHcuEvolucion(evol);
                 hem.setMedidag((String)ModeloTabla.getValueAt(i, 0));
                 hem.setObservacion((String)ModeloTabla.getValueAt(i, 1));
-                if(AtencionUrgencia.panelindex.evo.auditoria==false){
                     hem.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
-                }                
+                                
                 hem.setEstado(1);//1 es activo
                 hcuEvoMedidasgJpa.create(hem);
                 evoMedidasgs.add(hem);

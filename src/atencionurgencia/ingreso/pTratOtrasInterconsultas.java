@@ -187,9 +187,9 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
                     interconsultaHcu.setIdHistoriac(ih.getId());
                     interconsultaHcu.setJustificacion((String)ModeloTabla.getValueAt(i, 3));
                     interconsultaHcu.setIdConfigCups(5129);// id 5129 de codigo cups 890702 - CONSULTA DE URGENCIAS, POR MEDICINA ESPECIALIZADA
-                    if(AtencionUrgencia.panelindex.hc.auditoria==false){
+
                         interconsultaHcu.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
-                    }                    
+                                      
                     interconsultaHcuJPA.create(interconsultaHcu);
                 }
             }else{
@@ -244,9 +244,8 @@ public class pTratOtrasInterconsultas extends javax.swing.JPanel {
                     evoInter.setIdHcuEvolucion(evol);
                     evoInter.setJustificacion((String)ModeloTabla.getValueAt(i, 3));
                     evoInter.setIdConfigCups(new ConfigCups(5129));
-                    if(AtencionUrgencia.panelindex.evo.auditoria==false){
                         evoInter.setIdUsuario(AtencionUrgencia.configdecripcionlogin.getId());
-                    }
+                    
                     
                     evoInter.setEstado(1);
                     evoInterconsultaJpa.create(evoInter);    

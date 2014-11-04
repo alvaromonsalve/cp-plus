@@ -247,9 +247,8 @@ public class pTratMedic extends javax.swing.JPanel {
                   hcu.setIdHistoriac(ihc);
                   hcu.setIdSuministro((SumSuministro)ModeloTabla.getValueAt(i, 0));
                   hcu.setVia((String)ModeloTabla.getValueAt(i, 4));
-                  if(AtencionUrgencia.panelindex.hc.auditoria==false){
                       hcu.setUsuario(AtencionUrgencia.idUsuario);
-                  }
+                  
                   
                   hcu.setCantidad((Float)ModeloTabla.getValueAt(i, 7));
                   infoPosologiaHcuJPA.create(hcu);
@@ -310,9 +309,8 @@ public class pTratMedic extends javax.swing.JPanel {
                 hmm.setAdministracion(MTMezcla.getValueAt(i, 4).toString());
                 hmm.setIdHistoriac(ihc);
                 hmm.setVia(MTMezcla.getValueAt(i, 3).toString());
-                if(AtencionUrgencia.panelindex.evo.auditoria==false){
                     hmm.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
-                }                
+                             
                 hcuMezclasMedicamentosJPA.create(hmm);//entidad mezcla creada
                 DefaultTableModel model = (DefaultTableModel)MTMezcla.getValueAt(i, 0);
                 for(int a=0;a<model.getRowCount();a++){
@@ -322,9 +320,8 @@ public class pTratMedic extends javax.swing.JPanel {
                     desc.setDosisN((Float)model.getValueAt(a, 1));
                     desc.setDosisU(model.getValueAt(a, 2).toString());
                     desc.setSolDiluir((Boolean)model.getValueAt(a, 3));
-                    if(AtencionUrgencia.panelindex.evo.auditoria==false){
                         desc.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
-                    }                    
+                                     
                     desc.setEstado(0);
                     descJpaController.create(desc);
                 }
@@ -355,9 +352,8 @@ public class pTratMedic extends javax.swing.JPanel {
                   hep.setIdHcuEvolucion(evol);
                   hep.setIdSuministro((SumSuministro)ModeloTabla.getValueAt(i, 0));
                   hep.setVia((String)ModeloTabla.getValueAt(i, 4));
-                  if(AtencionUrgencia.panelindex.evo.auditoria==false){
                       hep.setUsuario(AtencionUrgencia.idUsuario);
-                  }                  
+                                
                   hep.setCantidad((Float)ModeloTabla.getValueAt(i, 7));
                   hep.setEstado(1);//1 es activo
                   hcuEvoPosologiaJpaController.create(hep);                  
@@ -415,9 +411,8 @@ public class pTratMedic extends javax.swing.JPanel {
               hemm.setAdministracion(MTMezcla.getValueAt(i, 4).toString());
               hemm.setIdHcuEvolucion(evol);
               hemm.setVia(MTMezcla.getValueAt(i, 3).toString());
-              if(AtencionUrgencia.panelindex.evo.auditoria==false){
                   hemm.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
-              }              
+                          
               hemm.setEstado(1);
               hcuEvomedicamentosJpa.create(hemm);//entidad mezcla creada
               DefaultTableModel model = (DefaultTableModel)MTMezcla.getValueAt(i, 0);
@@ -428,9 +423,8 @@ public class pTratMedic extends javax.swing.JPanel {
                   desc.setDosisN((Float)model.getValueAt(a, 1));
                   desc.setDosisU(model.getValueAt(a, 2).toString());
                   desc.setSolDiluir((Boolean)model.getValueAt(a, 3));
-                  if(AtencionUrgencia.panelindex.evo.auditoria==false){
                       desc.setUsuario(AtencionUrgencia.configdecripcionlogin.getId());
-                  }                  
+                                   
                   desc.setEstado(1);
                   hcuEvomedicamentosDescJpa.create(desc);
               }

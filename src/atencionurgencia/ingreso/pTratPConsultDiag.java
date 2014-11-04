@@ -112,9 +112,8 @@ public class pTratPConsultDiag extends javax.swing.JPanel {
                 procedimientoHcu.setIdCups(((ConfigCups)ModeloTabla.getValueAt(i, 0)).getId());
                 procedimientoHcu.setIdHistoriac(ihc.getId());
                 procedimientoHcu.setObservacion(ModeloTabla.getValueAt(i, 3).toString());
-                if(AtencionUrgencia.panelindex.hc.auditoria==false){
                     procedimientoHcu.setIdUsuario(atencionurgencia.AtencionUrgencia.configdecripcionlogin.getId());
-                }                
+               
                 /** Estado inicial */
                 procedimientoHcu.setEstado(0);
                 infoProcedimientoHcuJPA.create(procedimientoHcu);

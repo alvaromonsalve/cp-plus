@@ -112,9 +112,8 @@ public class pTratLaboratorio extends javax.swing.JPanel {
                 procedimientoHcu.setIdCups(((ConfigCups)ModeloTabla.getValueAt(i, 0)).getId());
                 procedimientoHcu.setIdHistoriac(ihc.getId());
                 procedimientoHcu.setObservacion(ModeloTabla.getValueAt(i, 3).toString());
-                if(AtencionUrgencia.panelindex.hc.auditoria==false){
                     procedimientoHcu.setIdUsuario(atencionurgencia.AtencionUrgencia.configdecripcionlogin.getId());
-                }                
+                              
                 procedimientoHcu.setEstado(0);//estado inicial
                 infoProcedimientoHcuJPA.create(procedimientoHcu);
             }else{
