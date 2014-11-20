@@ -10,6 +10,7 @@ import atencionurgencia.evolucion.Evo;
 import atencionurgencia.ingreso.HC;
 import entidades.AccessRoles;
 import entidades.InfoHistoriac;
+import entidades.ReportVersion;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.Date;
@@ -24,6 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import jpa.InfoHistoriacJpaController;
+import jpa.ReportVersionJpaController;
 import other.hcuAdministrador;
 import tools.Funciones;
 
@@ -42,16 +44,28 @@ public class panelIndex extends javax.swing.JPanel {
     private Timer timer;
     private int tiempo=1;
     private InfoHistoriacJpaController infoHistoriacJpaC;
+    public List<ReportVersion> reportVersions;
     
 
     public panelIndex(EntityManagerFactory factory) {
         initComponents();
-        this.factory = factory;
-        hc = new HC(factory);
+        this.factory = factory;        
         this.jButton4.setVisible(false);
         this.jButton5.setVisible(false);
         infoHistoriacJpaC = new InfoHistoriacJpaController(factory);
+        reportVersions = FindReportsVersions();
     }
+    
+    private List<ReportVersion> FindReportsVersions(){
+        EntityManager em = infoHistoriacJpaC.getEntityManager();
+        try {
+            return em.createQuery("SELECT r FROM ReportVersion r WHERE r.servicio = 'URGENCIAS' AND r.estado = '1' ORDER BY r.fechaPublicacion DESC")
+            .setHint("javax.persistence.cache.storeMode", "REFRESH")
+            .getResultList();
+        } finally {
+            em.close();
+        }
+   }
     
     public void activeButton(boolean var) {
         if (var == false) {
@@ -158,6 +172,7 @@ public class panelIndex extends javax.swing.JPanel {
         jButton3.setContentAreaFilled(false);
         jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jButton3.setDoubleBuffered(true);
+        jButton3.setEnabled(false);
         jButton3.setFocusable(false);
         jButton3.setMaximumSize(new java.awt.Dimension(46, 46));
         jButton3.setMinimumSize(new java.awt.Dimension(46, 46));
@@ -183,6 +198,7 @@ public class panelIndex extends javax.swing.JPanel {
         jButton4.setContentAreaFilled(false);
         jButton4.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jButton4.setDoubleBuffered(true);
+        jButton4.setEnabled(false);
         jButton4.setFocusable(false);
         jButton4.setMaximumSize(new java.awt.Dimension(46, 46));
         jButton4.setMinimumSize(new java.awt.Dimension(46, 46));
@@ -213,14 +229,14 @@ public class panelIndex extends javax.swing.JPanel {
         jButton5.setMaximumSize(new java.awt.Dimension(46, 46));
         jButton5.setMinimumSize(new java.awt.Dimension(46, 46));
         jButton5.setPreferredSize(new java.awt.Dimension(46, 46));
-        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jButton5MouseExited(evt);
-            }
-        });
         jButton5.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jButton5MouseMoved(evt);
+            }
+        });
+        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButton5MouseExited(evt);
             }
         });
         jButton5.addActionListener(new java.awt.event.ActionListener() {
@@ -346,6 +362,7 @@ public class panelIndex extends javax.swing.JPanel {
         listaPacientes = new fListPacientes(factory);
         listaPacientes.setVisible(true);
         listaPacientes.setAlwaysOnTop(true);
+        hc = new HC(factory);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseExited
@@ -380,12 +397,12 @@ public class panelIndex extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton3MouseMoved
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        jButton3.setEnabled(false);
-        fPacientesCamas pacientesCamas = null;
-        pacientesCamas = new fPacientesCamas(factory);
-        pacientesCamas.setVisible(true);
-        pacientesCamas.inicio();
-        jButton3.setContentAreaFilled(false);
+//        jButton3.setEnabled(false);
+//        fPacientesCamas pacientesCamas = null;
+//        pacientesCamas = new fPacientesCamas(factory);
+//        pacientesCamas.setVisible(true);
+//        pacientesCamas.inicio();
+//        jButton3.setContentAreaFilled(false);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseExited
@@ -399,33 +416,33 @@ public class panelIndex extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton4MouseMoved
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        jButton4.setEnabled(false);
-        boolean accede = false;
-        if (AtencionUrgencia.isAdministrador == true) {
-            accede = true;
-        }
-        for (AccessRoles ar : roles) {
-            if (ar.getRuta() == 10001) {
-
-                accede = true;
-                break;
-            }
-        }
-        if (accede == true) {
-            fListinterconsulta listPacientes = null;
-            listPacientes = new fListinterconsulta(factory);
-            listPacientes.setVisible(true);
-            jButton4.setContentAreaFilled(false);
-        } else {
-            jpContainer.removeAll();
-            JLabel label = new JLabel("CODIGO DE PERMISO: 10001");
-            label.setForeground(Color.white);
-            label.setFont(new Font("Tahoma", Font.BOLD, 11));
-            label.setVisible(true);
-            jpContainer.add(label);
-            jpContainer.setIcon(new javax.swing.ImageIcon(ClassLoader.getSystemResource("images/permiso2.png")));
-            jpContainer.repaint();
-        }
+//        jButton4.setEnabled(false);
+//        boolean accede = false;
+//        if (AtencionUrgencia.isAdministrador == true) {
+//            accede = true;
+//        }
+//        for (AccessRoles ar : roles) {
+//            if (ar.getRuta() == 10001) {
+//
+//                accede = true;
+//                break;
+//            }
+//        }
+//        if (accede == true) {
+//            fListinterconsulta listPacientes = null;
+//            listPacientes = new fListinterconsulta(factory);
+//            listPacientes.setVisible(true);
+//            jButton4.setContentAreaFilled(false);
+//        } else {
+//            jpContainer.removeAll();
+//            JLabel label = new JLabel("CODIGO DE PERMISO: 10001");
+//            label.setForeground(Color.white);
+//            label.setFont(new Font("Tahoma", Font.BOLD, 11));
+//            label.setVisible(true);
+//            jpContainer.add(label);
+//            jpContainer.setIcon(new javax.swing.ImageIcon(ClassLoader.getSystemResource("images/permiso2.png")));
+//            jpContainer.repaint();
+//        }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseExited
@@ -439,13 +456,13 @@ public class panelIndex extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton5MouseMoved
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        this.jpContainer.removeAll();
-        this.documentos = new jDocumentos();
-        this.documentos.setBounds(0, 0, 764, 514);
-        this.jpContainer.add(this.documentos);
-        this.documentos.setVisible(true);
-        this.jpContainer.validate();
-        this.jpContainer.repaint();
+//        this.jpContainer.removeAll();
+//        this.documentos = new jDocumentos();
+//        this.documentos.setBounds(0, 0, 764, 514);
+//        this.jpContainer.add(this.documentos);
+//        this.documentos.setVisible(true);
+//        this.jpContainer.validate();
+//        this.jpContainer.repaint();
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton6MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseMoved
@@ -489,7 +506,7 @@ public class panelIndex extends javax.swing.JPanel {
                 int mod = (tiempo - 1200) % 1200;
                 if (mod == 0) {
                     List<InfoHistoriac>  hcs = findinfoHistoriacs(0);
-                    if(hcs.size()<=0){
+                    if(hcs.size()<0){
                         cancel();
                         Object[] opciones = {"Aceptar"};
 

@@ -12,6 +12,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
@@ -76,11 +77,10 @@ public class enAtencion extends javax.swing.JDialog {
             String difString;
             if(hh!=null){                
                 diferencia = (hoy.getTime() - hh.getFIngreso().getTime())/ 1000/60;
-                difString = String.format("%.2f", diferencia);
-                
+                difString = String.valueOf(diferencia);                
             }else{
-                diferencia = (hoy.getTime() -listaHistoriaC.get(i).getFechaDato()  .getTime())/ 1000/60;
-                difString = String.format("%.2f", diferencia);
+                diferencia = (hoy.getTime() - listaHistoriaC.get(i).getFechaDato()  .getTime())/ 1000/60;
+                difString = String.valueOf(diferencia);
             }
             modelo.setValueAt(difString, i, 4);
         }
@@ -94,7 +94,9 @@ public class enAtencion extends javax.swing.JDialog {
                     .setParameter("hc", info_historiac)
                     .setHint("javax.persistence.cache.storeMode", "REFRESH")
                     .getSingleResult();
-        } finally {
+        }catch (NoResultException ex){
+            return null;
+        }finally {
             em.close();
         }
     }
@@ -133,8 +135,10 @@ public class enAtencion extends javax.swing.JDialog {
             jtListadoPacientes.getTableHeader().getColumnModel().getColumn(1).setMaxWidth(70);
             jtListadoPacientes.getColumnModel().getColumn(2).setMinWidth(160);
             jtListadoPacientes.getTableHeader().getColumnModel().getColumn(2).setMaxWidth(160);
-            jtListadoPacientes.getColumnModel().getColumn(3).setMinWidth(180);
-            jtListadoPacientes.getTableHeader().getColumnModel().getColumn(3).setMaxWidth(180);
+            jtListadoPacientes.getColumnModel().getColumn(3).setMinWidth(190);
+            jtListadoPacientes.getTableHeader().getColumnModel().getColumn(3).setMaxWidth(190);
+            jtListadoPacientes.getColumnModel().getColumn(4).setMinWidth(50);
+            jtListadoPacientes.getTableHeader().getColumnModel().getColumn(4).setMaxWidth(50);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "10074:\n" + ex.getMessage(), enAtencion.class.getName(), JOptionPane.INFORMATION_MESSAGE);
         }

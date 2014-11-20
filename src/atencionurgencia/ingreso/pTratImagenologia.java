@@ -113,9 +113,7 @@ public class pTratImagenologia extends javax.swing.JPanel {
                 procedimientoHcu.setIdHistoriac(ihc.getId());
                 procedimientoHcu.setObservacion(ModeloTabla.getValueAt(i, 3).toString());
                 procedimientoHcu.setEstado(0);//estado inicial
-
-                    procedimientoHcu.setIdUsuario(atencionurgencia.AtencionUrgencia.configdecripcionlogin.getId());
-                                
+                procedimientoHcu.setIdUsuario(atencionurgencia.AtencionUrgencia.configdecripcionlogin.getId());                                
                 infoProcedimientoHcuJPA.create(procedimientoHcu);
             }else{
                 if(procedimientoHcu!=null){

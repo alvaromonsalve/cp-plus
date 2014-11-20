@@ -35,7 +35,7 @@ public class fListPacientes extends javax.swing.JFrame {
     private Timer reloj;
     InfoAdmisionJpaController admision = null;
     InfoOtrosdatosAdmisionJpaController oadmision = null;
-            InfoPacienteJpaController infopacienteJPA = null;
+    InfoPacienteJpaController infopacienteJPA = null;
 
     public fListPacientes(EntityManagerFactory factory) {
         initComponents();

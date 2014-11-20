@@ -384,6 +384,7 @@ public class impresionesHC extends javax.swing.JFrame {
             try {
                 Map param = new HashMap();
                 String master;
+                //<![CDATA[call `rep_recetaMedica`($P{id_hc})]]> para el que genera el consecutivo hacerlo sin reportiar
                 if ((idHC.getEstado() != 1 & noValido == true) | (idHC.getEstado() == 1 & noValido == false)) {
                     master = System.getProperty("user.dir") + "/reportes/resetaMedica.jasper";
                     param.put("entidadadmision", idHC.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad());

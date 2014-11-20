@@ -2877,13 +2877,13 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jXTaskPane4" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="jXTaskPane1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jXTaskPane2" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jXTaskPane3" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jXTaskPane4" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jXTaskPane5" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
@@ -2894,6 +2894,7 @@
               <SubComponents>
                 <Container class="org.jdesktop.swingx.JXTaskPane" name="jXTaskPane1">
                   <Properties>
+                    <Property name="expanded" type="boolean" value="false"/>
                     <Property name="title" type="java.lang.String" value="MEDICAMENTOS"/>
                     <Property name="animated" type="boolean" value="false"/>
                     <Property name="focusable" type="boolean" value="false"/>
@@ -3522,7 +3523,6 @@
                 </Container>
                 <Container class="org.jdesktop.swingx.JXTaskPane" name="jXTaskPane4">
                   <Properties>
-                    <Property name="expanded" type="boolean" value="false"/>
                     <Property name="title" type="java.lang.String" value="MEDIDAS GENERALES"/>
                     <Property name="animated" type="boolean" value="false"/>
                     <Property name="focusable" type="boolean" value="false"/>

@@ -276,7 +276,9 @@ public class HC extends javax.swing.JPanel {
         infohistoriac.setDiagnostico4(idDiag4);
         infohistoriac.setDiagnostico5(idDiag5);
         infohistoriac.setHallazgo(jTextArea19.getText().toUpperCase());
-        infohistoriac.setTipoHc(0);//0 = urgencias;
+        if(auditoria ==false){
+            infohistoriac.setTipoHc(0);//0 = urgencias;
+        }        
         if (infohistoriac.getEstado() != 2 && auditoria ==false) {
             infohistoriac.setEstado(finalizar);
         }
@@ -2569,6 +2571,7 @@ public class HC extends javax.swing.JPanel {
 
         jPanel2.setOpaque(false);
 
+        jXTaskPane1.setExpanded(false);
         jXTaskPane1.setTitle("MEDICAMENTOS");
         jXTaskPane1.setAnimated(false);
         jXTaskPane1.setFocusable(false);
@@ -2837,7 +2840,6 @@ public class HC extends javax.swing.JPanel {
         });
         jXTaskPane3.getContentPane().add(jLabel56);
 
-        jXTaskPane4.setExpanded(false);
         jXTaskPane4.setTitle("MEDIDAS GENERALES");
         jXTaskPane4.setAnimated(false);
         jXTaskPane4.setFocusable(false);
@@ -2957,13 +2959,13 @@ public class HC extends javax.swing.JPanel {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jXTaskPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jXTaskPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jXTaskPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jXTaskPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jXTaskPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jXTaskPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -3464,7 +3466,9 @@ public class HC extends javax.swing.JPanel {
                         .equals("1")) {
                     String path2 = (String) modeloAyudDiag.getValueAt(jtbTratamiento4.rowAtPoint(evt.getPoint()), 5)
                             + s + (String) modeloAyudDiag.getValueAt(jtbTratamiento4.rowAtPoint(evt.getPoint()), 2);
-                    Funciones.fileDownload(path2);
+//                    String path3 = "Epicrisis.jasper";
+                  Funciones.fileDownload(path2);
+//                    Funciones.reportDownload("", path3);
                 }
             }
         }
@@ -3964,6 +3968,9 @@ public class HC extends javax.swing.JPanel {
                     finalizar = 1;
                     CrearHistoriaC();//guardo en hc
                     SaveAntPersonales();
+                    
+                    
+                    
                     impresionesHC imp = new impresionesHC(factory);
                     imp.setidHC(this.infohistoriac);
                     imp.activarLinks();
@@ -4415,7 +4422,7 @@ public class HC extends javax.swing.JPanel {
                 imp.setdestinoHc(infohistoriac.getDestino());
             }            
             imp.setLocationRelativeTo(null);
-            imp.setNoValido(true);
+//            imp.setNoValido(true);
             imp.setVisible(true);
         }
     }//GEN-LAST:event_jButton11ActionPerformed

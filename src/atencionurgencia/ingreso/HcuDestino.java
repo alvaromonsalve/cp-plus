@@ -86,7 +86,7 @@ public class HcuDestino extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox jComboBox1;
+    public javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel49;
     private javax.swing.JPanel jPanel32;
     // End of variables declaration//GEN-END:variables

@@ -3,9 +3,17 @@ package atencionurgencia.ListadoPacientes;
 import java.awt.event.KeyEvent;
 import atencionurgencia.*;
 import entidades.InfoHistoriac;
+import entidades.ReportVersion;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JOptionPane;
@@ -14,12 +22,17 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.view.JasperViewer;
 import oldConnection.Database;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Alvaro Monsalve
  */
 public class Ftriaje extends javax.swing.JFrame {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Ftriaje.class);
 
     public Ftriaje() {
         initComponents();
@@ -58,7 +71,6 @@ public class Ftriaje extends javax.swing.JFrame {
         }else if(AtencionUrgencia.panelindex.hc.infoadmision.getCausaExterna().equals("02")){
             AtencionUrgencia.panelindex.hc.jComboBox1.setSelectedItem("ACCIDENTE DE TRANSITO");
         }
-//        
     }
     
     private class hiloReporte extends Thread{
@@ -71,45 +83,98 @@ public class Ftriaje extends javax.swing.JFrame {
         }
         
         @Override
-        public void run(){
-            ((Ftriaje)form).jLabel1.setVisible(true);
-            ((Ftriaje)form).jButton1.setEnabled(false);
-            try {
-                String master = System.getProperty("user.dir")+"/reportes/reportTriage.jasper";
-                if(master!=null){
-                    Database db = new Database(AtencionUrgencia.props);
-                    db.Conectar();
-                    Map param = new HashMap();
-                    param.put("idHc",idHC.getId());
-                    param.put("nameReport","NOTA DE TRIAJE");
-                    param.put("version","1.0");
-                    param.put("codigo","R-FA-001");
-                    param.put("servicio","URGENCIAS");
-                    JasperPrint informe = JasperFillManager.fillReport(master, param,db.conexion);
-                    Object[] objeto ={"Visualizar","Imprimir"};
-                    int n = JOptionPane.showOptionDialog(((Ftriaje)form), "Escoja la opción deseada", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
-                            JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
-                    if(n==0){
-                        JasperViewer.viewReport(informe, false);
-                    }else{
-                        JasperPrintManager.printReport(informe, true);
+        public void run() {
+            ((Ftriaje) form).jLabel1.setVisible(true);
+            ((Ftriaje) form).jButton1.setEnabled(false);
+            if(idHC.getFechaDato()==null){
+                idHC.setFechaDato(new Date());
+            }
+            ReportVersion rv=null;
+            for (ReportVersion reportVersion : AtencionUrgencia.panelindex.reportVersions) {
+                if (reportVersion.getCodigo().equals("R-FA-001") && reportVersion.getFechaPublicacion().before(idHC.getFechaDato())  ) {                    
+                    rv = reportVersion;
+                    break;
+                }
+            }
+            String pathOrigen = rv.getRutaFtp();
+            String fileName = rv.getFileName();
+            if(reportDownload(pathOrigen, fileName)==true){
+                String master = "C:/Downloads/" + fileName;
+                if (master != null) {
+                    try {
+                        Database db = new Database(AtencionUrgencia.props);
+                        db.Conectar();
+                        Map param = new HashMap();
+                        param.put("idHc", idHC.getId());
+                        param.put("nameReport", rv.getNombre());
+                        param.put("version", rv.getVersion());
+                        param.put("codigo", rv.getCodigo());
+                        param.put("servicio", rv.getServicio());
+                        JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
+                        Object[] objeto = {"Visualizar", "Imprimir"};
+                        int n = JOptionPane.showOptionDialog(((Ftriaje) form), "Escoja la opción deseada", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION,
+                                JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+                        if (n == 0) {
+                            JasperViewer.viewReport(informe, false);
+                        } else {
+                            JasperPrintManager.printReport(informe, true);
+                        }
+                        LOGGER.debug("Reporte "+rv.getCodigo()+" lanzado con exito");
+                    } catch (Exception ex) {
+                        LOGGER.error("Generando reporte: "+ex.getMessage());
+                        JOptionPane.showMessageDialog(null, "hiloReporte:\n" + ex.getMessage(), Ftriaje.class.getName(), JOptionPane.INFORMATION_MESSAGE);
                     }
-                    Object[] objeto2 ={"Si","No"};
-                    n = JOptionPane.showOptionDialog(((Ftriaje)form), "¿Desea terminar este proceso de triaje?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
-                            JOptionPane.QUESTION_MESSAGE, null, objeto, objeto2[1]);
-                    if(n==0){
-                        ((Ftriaje)form).dispose();
-                    }
-             }                 
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "10076:\n"+ex.getMessage(), Ftriaje.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                }
             }
             AtencionUrgencia.panelindex.FramEnable(true);
             AtencionUrgencia.panelindex.hc.cerrarPanel();
-            ((Ftriaje)form).jLabel1.setVisible(false);
-            ((Ftriaje)form).jButton1.setEnabled(true);
+            ((Ftriaje) form).jLabel1.setVisible(false);
+            ((Ftriaje) form).jButton1.setEnabled(true);
         }
     }
+    
+    private boolean reportDownload(String pathOrigen, String fileName) {
+        FTPClient fTPClient = new FTPClient();
+        boolean var = false;
+        try {
+            fTPClient.connect(AtencionUrgencia.sFTP);
+            boolean login = fTPClient.login(AtencionUrgencia.sUser, AtencionUrgencia.sPassword);
+            if (login) {
+                fTPClient.enterLocalPassiveMode();
+                fTPClient.setFileType(FTP.BINARY_FILE_TYPE);
+                String remoteFile1 = "/reportes/" + pathOrigen + "/" + fileName;
+                File downloadFile1 = new File("C:/Downloads/" + fileName);
+                OutputStream outputStream1 = new BufferedOutputStream(new FileOutputStream(downloadFile1));
+                InputStream inputStream = fTPClient.retrieveFileStream(remoteFile1);
+                byte[] bytesArray = new byte[4096];
+                int bytesRead = -1;
+                while ((bytesRead = inputStream.read(bytesArray)) != -1) {
+                    outputStream1.write(bytesArray, 0, bytesRead);
+                }
+                boolean success = fTPClient.completePendingCommand();
+                if (success) {
+                    var = true;
+                    outputStream1.close();
+                    inputStream.close();
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se ha podido encontrar "+fileName);
+                }
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "reportDownload:\n" + ex.getMessage(), Ftriaje.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+        } finally {
+            try {
+                if (fTPClient.isConnected()) {
+                    fTPClient.logout();
+                    fTPClient.disconnect();
+                }
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "ftp_close - Exception:\n" + ex.getMessage());
+            }
+        }
+        return var;
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -132,6 +197,11 @@ public class Ftriaje extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setIconImage(getIconImage());
         setMinimumSize(new java.awt.Dimension(436, 323));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -289,18 +359,18 @@ public class Ftriaje extends javax.swing.JFrame {
             Object[] objeto ={"Si","No"};
             int n= n = JOptionPane.showOptionDialog(this, "El paciente sera enviado a "+jComboBox1.getSelectedItem().toString()+"\n¿Desea seguir diligenciando la nota de ingreso?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
                     JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
-            if(n==0){
-            AtencionUrgencia.panelindex.jpContainer.removeAll();
-            AtencionUrgencia.panelindex.hc.setBounds(0, 0, 764, 514);
-            AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.hc);
-            AtencionUrgencia.panelindex.hc.setVisible(true);
-            AtencionUrgencia.panelindex.jpContainer.validate();
-            AtencionUrgencia.panelindex.jpContainer.repaint();
-            AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());//observaciones
-            AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());//nivel de triaje
-            AtencionUrgencia.panelindex.FramEnable(true);
-            generateHC(0,jComboBox1.getSelectedItem().toString());//el estado para observacion es 1 pero aun no se ha terminado la nota de ingreso
-            this.setVisible(false);    
+            if (n == 0) {
+                AtencionUrgencia.panelindex.jpContainer.removeAll();
+                AtencionUrgencia.panelindex.hc.setBounds(0, 0, 764, 514);
+                AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.hc);
+                AtencionUrgencia.panelindex.hc.setVisible(true);
+                AtencionUrgencia.panelindex.jpContainer.validate();
+                AtencionUrgencia.panelindex.jpContainer.repaint();
+                AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());//observaciones
+                AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());//nivel de triaje
+                AtencionUrgencia.panelindex.FramEnable(true);
+                generateHC(0, jComboBox1.getSelectedItem().toString());//el estado para observacion es 1 pero aun no se ha terminado la nota de ingreso
+                this.setVisible(false);
             }
             //3 consulta externa --- 2 Domicilio
         }else if(jComboBox1.getSelectedIndex()==1 || jComboBox1.getSelectedIndex()==2){
@@ -322,6 +392,15 @@ public class Ftriaje extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        Object[] objeto2 = {"Si", "No"};
+        int n = JOptionPane.showOptionDialog(this, "¿Desea terminar este proceso de triaje?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, objeto2, objeto2[1]);
+        if (n == 0) {            
+            this.dispose();     
+        }
+    }//GEN-LAST:event_formWindowClosing
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -63,6 +63,8 @@ public class Funciones {
         } 
     }
     
+
+    
         /**
      * 
      * @param pathOrigen debe contener path completo con el nombre del archivo
@@ -86,6 +88,17 @@ public class Funciones {
     public static void fileDownload(String pathDestino){
         try {
             new _Ftp().downloadFile(pathDestino);
+        } catch (SocketException ex) {
+            JOptionPane.showMessageDialog(null,"fileUpload SocketException: "+ ex.getMessage());
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null,"fileUpload IOException: "+ ex.getMessage());
+        }
+    }
+    
+
+    public static void reportDownload(String pathDestino, String fileName){
+        try {
+            new _Ftp_report().downloadFile(pathDestino,fileName);
         } catch (SocketException ex) {
             JOptionPane.showMessageDialog(null,"fileUpload SocketException: "+ ex.getMessage());
         } catch (IOException ex) {
@@ -144,7 +157,10 @@ public class Funciones {
             }
             if(Num[1].length()==1){
                 Num[1]=Num[1]+"0";
-                numero = Num[0]+","+Num[1];
+                numero = Num[0]+","+Num[1];                
+            }
+            if (Float.parseFloat(numero.replace(",", ".")) >= Float.parseFloat("1000.00")) {
+                numero = "";
             }
         }else{
             return "";
