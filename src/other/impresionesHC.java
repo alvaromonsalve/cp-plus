@@ -366,15 +366,15 @@ public class impresionesHC extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        if (!noValido) {
-            atencionurgencia.AtencionUrgencia.panelindex.FramEnable(false);
-        }
+//        if (!noValido) {
+//            AtencionUrgencia.panelindex.FramEnable(false);
+//        }
     }//GEN-LAST:event_formWindowOpened
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        if (!noValido) {
-            atencionurgencia.AtencionUrgencia.panelindex.FramEnable(true);
-        }
+//        if (!noValido) {
+//            AtencionUrgencia.panelindex.FramEnable(true);
+//        }
         this.dispose();
     }//GEN-LAST:event_formWindowClosing
 

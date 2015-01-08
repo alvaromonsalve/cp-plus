@@ -24,8 +24,6 @@ import javax.swing.JPanel;
 import jpa.AccessConfigUserJpaController;
 import jpa.CmProfesionalesJpaController;
 import jpa.ConfigdecripcionloginJpaController;
-import org.slf4j.Logger; 
-import org.slf4j.LoggerFactory;
 import tools.Funciones;
 
 
@@ -45,7 +43,7 @@ public class AtencionUrgencia {
     public static String sFTP ="192.168.1.102";
     public static String sUser = "userclipa_ftp";
     public static String sPassword = "Ccqf0owa58eM";
-    private static final Logger LOGGER = LoggerFactory.getLogger(AtencionUrgencia.class);
+//    private static final Logger LOGGER = LoggerFactory.getLogger(AtencionUrgencia.class);
 
     /**
      * 
@@ -55,15 +53,12 @@ public class AtencionUrgencia {
      */
     public static JPanel getPanelIndex(int idUsuario2, Properties props){
         createDirDownload();
-        LOGGER.trace("configurando opciones de panel de acceso");
         JPanel jPanel = new Panel("images/permiso.jpg");
         JLabel label = new JLabel("CODIGO DE PERMISO: 10000");
         label.setForeground(Color.white);
         label.setFont(new Font("Tahoma", Font.BOLD, 11));
         jPanel.add(label);
-        LOGGER.trace("Creando EntityManagerFactory de las persistencias");
         EntityManagerFactory factory=Persistence.createEntityManagerFactory("ClipaEJBPU",props);
-        LOGGER.trace("Instanciando controladores de entidades de usuarios y permisos");
         ConfigdecripcionloginJpaController configdecripcionloginJpaController = new ConfigdecripcionloginJpaController(factory);
         configdecripcionlogin = configdecripcionloginJpaController.findConfigdecripcionlogin(idUsuario2);
         AccessConfigUserJpaController acujc = new AccessConfigUserJpaController(factory);
@@ -132,9 +127,7 @@ public class AtencionUrgencia {
     private static void createDirDownload(){        
         File f = new File("C:/Downloads");        
         File f2 = new File("C:/Clipa_logs");
-        LOGGER.trace("Creando directorio de Descarga | C:/Downloads");
-        f.mkdirs();
-        LOGGER.trace("Creando directorio de Log | C:/Clipa_logs");        
+        f.mkdirs(); 
         Funciones.reportDownload("/generales/", "rotulImg.png");
         Funciones.reportDownload("/generales/", "rotulo.jasper");
     }

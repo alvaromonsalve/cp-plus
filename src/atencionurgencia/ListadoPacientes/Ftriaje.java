@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import atencionurgencia.*;
 import entidades.InfoHistoriac;
 import entidades.ReportVersion;
+import impr.Iniciar;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -24,15 +25,12 @@ import net.sf.jasperreports.view.JasperViewer;
 import oldConnection.Database;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Alvaro Monsalve
  */
 public class Ftriaje extends javax.swing.JFrame {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Ftriaje.class);
 
     public Ftriaje() {
         initComponents();
@@ -86,46 +84,48 @@ public class Ftriaje extends javax.swing.JFrame {
         public void run() {
             ((Ftriaje) form).jLabel1.setVisible(true);
             ((Ftriaje) form).jButton1.setEnabled(false);
-            if(idHC.getFechaDato()==null){
-                idHC.setFechaDato(new Date());
-            }
-            ReportVersion rv=null;
-            for (ReportVersion reportVersion : AtencionUrgencia.panelindex.reportVersions) {
-                if (reportVersion.getCodigo().equals("R-FA-001") && reportVersion.getFechaPublicacion().before(idHC.getFechaDato())  ) {                    
-                    rv = reportVersion;
-                    break;
-                }
-            }
-            String pathOrigen = rv.getRutaFtp();
-            String fileName = rv.getFileName();
-            if(reportDownload(pathOrigen, fileName)==true){
-                String master = "C:/Downloads/" + fileName;
-                if (master != null) {
-                    try {
-                        Database db = new Database(AtencionUrgencia.props);
-                        db.Conectar();
-                        Map param = new HashMap();
-                        param.put("idHc", idHC.getId());
-                        param.put("nameReport", rv.getNombre());
-                        param.put("version", rv.getVersion());
-                        param.put("codigo", rv.getCodigo());
-                        param.put("servicio", rv.getServicio());
-                        JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
-                        Object[] objeto = {"Visualizar", "Imprimir"};
-                        int n = JOptionPane.showOptionDialog(((Ftriaje) form), "Escoja la opción deseada", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION,
-                                JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
-                        if (n == 0) {
-                            JasperViewer.viewReport(informe, false);
-                        } else {
-                            JasperPrintManager.printReport(informe, true);
-                        }
-                        LOGGER.debug("Reporte "+rv.getCodigo()+" lanzado con exito");
-                    } catch (Exception ex) {
-                        LOGGER.error("Generando reporte: "+ex.getMessage());
-                        JOptionPane.showMessageDialog(null, "hiloReporte:\n" + ex.getMessage(), Ftriaje.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }
-            }
+//            if(idHC.getFechaDato()==null){
+//                idHC.setFechaDato(new Date());
+//            }
+//            ReportVersion rv=null;
+//            for (ReportVersion reportVersion : AtencionUrgencia.panelindex.reportVersions) {
+//                if (reportVersion.getCodigo().equals("R-FA-001") && reportVersion.getFechaPublicacion().before(idHC.getFechaDato())  ) {                    
+//                    rv = reportVersion;
+//                    break;
+//                }
+//            }
+//            String pathOrigen = rv.getRutaFtp();
+//            String fileName = rv.getFileName();
+//            if(reportDownload(pathOrigen, fileName)==true){
+//                String master = "C:/Downloads/" + fileName;
+//                if (master != null) {
+//                    try {
+//                        Database db = new Database(AtencionUrgencia.props);
+//                        db.Conectar();
+//                        Map param = new HashMap();
+//                        param.put("idHc", idHC.getId());
+//                        param.put("nameReport", rv.getNombre());
+//                        param.put("version", rv.getVersion());
+//                        param.put("codigo", rv.getCodigo());
+//                        param.put("servicio", rv.getServicio());
+//                        JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
+//                        Object[] objeto = {"Visualizar", "Imprimir"};
+//                        int n = JOptionPane.showOptionDialog(((Ftriaje) form), "Escoja la opción deseada", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION,
+//                                JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+//                        if (n == 0) {
+//                            JasperViewer.viewReport(informe, false);
+//                        } else {
+//                            JasperPrintManager.printReport(informe, true);
+//                        }
+//                        LOGGER.debug("Reporte "+rv.getCodigo()+" lanzado con exito");
+//                    } catch (Exception ex) {
+//                        LOGGER.error("Generando reporte: "+ex.getMessage());
+//                        JOptionPane.showMessageDialog(null, "hiloReporte:\n" + ex.getMessage(), Ftriaje.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+//                    }
+//                }
+//            }
+            Iniciar in = new Iniciar(AtencionUrgencia.props);
+            in.imprimirTriaje(idHC.getId());
             AtencionUrgencia.panelindex.FramEnable(true);
             AtencionUrgencia.panelindex.hc.cerrarPanel();
             ((Ftriaje) form).jLabel1.setVisible(false);
@@ -133,47 +133,47 @@ public class Ftriaje extends javax.swing.JFrame {
         }
     }
     
-    private boolean reportDownload(String pathOrigen, String fileName) {
-        FTPClient fTPClient = new FTPClient();
-        boolean var = false;
-        try {
-            fTPClient.connect(AtencionUrgencia.sFTP);
-            boolean login = fTPClient.login(AtencionUrgencia.sUser, AtencionUrgencia.sPassword);
-            if (login) {
-                fTPClient.enterLocalPassiveMode();
-                fTPClient.setFileType(FTP.BINARY_FILE_TYPE);
-                String remoteFile1 = "/reportes/" + pathOrigen + "/" + fileName;
-                File downloadFile1 = new File("C:/Downloads/" + fileName);
-                OutputStream outputStream1 = new BufferedOutputStream(new FileOutputStream(downloadFile1));
-                InputStream inputStream = fTPClient.retrieveFileStream(remoteFile1);
-                byte[] bytesArray = new byte[4096];
-                int bytesRead = -1;
-                while ((bytesRead = inputStream.read(bytesArray)) != -1) {
-                    outputStream1.write(bytesArray, 0, bytesRead);
-                }
-                boolean success = fTPClient.completePendingCommand();
-                if (success) {
-                    var = true;
-                    outputStream1.close();
-                    inputStream.close();
-                } else {
-                    JOptionPane.showMessageDialog(null, "No se ha podido encontrar "+fileName);
-                }
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "reportDownload:\n" + ex.getMessage(), Ftriaje.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-        } finally {
-            try {
-                if (fTPClient.isConnected()) {
-                    fTPClient.logout();
-                    fTPClient.disconnect();
-                }
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(null, "ftp_close - Exception:\n" + ex.getMessage());
-            }
-        }
-        return var;
-    }
+//    private boolean reportDownload(String pathOrigen, String fileName) {
+//        FTPClient fTPClient = new FTPClient();
+//        boolean var = false;
+//        try {
+//            fTPClient.connect(AtencionUrgencia.sFTP);
+//            boolean login = fTPClient.login(AtencionUrgencia.sUser, AtencionUrgencia.sPassword);
+//            if (login) {
+//                fTPClient.enterLocalPassiveMode();
+//                fTPClient.setFileType(FTP.BINARY_FILE_TYPE);
+//                String remoteFile1 = "/reportes/" + pathOrigen + "/" + fileName;
+//                File downloadFile1 = new File("C:/Downloads/" + fileName);
+//                OutputStream outputStream1 = new BufferedOutputStream(new FileOutputStream(downloadFile1));
+//                InputStream inputStream = fTPClient.retrieveFileStream(remoteFile1);
+//                byte[] bytesArray = new byte[4096];
+//                int bytesRead = -1;
+//                while ((bytesRead = inputStream.read(bytesArray)) != -1) {
+//                    outputStream1.write(bytesArray, 0, bytesRead);
+//                }
+//                boolean success = fTPClient.completePendingCommand();
+//                if (success) {
+//                    var = true;
+//                    outputStream1.close();
+//                    inputStream.close();
+//                } else {
+//                    JOptionPane.showMessageDialog(null, "No se ha podido encontrar "+fileName);
+//                }
+//            }
+//        } catch (Exception ex) {
+//            JOptionPane.showMessageDialog(null, "reportDownload:\n" + ex.getMessage(), Ftriaje.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+//        } finally {
+//            try {
+//                if (fTPClient.isConnected()) {
+//                    fTPClient.logout();
+//                    fTPClient.disconnect();
+//                }
+//            } catch (IOException ex) {
+//                JOptionPane.showMessageDialog(null, "ftp_close - Exception:\n" + ex.getMessage());
+//            }
+//        }
+//        return var;
+//    }
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

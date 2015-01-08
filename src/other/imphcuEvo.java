@@ -870,11 +870,11 @@ public class imphcuEvo extends javax.swing.JDialog {
                 String master= System.getProperty("user.dir") + "/Reportes/Receta.jasper";                
                 if (master != null) {
                     db.Conectar();
-                    param.put("idHC", hcuEvolucion.getId().toString());
-                    param.put("codigo", "R-FA-013");
+                    param.put("Idevolucion", hcuEvolucion.getId().toString());
+                    param.put("Codigo", "R-FA-013");
                     param.put("NameReport", "PRESCRIPCION MEDICA");                    
-                    param.put("version", "1.0");
-                    param.put("servicio", "URGENCIAS");                  
+                    param.put("Version", "1.0");
+                    param.put("Servicio", "URGENCIAS");                  
                 }
                 JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
                 Object[] objeto = {"Visualizar", "Imprimir"};
@@ -909,11 +909,11 @@ public class imphcuEvo extends javax.swing.JDialog {
                 String master= System.getProperty("user.dir") + "/Reportes/incapacidad.jasper";                
                 if (master != null) {
                     db.Conectar();
-                    param.put("idHC", hcuEvolucion.getId().toString());
-                    param.put("codigo", "R-FA-012");
+                    param.put("Idevolucion", hcuEvolucion.getId().toString());
+                    param.put("Codigo", "R-FA-012");
                     param.put("NameReport", "INCAPACIDAD");                    
-                    param.put("version", "1.0");
-                    param.put("servicio", "URGENCIAS");                  
+                    param.put("Version", "1.0");
+                    param.put("Servicio", "URGENCIAS");                  
                 }
                 JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
                 Object[] objeto = {"Visualizar", "Imprimir"};
