@@ -13,8 +13,6 @@ import java.net.SocketException;
 import javax.swing.JOptionPane;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -30,20 +28,16 @@ public class _Ftp_report implements Runnable{
     String pathDestin;
     String fileName;
     String var="";
-    private static final Logger LOGGER = LoggerFactory.getLogger(_Ftp_report.class);
     
     public void downloadFile(String pathOrigen, String fileName) throws SocketException, IOException {  
-        LOGGER.trace("Inicio de descarga de reporte "+fileName);
         fTPClient = new FTPClient();
         this.pathOrigen = pathOrigen;
         this.fileName = fileName;
-        LOGGER.trace("Conectando con servidor ftp");
         fTPClient.connect(sFTP);
         boolean login = fTPClient.login(sUser, sPassword);
         if (login) {
             new Thread(this).start();
         } else {
-            LOGGER.warn("No se pudo conectar con el servidor FTP");
             JOptionPane.showMessageDialog(null, "No se ha podido conectar con el servidor FTP");
         }
     }
@@ -51,7 +45,6 @@ public class _Ftp_report implements Runnable{
     @Override
     public void run() {
         try {
-            LOGGER.trace("Inicio de Hilo para descarga de reporte "+fileName);
             fTPClient.enterLocalPassiveMode();
             fTPClient.setFileType(FTP.BINARY_FILE_TYPE);
             String remoteFile1 = "/reportes/"+pathOrigen+"/"+fileName;
@@ -65,22 +58,18 @@ public class _Ftp_report implements Runnable{
             }
             boolean success = fTPClient.completePendingCommand();
             if (success) {
-                LOGGER.trace("Archivo descargado satisfactoriamente "+fileName);
             }
             outputStream1.close();
             inputStream.close();
         } catch (Exception ex) {
-            LOGGER.error(fileName+": "+ex.getMessage()+"\n"+ex.getCause());
             JOptionPane.showMessageDialog(null, "run Exception: " + ex.getMessage());
         }finally {
             try {
-                LOGGER.trace("Cerrando conexion con servidor ftp");
                 if (fTPClient.isConnected()) {
                     fTPClient.logout();
                     fTPClient.disconnect();
                 }
             } catch (IOException ex) {
-                LOGGER.error("ftp_close: "+ex.getMessage()+"\n"+ex.getCause());
                 JOptionPane.showMessageDialog(null, "ftp_close - Exception: " + ex.getMessage());
             }
         }
