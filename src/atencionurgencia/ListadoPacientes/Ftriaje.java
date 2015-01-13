@@ -3,28 +3,11 @@ package atencionurgencia.ListadoPacientes;
 import java.awt.event.KeyEvent;
 import atencionurgencia.*;
 import entidades.InfoHistoriac;
-import entidades.ReportVersion;
 import impr.Iniciar;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import javax.swing.JOptionPane;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperPrintManager;
-import net.sf.jasperreports.view.JasperViewer;
-import oldConnection.Database;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
 
 /**
  *
