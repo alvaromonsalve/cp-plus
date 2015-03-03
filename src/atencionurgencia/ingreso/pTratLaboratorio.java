@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package atencionurgencia.ingreso;
 
 import atencionurgencia.AtencionUrgencia;
@@ -42,7 +38,7 @@ public class pTratLaboratorio extends javax.swing.JPanel {
     
     private DefaultTableModel getModelo(){
         DefaultTableModel model = new DefaultTableModel(
-        null, new String [] {"entidadProced", "Codigo CUPS", "Descripción Procedimiento","Observacion"}){
+        null, new String [] {"entidadProced", "Codigo", "Descripción Procedimiento","Observacion"}){
         Class[] types = new Class [] {
             ConfigCups.class,
             java.lang.String.class,
@@ -70,8 +66,9 @@ public class pTratLaboratorio extends javax.swing.JPanel {
         jTable1.setModel(ModeloTabla);
         jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        Funciones.setOcultarColumnas(jTable1,new int[]{0,3});
+        Funciones.setOcultarColumnas(jTable1,new int[]{0,1,3});
         Funciones.setSizeColumnas(jTable1, new int[]{1}, new int[]{80});
+        jTable1.setTableHeader(null);
     }
     
     public void cargaDatoSeleccionado(ConfigCups cc,String observ){
@@ -87,7 +84,7 @@ public class pTratLaboratorio extends javax.swing.JPanel {
             ModeloTabla.addRow(dato);
             ModeloTabla.setValueAt(cc, rowIndex, 0);
             ModeloTabla.setValueAt(cc.getCodigo(), rowIndex, 1);
-            ModeloTabla.setValueAt(cc.getDeSubcategoria(), rowIndex, 2);
+            ModeloTabla.setValueAt(cc.getCodigo()+" | "+cc.getDeSubcategoria(), rowIndex, 2);
             ModeloTabla.setValueAt(observ, rowIndex, 3);
         }
     }
@@ -190,13 +187,13 @@ public class pTratLaboratorio extends javax.swing.JPanel {
     private void initComponents() {
 
         jLabel45 = new javax.swing.JLabel();
-        buttonSeven7 = new org.edisoncor.gui.button.ButtonSeven();
-        buttonSeven6 = new org.edisoncor.gui.button.ButtonSeven();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jPanel31 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
         jScrollPane25 = new javax.swing.JScrollPane();
         jTextArea25 = new javax.swing.JTextArea();
+        jLabel4 = new javax.swing.JLabel();
 
         setMaximumSize(new java.awt.Dimension(380, 420));
         setMinimumSize(new java.awt.Dimension(380, 420));
@@ -206,28 +203,6 @@ public class pTratLaboratorio extends javax.swing.JPanel {
         jLabel45.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
         jLabel45.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/microscope_icon.png"))); // NOI18N
         jLabel45.setText("Laboratorio Clínico");
-
-        buttonSeven7.setForeground(new java.awt.Color(0, 0, 255));
-        buttonSeven7.setText("Borrar");
-        buttonSeven7.setColorBrillo(new java.awt.Color(255, 255, 255));
-        buttonSeven7.setColorDeSombra(new java.awt.Color(255, 255, 255));
-        buttonSeven7.setFont(new java.awt.Font("Arial", 0, 10)); // NOI18N
-        buttonSeven7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonSeven7ActionPerformed(evt);
-            }
-        });
-
-        buttonSeven6.setForeground(new java.awt.Color(0, 0, 255));
-        buttonSeven6.setText("Agregar");
-        buttonSeven6.setColorBrillo(new java.awt.Color(255, 255, 255));
-        buttonSeven6.setColorDeSombra(new java.awt.Color(255, 255, 255));
-        buttonSeven6.setFont(new java.awt.Font("Arial", 0, 10)); // NOI18N
-        buttonSeven6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonSeven6ActionPerformed(evt);
-            }
-        });
 
         jScrollPane1.setBackground(new java.awt.Color(255, 255, 255));
         jScrollPane1.setOpaque(false);
@@ -253,8 +228,25 @@ public class pTratLaboratorio extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(jTable1);
 
-        jPanel31.setBorder(javax.swing.BorderFactory.createTitledBorder("Observaciones"));
-        jPanel31.setOpaque(false);
+        jLabel2.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/add20x20.png"))); // NOI18N
+        jLabel2.setFocusable(false);
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel2MouseReleased(evt);
+            }
+        });
+
+        jLabel3.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/cerrar_20x20.png"))); // NOI18N
+        jLabel3.setFocusable(false);
+        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel3MouseReleased(evt);
+            }
+        });
 
         jScrollPane25.setMaximumSize(new java.awt.Dimension(164, 20));
         jScrollPane25.setMinimumSize(new java.awt.Dimension(164, 20));
@@ -274,16 +266,8 @@ public class pTratLaboratorio extends javax.swing.JPanel {
         });
         jScrollPane25.setViewportView(jTextArea25);
 
-        javax.swing.GroupLayout jPanel31Layout = new javax.swing.GroupLayout(jPanel31);
-        jPanel31.setLayout(jPanel31Layout);
-        jPanel31Layout.setHorizontalGroup(
-            jPanel31Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane25, javax.swing.GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE)
-        );
-        jPanel31Layout.setVerticalGroup(
-            jPanel31Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane25, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
-        );
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel4.setText("Justificación");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -294,11 +278,14 @@ public class pTratLaboratorio extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(buttonSeven6, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buttonSeven7, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel3))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
-                    .addComponent(jPanel31, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane25, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -306,26 +293,18 @@ public class pTratLaboratorio extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel45)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonSeven6, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(buttonSeven7, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane25, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void buttonSeven7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven7ActionPerformed
-        if(ModeloTabla.getRowCount()>0 && jTable1.getSelectedRow()>-1){
-            ModeloTabla.removeRow(jTable1.getSelectedRow());
-        }
-    }//GEN-LAST:event_buttonSeven7ActionPerformed
-
-    private void buttonSeven6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven6ActionPerformed
-        formularioOpen();
-    }//GEN-LAST:event_buttonSeven6ActionPerformed
 
     private void jTable1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseMoved
         int rowIndex = jTable1.rowAtPoint(evt.getPoint());
@@ -347,11 +326,23 @@ public class pTratLaboratorio extends javax.swing.JPanel {
        }
     }//GEN-LAST:event_jTextArea25KeyReleased
 
+    private void jLabel2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseReleased
+        if (jLabel2.isEnabled()==true){
+            formularioOpen();
+        }
+    }//GEN-LAST:event_jLabel2MouseReleased
+
+    private void jLabel3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseReleased
+        if(ModeloTabla.getRowCount()>0 && jTable1.getSelectedRow()>-1){
+            ModeloTabla.removeRow(jTable1.getSelectedRow());
+        }
+    }//GEN-LAST:event_jLabel3MouseReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public org.edisoncor.gui.button.ButtonSeven buttonSeven6;
-    public org.edisoncor.gui.button.ButtonSeven buttonSeven7;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel45;
-    private javax.swing.JPanel jPanel31;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane25;
     public javax.swing.JTable jTable1;

@@ -8,7 +8,6 @@ import entidades.HcuEvolucion;
 import entidades.InfoHistoriac;
 import entidades.InfoProcedimientoHcu;
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
@@ -16,10 +15,8 @@ import javax.swing.RowSorter;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 import jpa.ConfigCupsJpaController;
 import jpa.HcuEvoProcedimientoJpaController;
-import jpa.HcuEvolucionJpaController;
 import jpa.InfoProcedimientoHcuJpaController;
 import jpa.StaticEstructuraCupsJpaController;
 import jpa.exceptions.NonexistentEntityException;
@@ -185,7 +182,7 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
                 cupsJpaController=new ConfigCupsJpaController(factory);
             }
             ConfigCups cups = cupsJpaController.findConfigCups(listInfoProcedimientoHcu1.getIdCups());
-            if (cups.getIdEstructuraCups().getId() >17 && cups.getIdEstructuraCups().getId() <30) {
+            if ((cups.getIdEstructuraCups().getId() >17 && cups.getIdEstructuraCups().getId() <30) || cups.getIdEstructuraCups().getId() == 16) {
                 boolean exist=false;
                 for (int a = 0; a<ModeloTabla.getRowCount(); a++) {
                     if (listInfoProcedimientoHcu1.getIdCups() == ((ConfigCups)ModeloTabla.getValueAt(a, 0)).getId()) {
@@ -274,7 +271,7 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
         listInfoProcedimientoHcu = infoProcedimientoHcuJPA.ListFindInfoProcedimientoHcu(ihc);
         for(int i=0;i<listInfoProcedimientoHcu.size();i++){
             ConfigCups cups = cupsJpaController.findConfigCups(listInfoProcedimientoHcu.get(i).getIdCups());
-            if(cups.getIdEstructuraCups().getId() >17 && cups.getIdEstructuraCups().getId() <30){
+            if((cups.getIdEstructuraCups().getId() >17 && cups.getIdEstructuraCups().getId() <30)|| cups.getIdEstructuraCups().getId() == 16){
                 this.cargaDatoSeleccionado(cups,listInfoProcedimientoHcu.get(i).getObservacion());
             }
         }
@@ -371,7 +368,6 @@ public class pTratMasProcedimientos extends javax.swing.JPanel {
 //    }
     
     public void formularioOpen(int tipo){
-        System.out.println(tipo);
         dProcedimiento = new dSelectProcedimiento(null,true,tipo,evo);//0
         dProcedimiento.setVisible(true);
     }

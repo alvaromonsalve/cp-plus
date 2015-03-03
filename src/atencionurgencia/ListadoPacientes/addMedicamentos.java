@@ -132,7 +132,7 @@ public class addMedicamentos extends javax.swing.JDialog {
         jTextField1.setText(dosisn.toString());
         jComboBox4.setSelectedItem(dosisu);
         jComboBox5.setSelectedItem(via);
-        jButton1.setEnabled(false);
+        jLabel1.setEnabled(false);
         jTextField2.setText(cantidad);
         suminis = sum;
     }
@@ -153,9 +153,7 @@ public class addMedicamentos extends javax.swing.JDialog {
         jTable1 = new javax.swing.JTable();
         jLabel42 = new javax.swing.JLabel();
         jTextField15 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        buttonSeven14 = new org.edisoncor.gui.button.ButtonSeven();
-        buttonSeven13 = new org.edisoncor.gui.button.ButtonSeven();
+        jLabel1 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane25 = new javax.swing.JScrollPane();
@@ -172,6 +170,7 @@ public class addMedicamentos extends javax.swing.JDialog {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(720, 540));
@@ -230,15 +229,10 @@ public class addMedicamentos extends javax.swing.JDialog {
             }
         });
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(85, 185, 251));
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/001_38.png"))); // NOI18N
-        jButton1.setText("Buscar");
-        jButton1.setFocusable(false);
-        jButton1.setOpaque(false);
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/001_38.png"))); // NOI18N
+        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel1MouseReleased(evt);
             }
         });
 
@@ -248,15 +242,17 @@ public class addMedicamentos extends javax.swing.JDialog {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel42, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTextField15)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 696, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jLabel1))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 696, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -265,33 +261,11 @@ public class addMedicamentos extends javax.swing.JDialog {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel42)
                     .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
                 .addContainerGap())
         );
-
-        buttonSeven14.setForeground(new java.awt.Color(0, 0, 255));
-        buttonSeven14.setText("Cancelar");
-        buttonSeven14.setColorBrillo(new java.awt.Color(255, 255, 255));
-        buttonSeven14.setColorDeSombra(new java.awt.Color(255, 255, 255));
-        buttonSeven14.setFont(new java.awt.Font("Arial", 0, 10)); // NOI18N
-        buttonSeven14.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonSeven14ActionPerformed(evt);
-            }
-        });
-
-        buttonSeven13.setForeground(new java.awt.Color(0, 0, 255));
-        buttonSeven13.setText("Aceptar");
-        buttonSeven13.setColorBrillo(new java.awt.Color(255, 255, 255));
-        buttonSeven13.setColorDeSombra(new java.awt.Color(255, 255, 255));
-        buttonSeven13.setFont(new java.awt.Font("Arial", 0, 10)); // NOI18N
-        buttonSeven13.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonSeven13ActionPerformed(evt);
-            }
-        });
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel2.setOpaque(false);
@@ -389,7 +363,7 @@ public class addMedicamentos extends javax.swing.JDialog {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel41)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("POSOLOGIA", jPanel2);
@@ -416,31 +390,46 @@ public class addMedicamentos extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         jTabbedPane2.addTab("DESCRIPCION", jPanel1);
 
+        jLabel2.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("Aceptar");
+        jLabel2.setOpaque(true);
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel2MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel2MouseReleased(evt);
+            }
+        });
+        jLabel2.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel2MouseMoved(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel50, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jTabbedPane2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(buttonSeven14, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buttonSeven13, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel50, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -453,10 +442,7 @@ public class addMedicamentos extends javax.swing.JDialog {
                     .addComponent(jTabbedPane2)
                     .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonSeven14, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(buttonSeven13, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -478,33 +464,6 @@ public class addMedicamentos extends javax.swing.JDialog {
             setDatosTabla();
         }
     }//GEN-LAST:event_jTextField15KeyReleased
-
-    private void buttonSeven13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven13ActionPerformed
-        if(!jTextField2.getText().isEmpty()){
-            
-        
-        Numero_a_Letra num = new Numero_a_Letra();
-        if(jTable1.getRowCount() > 0){
-            suminis = (SumSuministro)jTable1.getValueAt(jTable1.getSelectedRow(), 0);
-        }
-        if(suminis!=null){
-            if(!jTextField1.getText().equals("") && jComboBox4.getSelectedIndex()>-1 && jComboBox5.getSelectedIndex()>-1 && !"".equals(jTextArea25.getText()) && !"".equals(jTextPane1.getText())){
-                if(onEvolucion){
-                    AtencionUrgencia.panelindex.evo.pplan.pMedic.addMedicamento(suminis,Float.parseFloat(jTextField1.getText().replace(",", ".")),num.numericToString(jTextField2.getText()),
-                        jComboBox4.getSelectedItem().toString(),jComboBox5.getSelectedItem().toString(), jTextArea25.getText().toUpperCase(),Float.parseFloat(jTextField2.getText().replace(",", ".")) );
-                }else{
-                    AtencionUrgencia.panelindex.hc.pMedic.addMedicamento(suminis,Float.parseFloat(jTextField1.getText().replace(",", ".")),num.numericToString(jTextField2.getText()),
-                        jComboBox4.getSelectedItem().toString(),jComboBox5.getSelectedItem().toString(), jTextArea25.getText().toUpperCase(),Float.parseFloat(jTextField2.getText().replace(",", ".")) );
-                
-                }
-                this.dispose();
-            }
-        }
-        }else{
-            JOptionPane.showMessageDialog(null, "Por favor digite la cantidad");
-        }
-
-    }//GEN-LAST:event_buttonSeven13ActionPerformed
 
     private void jTable1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseMoved
         int rowIndex = jTable1.rowAtPoint(evt.getPoint());
@@ -531,22 +490,6 @@ public class addMedicamentos extends javax.swing.JDialog {
             jTextPane1.setCaretPosition(0);
         }//laboratorio. registro invima. presentacion comercial (pueden ser diferente y no los estamos mostrando por ese motivo se estan repitiendo
     }//GEN-LAST:event_jTable1MouseClicked
-
-    private void buttonSeven14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSeven14ActionPerformed
-        while(ModeloTabla.getRowCount()>0){
-            ModeloTabla.removeRow(0);
-        }
-        jTextField15.setText(null);
-        jTextArea25.setText(null);
-        jTextPane1.setText(null);
-        jTextField1.setText("");
-        jComboBox4.setSelectedIndex(-1);
-        jComboBox5.setSelectedIndex(-1);
-    }//GEN-LAST:event_buttonSeven14ActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        setDatosTabla();
-    }//GEN-LAST:event_jButton1ActionPerformed
     
     private void jTextField1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField1FocusLost
         jTextField1.setText(Funciones.FormatDecimal(jTextField1.getText()));
@@ -576,13 +519,52 @@ public class addMedicamentos extends javax.swing.JDialog {
             jTextPane1.setCaretPosition(0);
         }
     }//GEN-LAST:event_jTable1KeyReleased
+
+    private void jLabel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseReleased
+        if(jLabel1.isEnabled()==true){
+            setDatosTabla();
+        }        
+    }//GEN-LAST:event_jLabel1MouseReleased
+
+    private void jLabel2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseReleased
+                if(!jTextField2.getText().isEmpty()){
+            
+        
+        Numero_a_Letra num = new Numero_a_Letra();
+        if(jTable1.getRowCount() > 0){
+            suminis = (SumSuministro)jTable1.getValueAt(jTable1.getSelectedRow(), 0);
+        }
+        if(suminis!=null){
+            if(!jTextField1.getText().equals("") && jComboBox4.getSelectedIndex()>-1 && jComboBox5.getSelectedIndex()>-1 && !"".equals(jTextArea25.getText()) && !"".equals(jTextPane1.getText())){
+                if(onEvolucion){
+                    AtencionUrgencia.panelindex.evo.pplan.pMedic.addMedicamento(suminis,Float.parseFloat(jTextField1.getText().replace(",", ".")),num.numericToString(jTextField2.getText()),
+                        jComboBox4.getSelectedItem().toString(),jComboBox5.getSelectedItem().toString(), jTextArea25.getText().toUpperCase(),Float.parseFloat(jTextField2.getText().replace(",", ".")) );
+                }else{
+                    AtencionUrgencia.panelindex.hc.pMedic.addMedicamento(suminis,Float.parseFloat(jTextField1.getText().replace(",", ".")),num.numericToString(jTextField2.getText()),
+                        jComboBox4.getSelectedItem().toString(),jComboBox5.getSelectedItem().toString(), jTextArea25.getText().toUpperCase(),Float.parseFloat(jTextField2.getText().replace(",", ".")) );
+                
+                }
+                this.dispose();
+            }
+        }
+        }else{
+            JOptionPane.showMessageDialog(null, "Por favor digite la cantidad");
+        }
+    }//GEN-LAST:event_jLabel2MouseReleased
+
+    private void jLabel2MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseMoved
+        jLabel2.setBackground(new java.awt.Color(194, 224, 255));
+    }//GEN-LAST:event_jLabel2MouseMoved
+
+    private void jLabel2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseExited
+        jLabel2.setBackground(new java.awt.Color(255,255,255));
+    }//GEN-LAST:event_jLabel2MouseExited
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven13;
-    private org.edisoncor.gui.button.ButtonSeven buttonSeven14;
-    private javax.swing.JButton jButton1;
     private javax.swing.JComboBox jComboBox4;
     private javax.swing.JComboBox jComboBox5;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel38;
     private javax.swing.JLabel jLabel40;

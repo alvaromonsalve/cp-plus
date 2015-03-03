@@ -1,22 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package atencionurgencia.ingreso;
 
 import atencionurgencia.AtencionUrgencia;
+import static atencionurgencia.AtencionUrgencia.panelindex;
 import entidades.HcuEvoMedidasg;
 import entidades.HcuEvolucion;
 import entidades.InfoHistoriac;
 import entidades.InfoMedidasgHcu;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import jpa.HcuEvoMedidasgJpaController;
-import jpa.HcuEvolucionJpaController;
 import jpa.InfoMedidasgHcuJpaController;
 import jpa.exceptions.NonexistentEntityException;
 import tools.Funciones;
@@ -80,21 +79,9 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
         jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         Funciones.setOcultarColumnas(jTable1,new int[]{1});
+        jTable1.setTableHeader(null);
     }
-    
-    public void cargaDato(){
-        int rowIndex = ModeloTabla.getRowCount();
-        if(!jTextArea27.getText().equals("")){
-            if(jTextArea27.getText().length()>=100){
-                JOptionPane.showMessageDialog(this, "El título es muy extenso.");
-            }else{
-                ModeloTabla.addRow(dato);
-                ModeloTabla.setValueAt(jTextArea27.getText().toUpperCase(), rowIndex, 0);
-                ModeloTabla.setValueAt("", rowIndex, 1);
-                jTextArea27.setText("");
-            }
-        }
-    }
+   
     
     public void saveChanges(EntityManagerFactory factory, InfoHistoriac ihc){
         if(medidasgHcuJPA==null){
@@ -315,13 +302,11 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
         jLabel49 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jPanel32 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
         jScrollPane26 = new javax.swing.JScrollPane();
         jTextArea26 = new javax.swing.JTextArea();
-        jScrollPane27 = new javax.swing.JScrollPane();
-        jTextArea27 = new javax.swing.JTextArea();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
 
         setFocusable(false);
         setMaximumSize(new java.awt.Dimension(380, 420));
@@ -357,8 +342,24 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(jTable1);
 
-        jPanel32.setBorder(javax.swing.BorderFactory.createTitledBorder("Observaciones"));
-        jPanel32.setOpaque(false);
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/add20x20.png"))); // NOI18N
+        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel1MouseReleased(evt);
+            }
+        });
+
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/cerrar_20x20.png"))); // NOI18N
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel2MouseReleased(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel3.setText("Observaciones");
 
         jScrollPane26.setMaximumSize(new java.awt.Dimension(164, 20));
         jScrollPane26.setMinimumSize(new java.awt.Dimension(164, 20));
@@ -379,77 +380,39 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
         });
         jScrollPane26.setViewportView(jTextArea26);
 
-        javax.swing.GroupLayout jPanel32Layout = new javax.swing.GroupLayout(jPanel32);
-        jPanel32.setLayout(jPanel32Layout);
-        jPanel32Layout.setHorizontalGroup(
-            jPanel32Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane26, javax.swing.GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE)
-        );
-        jPanel32Layout.setVerticalGroup(
-            jPanel32Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane26, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 53, Short.MAX_VALUE)
-        );
-
-        jScrollPane27.setMaximumSize(new java.awt.Dimension(164, 20));
-        jScrollPane27.setMinimumSize(new java.awt.Dimension(164, 20));
-        jScrollPane27.setPreferredSize(new java.awt.Dimension(164, 20));
-
-        jTextArea27.setColumns(20);
-        jTextArea27.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jTextArea27.setForeground(new java.awt.Color(0, 102, 255));
-        jTextArea27.setLineWrap(true);
-        jTextArea27.setRows(2);
-        jTextArea27.setMaximumSize(new java.awt.Dimension(164, 40));
-        jTextArea27.setMinimumSize(new java.awt.Dimension(164, 40));
-        jScrollPane27.setViewportView(jTextArea27);
-
-        jButton1.setText("Agregar");
-        jButton1.setFocusable(false);
-        jButton1.setOpaque(false);
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        jButton2.setText("Borrar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel49, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel49, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
-                    .addComponent(jPanel32, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane27, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel2))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane26, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel49)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane27, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(9, 9, 9)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel32, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3)
+                .addGap(10, 10, 10)
+                .addComponent(jScrollPane26, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -475,27 +438,40 @@ public class pTratMedidaGeneral extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jTextArea26KeyReleased
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        this.cargaDato();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void jLabel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseReleased
+        JTextArea ta = new JTextArea(2, 20);
+        switch (JOptionPane.showConfirmDialog((JFrame) SwingUtilities.getWindowAncestor(panelindex)
+                , new JScrollPane(ta),"Escriba la orden medica",-1)) {
+            case JOptionPane.OK_OPTION:
+                int rowIndex = ModeloTabla.getRowCount();
+                if (!ta.getText().equals("")) {
+                    if (ta.getText().length() >= 100) {
+                        JOptionPane.showMessageDialog(this, "El título es muy extenso.");
+                    } else {
+                        ModeloTabla.addRow(dato);
+                        ModeloTabla.setValueAt(ta.getText().toUpperCase(), rowIndex, 0);
+                        ModeloTabla.setValueAt("", rowIndex, 1);
+                    }
+                }
+                break;
+        }
+    }//GEN-LAST:event_jLabel1MouseReleased
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void jLabel2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseReleased
         if(ModeloTabla.getRowCount()>0 && jTable1.getSelectedRow()>-1){
             ModeloTabla.removeRow(jTable1.getSelectedRow());
             jTextArea26.setText("");
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_jLabel2MouseReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JButton jButton1;
-    public javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel49;
-    private javax.swing.JPanel jPanel32;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane26;
-    private javax.swing.JScrollPane jScrollPane27;
     public javax.swing.JTable jTable1;
     public javax.swing.JTextArea jTextArea26;
-    public javax.swing.JTextArea jTextArea27;
     // End of variables declaration//GEN-END:variables
 }

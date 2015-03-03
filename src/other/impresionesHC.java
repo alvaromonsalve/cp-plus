@@ -2,12 +2,15 @@
 package other;
 
 import atencionurgencia.AtencionUrgencia;
+import atencionurgencia.ingreso.HC;
 import entidades.ConfigCups;
 import entidades.InfoHistoriac;
 import entidades.InfoInterconsultaHcu;
 import entidades.InfoPosologiaHcu;
 import entidades.InfoProcedimientoHcu;
+import impr.urgencias.Iniciar;
 import java.awt.Frame;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,11 +22,8 @@ import jpa.ConfigCupsJpaController;
 import jpa.InfoInterconsultaHcuJpaController;
 import jpa.InfoPosologiaHcuJpaController;
 import jpa.InfoProcedimientoHcuJpaController;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperPrintManager;
-import net.sf.jasperreports.view.JasperViewer;
 import oldConnection.Database;
 
 /**
@@ -82,7 +82,10 @@ public class impresionesHC extends javax.swing.JFrame {
         jLabel7.setEnabled(var);
     }
     
+    private boolean gCLAB,gCRX,gCOT;
+    
     public void activarLinks(){
+        gCLAB = false;gCRX=false;gCOT=false;
         if (infoPosologiaHcuJPA == null) {
             infoPosologiaHcuJPA = new InfoPosologiaHcuJpaController(factory);
             infoProcedimientoHcuJPA = new InfoProcedimientoHcuJpaController(factory);
@@ -91,7 +94,7 @@ public class impresionesHC extends javax.swing.JFrame {
         }
         List<InfoPosologiaHcu> listInfoPosologiaHcu = infoPosologiaHcuJPA.ListFindInfoPosologia(idHC);       
         if (listInfoPosologiaHcu.size() > 0) {
-            jLabel3.setEnabled(true);
+            jLabel3.setEnabled(true);            
         }
         List<InfoProcedimientoHcu> listInfoProcedimientoHcuLabfilter = new ArrayList<InfoProcedimientoHcu>();
         List<InfoProcedimientoHcu> listInfoProcedimientoHcuRxfilter = new ArrayList<InfoProcedimientoHcu>();
@@ -109,17 +112,90 @@ public class impresionesHC extends javax.swing.JFrame {
         }
         if (listInfoProcedimientoHcuLabfilter != null & listInfoProcedimientoHcuLabfilter.size() > 0){
             jLabel4.setEnabled(true);
+            gCLAB=true;
         }
         if (listInfoProcedimientoHcuRxfilter != null & listInfoProcedimientoHcuRxfilter.size() > 0){
             jLabel5.setEnabled(true);
+            gCRX=true;
         }
         if (listInfoProcedimientoHcuOtherfilter != null & listInfoProcedimientoHcuOtherfilter.size() > 0){
             jLabel6.setEnabled(true);
+            gCOT=true;
         }
         List<InfoInterconsultaHcu> listInfoInterconsultaHcu = infoInterconsultaHcuJPA.listInterconsultaHcu(idHC);
         if (listInfoInterconsultaHcu.size() > 0) {
             jLabel7.setEnabled(true);
         }
+    }
+    
+        private void rep_solicitudProcedimientoLAB(InfoHistoriac ihc){
+        ejb.Database bd = new ejb.Database(AtencionUrgencia.props);
+        ResultSet rs = null; 
+        try {
+            bd.ConectarBasedeDatos();
+            bd.sentencia = bd.conexion.prepareStatement("CALL rep_solicitudProcedimientoLAB(?,?)");
+            bd.sentencia.setInt(1, ihc.getId());
+            bd.sentencia.setInt(2, 1);             
+            rs = bd.sentencia.executeQuery();
+            if(rs != null){
+                //por si acaso necesitamos validar q se retornen datos aunque quitaremos esas opciones del procedimiento
+                //para que no retorne nada
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "101??:\n" + ex.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+        } finally {
+            bd.cerrarConexionYStatement(bd.conexion, bd.sentencia);
+            bd.cerrarResultSet(rs);
+        }
+    }
+    
+    private void rep_solicitudProcedimientoRX(InfoHistoriac ihc){
+        ejb.Database bd = new ejb.Database(AtencionUrgencia.props);
+        ResultSet rs = null; 
+        try {
+            bd.ConectarBasedeDatos();
+            bd.sentencia = bd.conexion.prepareStatement("CALL rep_solicitudProcedimientoRX(?,?)");
+            bd.sentencia.setInt(1, ihc.getId());
+            bd.sentencia.setInt(2, 1);             
+            rs = bd.sentencia.executeQuery();
+            if(rs != null){
+                //por si acaso necesitamos validar q se retornen datos aunque quitaremos esas opciones del procedimiento
+                //para que no retorne nada
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "101??:\n" + ex.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+        } finally {
+            bd.cerrarConexionYStatement(bd.conexion, bd.sentencia);
+            bd.cerrarResultSet(rs);
+        }
+    }
+    
+    private void rep_solicitudProcedimiento(InfoHistoriac ihc){
+        ejb.Database bd = new ejb.Database(AtencionUrgencia.props);
+        ResultSet rs = null; 
+        try {
+            bd.ConectarBasedeDatos();
+            bd.sentencia = bd.conexion.prepareStatement("CALL rep_solicitudProcedimiento(?,?)");
+            bd.sentencia.setInt(1, ihc.getId());
+            bd.sentencia.setInt(2, 1);             
+            rs = bd.sentencia.executeQuery();
+            if(rs != null){
+                //por si acaso necesitamos validar q se retornen datos aunque quitaremos esas opciones del procedimiento
+                //para que no retorne nada
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "101??:\n" + ex.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+        } finally {
+            bd.cerrarConexionYStatement(bd.conexion, bd.sentencia);
+            bd.cerrarResultSet(rs);
+        }
+    }
+    
+    public void generarConsecutivos(){
+        //Genera consecutivo
+        rep_solicitudProcedimientoLAB(this.idHC);
+        rep_solicitudProcedimientoRX(this.idHC);
+        rep_solicitudProcedimiento(this.idHC);
     }
     
     public List<InfoProcedimientoHcu> ListFindInfoProcedimientoHcu(InfoHistoriac ihc){
@@ -136,28 +212,25 @@ public class impresionesHC extends javax.swing.JFrame {
     
     private class hiloReporte extends Thread{
         Frame form=null;
-        JasperPrint informe;
-        int n;
+        InfoHistoriac idHC;
+        String tipo;
         
-        public hiloReporte(Frame form,JasperPrint informe, int n){
+        public hiloReporte(Frame form,InfoHistoriac idHC, String tipo){
             this.form =form;
-            this.informe=informe;
-            this.n=n;
+            this.idHC=idHC;
+            this.tipo=tipo;
         }
         
         @Override
         public void run(){
             ((impresionesHC)form).jLabel1.setVisible(true);
-            if (n == 0) {
-                JasperViewer.viewReport(informe, false);
-            } else if(n == 1) {
-                try {                    
-                    JasperPrintManager.printReport(informe, true);
-                } catch (JRException ex) {
-                    JOptionPane.showMessageDialog(null, "10076:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-                }
+            Iniciar in = new Iniciar(AtencionUrgencia.props);
+            ((impresionesHC)form).dispose();
+            if(tipo.equals("LAB")){
+                in.imprimirLabIngreso(idHC.getId());
             }
             ((impresionesHC)form).jLabel1.setVisible(false);
+            
         }
     }
 
@@ -206,13 +279,9 @@ public class impresionesHC extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel2.setText("Seleccione los documentos que desea digitalizar");
 
+        jLabel3.setForeground(new java.awt.Color(153, 153, 153));
         jLabel3.setText("RECETA MEDICA");
         jLabel3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel3.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel3MouseMoved(evt);
-            }
-        });
         jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel3MouseExited(evt);
@@ -221,14 +290,14 @@ public class impresionesHC extends javax.swing.JFrame {
                 jLabel3MouseReleased(evt);
             }
         });
+        jLabel3.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel3MouseMoved(evt);
+            }
+        });
 
         jLabel4.setText("LABORATORIOS");
         jLabel4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel4.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel4MouseMoved(evt);
-            }
-        });
         jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel4MouseExited(evt);
@@ -237,14 +306,14 @@ public class impresionesHC extends javax.swing.JFrame {
                 jLabel4MouseReleased(evt);
             }
         });
+        jLabel4.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel4MouseMoved(evt);
+            }
+        });
 
         jLabel5.setText("IMAGENOLOGIA");
         jLabel5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel5.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel5MouseMoved(evt);
-            }
-        });
         jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel5MouseExited(evt);
@@ -253,14 +322,14 @@ public class impresionesHC extends javax.swing.JFrame {
                 jLabel5MouseReleased(evt);
             }
         });
+        jLabel5.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel5MouseMoved(evt);
+            }
+        });
 
         jLabel6.setText("OTROS PROCEDIMIENTOS");
         jLabel6.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel6.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel6MouseMoved(evt);
-            }
-        });
         jLabel6.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel6MouseExited(evt);
@@ -269,20 +338,26 @@ public class impresionesHC extends javax.swing.JFrame {
                 jLabel6MouseReleased(evt);
             }
         });
-
-        jLabel7.setText("VALORACION ESPECIALISTA");
-        jLabel7.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel7.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        jLabel6.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel7MouseMoved(evt);
+                jLabel6MouseMoved(evt);
             }
         });
+
+        jLabel7.setForeground(new java.awt.Color(153, 153, 153));
+        jLabel7.setText("VALORACION ESPECIALISTA");
+        jLabel7.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jLabel7.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel7MouseExited(evt);
             }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 jLabel7MouseReleased(evt);
+            }
+        });
+        jLabel7.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel7MouseMoved(evt);
             }
         });
 
@@ -379,90 +454,107 @@ public class impresionesHC extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosing
 
     private void jLabel3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseReleased
-        if(jLabel3.isEnabled()==true){
-            Database db = new Database(AtencionUrgencia.props);
-            try {
-                Map param = new HashMap();
-                String master;
-                //<![CDATA[call `rep_recetaMedica`($P{id_hc})]]> para el que genera el consecutivo hacerlo sin reportiar
-                if ((idHC.getEstado() != 1 & noValido == true) | (idHC.getEstado() == 1 & noValido == false)) {
-                    master = System.getProperty("user.dir") + "/reportes/resetaMedica.jasper";
-                    param.put("entidadadmision", idHC.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad());
-                } else if ((idHC.getEstado() != 2 & noValido == true) | (idHC.getEstado() == 2 & noValido == false)) {
-                    master = System.getProperty("user.dir") + "/reportes/resetaMedica.jasper";
-                    param.put("entidadadmision", idHC.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad());
-                } else {
-                    //reporte que no genera consecutivo
-                    master = System.getProperty("user.dir") + "/reportes/solicitudmedicamentos.jasper";
-                }
-                if (master != null) {                    
-                    db.Conectar();
-                    param.put("id_hc", idHC.getId().toString());
-                    if(noValido==true){
-                        param.put("NombreReport", "PRESCRIPCION MEDICA (NO VALIDO)");
-                    }else{
-                        param.put("NombreReport", "PRESCRIPCION MEDICA");
-                    }                    
-                    param.put("version", "1.0");
-                    param.put("codigo", "R-FA-003");
-                    param.put("servicio", "URGENCIAS");
-                    JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
-                    Object[] objeto = {"Visualizar", "Imprimir"};
-                    int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "PRESCRIPCION MEDICA", JOptionPane.YES_NO_CANCEL_OPTION,
-                            JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
-                    hiloReporte ut = new hiloReporte(this,informe,n);
-                    Thread thread = new Thread(ut);
-                    thread.start();
-                    db.DesconectarBasedeDatos();
-                }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "10075:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            }finally{
-                db.DesconectarBasedeDatos();
-            }
-        }
+//        if(jLabel3.isEnabled()==true){
+//            Database db = new Database(AtencionUrgencia.props);
+//            try {
+//                Map param = new HashMap();
+//                String master;
+//                //<![CDATA[call `rep_recetaMedica`($P{id_hc})]]> para el que genera el consecutivo hacerlo sin reportiar
+//                //verificar si esta finalizada para que permita imprimir
+//                if ((idHC.getEstado() != 1 & noValido == true) | (idHC.getEstado() == 1 & noValido == false)) {
+//                    master = System.getProperty("user.dir") + "/reportes/resetaMedica.jasper";
+//                    param.put("entidadadmision", idHC.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad());
+//                } else if ((idHC.getEstado() != 2 & noValido == true) | (idHC.getEstado() == 2 & noValido == false)) {
+//                    master = System.getProperty("user.dir") + "/reportes/resetaMedica.jasper";
+//                    param.put("entidadadmision", idHC.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad());
+//                } else {
+//                    //reporte que no genera consecutivo
+//                    master = System.getProperty("user.dir") + "/reportes/solicitudmedicamentos.jasper";
+//                }
+//                if (master != null) {                    
+//                    db.Conectar();
+//                    param.put("id_hc", idHC.getId().toString());
+//                    if(noValido==true){
+//                        param.put("NombreReport", "PRESCRIPCION MEDICA (NO VALIDO)");
+//                    }else{
+//                        param.put("NombreReport", "PRESCRIPCION MEDICA");
+//                    }                    
+//                    param.put("version", "1.0");
+//                    param.put("codigo", "R-FA-003");
+//                    param.put("servicio", "URGENCIAS");
+//                    System.out.println("lol");
+//                    JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
+//                    Object[] objeto = {"Visualizar", "Imprimir"};
+//                    int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "PRESCRIPCION MEDICA", JOptionPane.YES_NO_CANCEL_OPTION,
+//                            JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+//                    hiloReporte ut = new hiloReporte(this,informe,n);
+//                    Thread thread = new Thread(ut);
+//                    thread.start();
+//                    db.DesconectarBasedeDatos();
+//                }
+//            } catch (Exception ex) {
+//                JOptionPane.showMessageDialog(null, "10075:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+//            }finally{
+//                db.DesconectarBasedeDatos();
+//            }
+//        }
     }//GEN-LAST:event_jLabel3MouseReleased
 
     private void jLabel4MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseReleased
         if (jLabel4.isEnabled() == true) {
-            Database db = new Database(AtencionUrgencia.props);
-            try {
-                Map param = new HashMap();
-                String master;
-                if ((idHC.getEstado() != 1 & noValido == true) | (idHC.getEstado() == 1 & noValido == false)) {
-                    master = System.getProperty("user.dir") + "/reportes/solPorcedimientosLaboratorio.jasper";
-                } else if ((idHC.getEstado() != 2 & noValido == true) | (idHC.getEstado() == 2 & noValido == false)) {
-                    master = System.getProperty("user.dir") + "/reportes/solPorcedimientosLaboratorio.jasper";
-                } else {
-                    //reporte que no genera consecutivo
-                    master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientolabposthcu.jasper";
-                }
-                if (master != null) {                    
-                    db.Conectar();
-                    param.put("id_hc", idHC.getId().toString());
-                    if(noValido==true){
-                        param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO (NO VALIDO)");
-                    }else{
-                        param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
-                    }                    
-                    param.put("version", "1.0");
-                    param.put("codigo", "R-FA-006");
-                    param.put("servicio", "URGENCIAS");
-                    param.put("novalido", setValueValidoInt(noValido));
-                    JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
-                    Object[] objeto = {"Visualizar", "Imprimir"};
-                    int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "LABORATORIO", JOptionPane.YES_NO_CANCEL_OPTION,
-                            JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
-                    hiloReporte ut = new hiloReporte(this,informe,n);
-                    Thread thread = new Thread(ut);
-                    thread.start();
-                }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "10075:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            }finally{
-                db.DesconectarBasedeDatos();
+            //solo imprime si esta finalizada la hc o si esta egresada
+            if(idHC.getEstado()==4 || idHC.getEstado()==1){
+                hiloReporte ut = new hiloReporte(this,idHC,"LAB");
+                Thread thread = new Thread(ut);
+                thread.start();
             }
         }
+            
+//            Database db = new Database(AtencionUrgencia.props);
+//            
+//            
+//            
+//            
+//            try {
+//                Map param = new HashMap();
+//                
+//                
+//                
+//                String master;
+//                if ((idHC.getEstado() != 1 & noValido == true) | (idHC.getEstado() == 1 & noValido == false)) {
+//                    master = System.getProperty("user.dir") + "/reportes/solPorcedimientosLaboratorio.jasper";
+//                } else if ((idHC.getEstado() != 2 & noValido == true) | (idHC.getEstado() == 2 & noValido == false)) {
+//                    master = System.getProperty("user.dir") + "/reportes/solPorcedimientosLaboratorio.jasper";
+//                } else {
+//                    //reporte que no genera consecutivo
+//                    master = System.getProperty("user.dir") + "/reportes/solicitudprocedimientolabposthcu.jasper";
+//                }
+//                if (master != null) {                    
+//                    db.Conectar();
+//                    param.put("id_hc", idHC.getId().toString());
+//                    if(noValido==true){
+//                        param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO (NO VALIDO)");
+//                    }else{
+//                        param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS DE LABORATORIO");
+//                    }                    
+//                    param.put("version", "1.0");
+//                    param.put("codigo", "R-FA-006");
+//                    param.put("servicio", "URGENCIAS");
+//                    param.put("novalido", setValueValidoInt(noValido));
+//                    JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
+//                    Object[] objeto = {"Visualizar", "Imprimir"};
+//                    int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "LABORATORIO", JOptionPane.YES_NO_CANCEL_OPTION,
+//                            JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+////                    hiloReporte ut = new hiloReporte(this,informe,n);
+////                    Thread thread = new Thread(ut);
+////                    thread.start();
+//                }
+//            } catch (Exception ex) {
+//                JOptionPane.showMessageDialog(null, "10075:\n" + ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+//            }finally{
+//                db.DesconectarBasedeDatos();
+//            }
+//        }
     }//GEN-LAST:event_jLabel4MouseReleased
 
     private void jLabel5MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseReleased
@@ -495,9 +587,9 @@ public class impresionesHC extends javax.swing.JFrame {
                     Object[] objeto ={"Visualizar","Imprimir"};
                     int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "IMAGENOLOGIA", JOptionPane.YES_NO_CANCEL_OPTION, 
                             JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
-                    hiloReporte ut = new hiloReporte(this,informe,n);
-                    Thread thread = new Thread(ut);
-                    thread.start();
+//                    hiloReporte ut = new hiloReporte(this,informe,n);
+//                    Thread thread = new Thread(ut);
+//                    thread.start();
                 }                     
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "10075:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
@@ -508,6 +600,8 @@ public class impresionesHC extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel5MouseReleased
 
     private void jLabel6MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseReleased
+        //no olvidar meter generador de consecutivos
+        
         if(jLabel6.isEnabled()==true){
             Database db = new Database(AtencionUrgencia.props);
             try {
@@ -524,7 +618,6 @@ public class impresionesHC extends javax.swing.JFrame {
                 if (master != null) {                    
                     db.Conectar();
                     param.put("id_hc", idHC.getId().toString());
-                    param.put("id_hc", idHC.getId());
                     if(noValido==true){
                         param.put("NombreReport", "SOLICITUD DE PROCEDIMIENTOS (NO VALIDO)");
                     }else{
@@ -538,9 +631,9 @@ public class impresionesHC extends javax.swing.JFrame {
                     Object[] objeto ={"Visualizar","Imprimir"};
                     int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "PROCEDIMIENTOS", JOptionPane.YES_NO_CANCEL_OPTION, 
                             JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
-                    hiloReporte ut = new hiloReporte(this,informe,n);
-                    Thread thread = new Thread(ut);
-                    thread.start();
+//                    hiloReporte ut = new hiloReporte(this,informe,n);
+//                    Thread thread = new Thread(ut);
+//                    thread.start();
                 }                     
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "10075:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
@@ -551,37 +644,37 @@ public class impresionesHC extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel6MouseReleased
 
     private void jLabel7MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel7MouseReleased
-        if(jLabel7.isEnabled()==true){
-            Database db = new Database(AtencionUrgencia.props);
-            try {
-                Map param = new HashMap();
-                String master = System.getProperty("user.dir") + "/reportes/solValoracion.jasper";
-                if (master != null) {                    
-                    db.Conectar();
-                    param.put("id_hc", idHC.getId());
-                    param.put("entidadadmision", idHC.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad());
-                    if(noValido==true){
-                        param.put("NombreReport", "SOLICITUD DE VALORACION POR ESPECIALISTA (NO VALIDO)");
-                    }else{
-                        param.put("NombreReport", "SOLICITUD DE VALORACION POR ESPECIALISTA");
-                    }                    
-                    param.put("version", "1.0");
-                    param.put("codigo", "R-FA-004");
-                    param.put("servicio", "URGENCIAS");
-                    JasperPrint informe = JasperFillManager.fillReport(master, param,db.conexion);
-                    Object[] objeto ={"Visualizar","Imprimir"};
-                    int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "VALORACION", JOptionPane.YES_NO_CANCEL_OPTION, 
-                            JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
-                    hiloReporte ut = new hiloReporte(this,informe,n);
-                    Thread thread = new Thread(ut);
-                    thread.start();
-                }                     
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "10075:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            }finally{
-                db.DesconectarBasedeDatos();
-            }
-        }
+//        if(jLabel7.isEnabled()==true){
+//            Database db = new Database(AtencionUrgencia.props);
+//            try {
+//                Map param = new HashMap();
+//                String master = System.getProperty("user.dir") + "/reportes/solValoracion.jasper";
+//                if (master != null) {                    
+//                    db.Conectar();
+//                    param.put("id_hc", idHC.getId());
+//                    param.put("entidadadmision", idHC.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad());
+//                    if(noValido==true){
+//                        param.put("NombreReport", "SOLICITUD DE VALORACION POR ESPECIALISTA (NO VALIDO)");
+//                    }else{
+//                        param.put("NombreReport", "SOLICITUD DE VALORACION POR ESPECIALISTA");
+//                    }                    
+//                    param.put("version", "1.0");
+//                    param.put("codigo", "R-FA-004");
+//                    param.put("servicio", "URGENCIAS");
+//                    JasperPrint informe = JasperFillManager.fillReport(master, param,db.conexion);
+//                    Object[] objeto ={"Visualizar","Imprimir"};
+//                    int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "VALORACION", JOptionPane.YES_NO_CANCEL_OPTION, 
+//                            JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+//                    hiloReporte ut = new hiloReporte(this,informe,n);
+//                    Thread thread = new Thread(ut);
+//                    thread.start();
+//                }                     
+//            } catch (Exception ex) {
+//                JOptionPane.showMessageDialog(null, "10075:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+//            }finally{
+//                db.DesconectarBasedeDatos();
+//            }
+//        }
     }//GEN-LAST:event_jLabel7MouseReleased
 
     private void jLabel8MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseReleased
@@ -605,9 +698,9 @@ public class impresionesHC extends javax.swing.JFrame {
                     Object[] objeto ={"Visualizar","Imprimir"};
                     int n = JOptionPane.showOptionDialog(this, "Escoja la opción deseada", "NOTA DE INGRESO", JOptionPane.YES_NO_CANCEL_OPTION, 
                             JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
-                    hiloReporte ut = new hiloReporte(this,informe,n);
-                    Thread thread = new Thread(ut);
-                    thread.start();                    
+//                    hiloReporte ut = new hiloReporte(this,informe,n);
+//                    Thread thread = new Thread(ut);
+//                    thread.start();                    
                 }                     
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "10075:\n"+ex.getMessage(), impresionesHC.class.getName(), JOptionPane.INFORMATION_MESSAGE);

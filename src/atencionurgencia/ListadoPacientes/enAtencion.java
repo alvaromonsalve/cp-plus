@@ -165,8 +165,8 @@ public class enAtencion extends javax.swing.JDialog {
                     AtencionUrgencia.panelindex.hc.setVisible(true);
                     AtencionUrgencia.panelindex.jpContainer.validate();
                     AtencionUrgencia.panelindex.jpContainer.repaint();
-                    AtencionUrgencia.panelindex.hc.viewClinicHistory(infoHistoriac);
-                    AtencionUrgencia.panelindex.hc.DatosAntPersonales();//crear o mostrar antecedentes personales
+//                    AtencionUrgencia.panelindex.hc.viewClinicHistory(infoHistoriac);
+//                    AtencionUrgencia.panelindex.hc.DatosAntPersonales();//crear o mostrar antecedentes personales
                     ((enAtencion) jdialog).jButton1.setEnabled(true);
                     jLabel1.setVisible(false);
                 }

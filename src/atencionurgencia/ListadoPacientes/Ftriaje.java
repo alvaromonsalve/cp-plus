@@ -2,23 +2,47 @@ package atencionurgencia.ListadoPacientes;
 
 import java.awt.event.KeyEvent;
 import atencionurgencia.*;
+import atencionurgencia.ingreso.HC;
+import entidades.HcuHistoriac2;
+import entidades.InfoAdmision;
+import entidades.InfoAntPersonales;
+import entidades.InfoHcExpfisica;
 import entidades.InfoHistoriac;
-import impr.Iniciar;
+import entidades.InfoPaciente;
+import entidades.PypInfoAntecedentesg;
+import impr.urgencias.Iniciar;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.swing.JOptionPane;
+import jpa.HcuHistoriac2JpaController;
+import jpa.InfoAntPersonalesJpaController;
+import jpa.InfoHcExpfisicaJpaController;
+import jpa.PypInfoAntecedentesgJpaController;
 
 /**
  *
  * @author Alvaro Monsalve
  */
 public class Ftriaje extends javax.swing.JFrame {
+    private final EntityManagerFactory factory;
+    private PypInfoAntecedentesgJpaController piajc;
+    private InfoAntPersonales antPersonales;
+    private PypInfoAntecedentesg pia;
+    private InfoHcExpfisica infoexploracion;
+    private InfoHistoriac ih;
+    private Boolean registroCreado=false;
+    private HcuHistoriac2 hh;
 
-    public Ftriaje() {
+    public Ftriaje(EntityManagerFactory factory) {
         initComponents();
-        this.setLocationRelativeTo(null);
         jLabel1.setVisible(false);   
+        this.factory=factory;
     }
     
         @Override
@@ -36,24 +60,6 @@ public class Ftriaje extends javax.swing.JFrame {
         return 2;
     }
     
-    /**
-     * 
-     * @param tipo valor que designa el tipo de hc.
-     * 0:nota de ingreso; 1:observacion; 2:domicilio; 3:consulta externa
-     */
-    private void generateHC(int tipo, String destino){
-        AtencionUrgencia.panelindex.hc.infohistoriac.setMotivoConsulta(jTextArea10.getText().toUpperCase());
-        AtencionUrgencia.panelindex.hc.infohistoriac.setNivelTriaje(getNivelTriaje());
-        AtencionUrgencia.panelindex.hc.infohistoriac.setDestino(destino);
-        AtencionUrgencia.panelindex.hc.finalizar = tipo;
-        AtencionUrgencia.panelindex.hc.CrearHistoriaC();
-        if(AtencionUrgencia.panelindex.hc.infoadmision.getCausaExterna().equals("01")){//ACCIDENTE DE TRABAJO
-            AtencionUrgencia.panelindex.hc.jComboBox1.setSelectedItem("ACCIDENTE DE TRABAJO");
-        }else if(AtencionUrgencia.panelindex.hc.infoadmision.getCausaExterna().equals("02")){
-            AtencionUrgencia.panelindex.hc.jComboBox1.setSelectedItem("ACCIDENTE DE TRANSITO");
-        }
-    }
-    
     private class hiloReporte extends Thread{
         Frame form=null;
         InfoHistoriac idHC;
@@ -66,97 +72,211 @@ public class Ftriaje extends javax.swing.JFrame {
         @Override
         public void run() {
             ((Ftriaje) form).jLabel1.setVisible(true);
-            ((Ftriaje) form).jButton1.setEnabled(false);
-//            if(idHC.getFechaDato()==null){
-//                idHC.setFechaDato(new Date());
-//            }
-//            ReportVersion rv=null;
-//            for (ReportVersion reportVersion : AtencionUrgencia.panelindex.reportVersions) {
-//                if (reportVersion.getCodigo().equals("R-FA-001") && reportVersion.getFechaPublicacion().before(idHC.getFechaDato())  ) {                    
-//                    rv = reportVersion;
-//                    break;
-//                }
-//            }
-//            String pathOrigen = rv.getRutaFtp();
-//            String fileName = rv.getFileName();
-//            if(reportDownload(pathOrigen, fileName)==true){
-//                String master = "C:/Downloads/" + fileName;
-//                if (master != null) {
-//                    try {
-//                        Database db = new Database(AtencionUrgencia.props);
-//                        db.Conectar();
-//                        Map param = new HashMap();
-//                        param.put("idHc", idHC.getId());
-//                        param.put("nameReport", rv.getNombre());
-//                        param.put("version", rv.getVersion());
-//                        param.put("codigo", rv.getCodigo());
-//                        param.put("servicio", rv.getServicio());
-//                        JasperPrint informe = JasperFillManager.fillReport(master, param, db.conexion);
-//                        Object[] objeto = {"Visualizar", "Imprimir"};
-//                        int n = JOptionPane.showOptionDialog(((Ftriaje) form), "Escoja la opción deseada", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION,
-//                                JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
-//                        if (n == 0) {
-//                            JasperViewer.viewReport(informe, false);
-//                        } else {
-//                            JasperPrintManager.printReport(informe, true);
-//                        }
-//                        LOGGER.debug("Reporte "+rv.getCodigo()+" lanzado con exito");
-//                    } catch (Exception ex) {
-//                        LOGGER.error("Generando reporte: "+ex.getMessage());
-//                        JOptionPane.showMessageDialog(null, "hiloReporte:\n" + ex.getMessage(), Ftriaje.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-//                    }
-//                }
-//            }
+            ((Ftriaje) form).jLabel2.setEnabled(false);
             Iniciar in = new Iniciar(AtencionUrgencia.props);
             in.imprimirTriaje(idHC.getId());
             AtencionUrgencia.panelindex.FramEnable(true);
-            AtencionUrgencia.panelindex.hc.cerrarPanel();
             ((Ftriaje) form).jLabel1.setVisible(false);
-            ((Ftriaje) form).jButton1.setEnabled(true);
+            ((Ftriaje) form).jLabel2.setEnabled(true);
         }
     }
     
-//    private boolean reportDownload(String pathOrigen, String fileName) {
-//        FTPClient fTPClient = new FTPClient();
-//        boolean var = false;
-//        try {
-//            fTPClient.connect(AtencionUrgencia.sFTP);
-//            boolean login = fTPClient.login(AtencionUrgencia.sUser, AtencionUrgencia.sPassword);
-//            if (login) {
-//                fTPClient.enterLocalPassiveMode();
-//                fTPClient.setFileType(FTP.BINARY_FILE_TYPE);
-//                String remoteFile1 = "/reportes/" + pathOrigen + "/" + fileName;
-//                File downloadFile1 = new File("C:/Downloads/" + fileName);
-//                OutputStream outputStream1 = new BufferedOutputStream(new FileOutputStream(downloadFile1));
-//                InputStream inputStream = fTPClient.retrieveFileStream(remoteFile1);
-//                byte[] bytesArray = new byte[4096];
-//                int bytesRead = -1;
-//                while ((bytesRead = inputStream.read(bytesArray)) != -1) {
-//                    outputStream1.write(bytesArray, 0, bytesRead);
-//                }
-//                boolean success = fTPClient.completePendingCommand();
-//                if (success) {
-//                    var = true;
-//                    outputStream1.close();
-//                    inputStream.close();
-//                } else {
-//                    JOptionPane.showMessageDialog(null, "No se ha podido encontrar "+fileName);
-//                }
-//            }
-//        } catch (Exception ex) {
-//            JOptionPane.showMessageDialog(null, "reportDownload:\n" + ex.getMessage(), Ftriaje.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-//        } finally {
-//            try {
-//                if (fTPClient.isConnected()) {
-//                    fTPClient.logout();
-//                    fTPClient.disconnect();
-//                }
-//            } catch (IOException ex) {
-//                JOptionPane.showMessageDialog(null, "ftp_close - Exception:\n" + ex.getMessage());
-//            }
-//        }
-//        return var;
-//    }
+    private class hiloGenerarHc extends Thread{
+        Frame form=null;
+        InfoHistoriac idHC;
+        
+        public hiloGenerarHc(Frame form, InfoHistoriac idHC){
+            this.form =form;
+            this.idHC=idHC;
+        }
+        
+        @Override
+        public void run() {
+            ((Ftriaje) form).jLabel1.setVisible(true);
+            ((Ftriaje) form).jLabel2.setEnabled(false);
+            AtencionUrgencia.panelindex.jpContainer.removeAll();
+            AtencionUrgencia.panelindex.hc = new HC(factory);
+            AtencionUrgencia.panelindex.hc.setBounds(0, 0, 764, 514);
+            AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.hc);
+            AtencionUrgencia.panelindex.hc.setVisible(true);
+            AtencionUrgencia.panelindex.jpContainer.validate();
+            AtencionUrgencia.panelindex.jpContainer.repaint();
+            AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());//observaciones
+            AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());//nivel de triaje                   
+            ((Ftriaje) form).CrearHistoriaC(AtencionUrgencia.panelindex.listaPacientes.ia);//creamos la historia clinica de ingreso
+            AtencionUrgencia.panelindex.hc.viewHCinForm(ih,hh,pia);
+            if (ih.getIdInfoAdmision() .getCausaExterna().equals("01")) {//ACCIDENTE DE TRABAJO
+                AtencionUrgencia.panelindex.hc.jComboBox1.setSelectedItem("ACCIDENTE DE TRABAJO");
+            } else if (ih.getIdInfoAdmision().getCausaExterna().equals("02")) {
+                AtencionUrgencia.panelindex.hc.jComboBox1.setSelectedItem("ACCIDENTE DE TRANSITO");
+            }
+            ((Ftriaje) form).jLabel1.setVisible(false);
+            ((Ftriaje) form).jLabel2.setEnabled(true);
+            ((Ftriaje) form).dispose();
+            AtencionUrgencia.panelindex.FramEnable(true);
+        }
+    }
+    
+    private void CrearHistoriaC(InfoAdmision ia){
+        ih = new InfoHistoriac();
+        hh = new HcuHistoriac2();
+        DatosAntPersonales(ia.getIdDatosPersonales());
+        ih.setIdInfoAdmision(ia);
+        ih.setCausaExterna(jComboBox1.getSelectedItem().toString());
+        ih.setMotivoConsulta(jTextArea10.getText().toUpperCase());
+        ih.setNivelTriaje(this.getSelectionNivelTriage());
+        ih.setAlergias(antPersonales.getAlergias());
+        ih.setIngresosPrevios(antPersonales.getIngresosPrevios());
+        ih.setTraumatismos(antPersonales.getTraumatismos());
+        ih.setTratamientos(antPersonales.getTratamientos());
+        ih.setSituacionBasal(antPersonales.getSituacionBasal());
+        ih.setHta(antPersonales.getHta());
+        ih.setDm(antPersonales.getDm());
+        ih.setDislipidemia(antPersonales.getDislipidemia());
+        ih.setTabaco(antPersonales.getTabaco());
+        ih.setAlcohol(antPersonales.getAlcohol());
+        ih.setDroga(antPersonales.getDroga());
+        ih.setOtrosHabitos(antPersonales.getOtrosHabitos());
+        ih.setDescHdd(antPersonales.getDescHdd());
+        ih.setAntFamiliar(antPersonales.getAntFamiliares());
+        ih.setEnfermedadActual("");
+        ih.setDiagnostico(1);
+        ih.setDiagnostico2(1);
+        ih.setDiagnostico3(1);
+        ih.setDiagnostico4(1);
+        ih.setDiagnostico5(1);
+        ih.setHallazgo("");
+        ih.setDestino((String) jComboBox1.getSelectedItem());
+        if(jComboBox1.getSelectedItem().equals("OBSERVACION")){
+            ih.setTipoHc(0);
+            ih.setEstado(0);
+        }else if(jComboBox1.getSelectedItem().equals("CONSULTA EXTERNA (CITA PRIORITARIA)")){
+             ih.setTipoHc(2);
+             ih.setEstado(3);
+        }else if(jComboBox1.getSelectedItem().equals("HOSPITALIZACION")){
+            ih.setTipoHc(0);
+            ih.setEstado(0);
+        }else{
+            ih.setTipoHc(2);
+            ih.setEstado(2);
+        }
+        ih.setIdConfigdecripcionlogin(AtencionUrgencia.configdecripcionlogin);
+        try {            
+            AtencionUrgencia.panelindex.infoHistoriacJpaC.create(ih);
+            hh.setIdInfoHistoriac(ih.getId());
+            hh.setFIngreso(new Date());
+            hh.setTiempoConsulta(0);
+            hh.setFum(pia.getFum());
+            hh.setNAbortos(pia.getAbortos());
+            hh.setNCesarias(pia.getCesareas());
+            hh.setNGestas(pia.getGestas());
+            hh.setNPartos(pia.getPartos());
+            hh.setObsAntGine(pia.getObservaciones());        
+            AtencionUrgencia.panelindex.hcuHistoriac2JpaC = new HcuHistoriac2JpaController(factory);
+            AtencionUrgencia.panelindex.hcuHistoriac2JpaC.create(hh);
+            this.saveFisicExplorer(ih);
+            ih.setInfoHcExpfisica(infoexploracion);
+            registroCreado=true;
+        }catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "10001:\n" + ex.getMessage(), Ftriaje.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+    
+    private void DatosAntPersonales(InfoPaciente ip) {
+        AtencionUrgencia.panelindex.antPersonalesJPA = new InfoAntPersonalesJpaController(factory);
+        piajc = new PypInfoAntecedentesgJpaController(factory);
+        antPersonales = AtencionUrgencia.panelindex.antPersonalesJPA.findInfoAntPersonalesIDPac(ip);
+        pia = findPiaIDPac(ip);
+        if (antPersonales == null) {
+            antPersonales = new InfoAntPersonales();
+            antPersonales.setIdPaciente(ip.getId());
+            antPersonales.setAlcohol(false);
+            antPersonales.setAlergias("NINGUNO");
+            antPersonales.setAntFamiliares("NINGUNO");
+            antPersonales.setDescHdd("");
+            antPersonales.setDislipidemia(false);
+            antPersonales.setDm(false);
+            antPersonales.setDroga(false);
+            antPersonales.setHta(false);
+            antPersonales.setIngresosPrevios("NINGUNO");
+            antPersonales.setOtrosHabitos("NINGUNO");
+            antPersonales.setSituacionBasal("NINGUNO");
+            antPersonales.setTabaco(false);
+            antPersonales.setTratamientos("NINGUNO");
+            antPersonales.setTraumatismos("NINGUNO");
+            AtencionUrgencia.panelindex.antPersonalesJPA.create(antPersonales);
+        }
+        if(pia==null){
+            pia = new PypInfoAntecedentesg();
+            pia.setInfoPaciente(ip);
+            pia.setAbortos("0");
+            pia.setCesareas("0");
+            try{
+            pia.setFum(new SimpleDateFormat("yyyy-MM-dd").parse("0001-01-01"));
+            } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "10002:\n" + ex.getMessage(), Ftriaje.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            }
+            pia.setPartos("0");
+            pia.setGestas("0");
+            pia.setObservaciones("NINGUNO");  
+            piajc.create(pia);
+        }
+    }
+    
+    private void saveFisicExplorer(InfoHistoriac ih) {
+        infoexploracion = new InfoHcExpfisica();
+        infoexploracion.setIdInfohistoriac(ih);
+        infoexploracion.setTa("");
+        infoexploracion.setT("");
+        infoexploracion.setTam("");
+        infoexploracion.setSao2("");
+        infoexploracion.setFc("");
+        infoexploracion.setPvc("");
+        infoexploracion.setFr("");
+        infoexploracion.setPic("");
+        infoexploracion.setPeso("");
+        infoexploracion.setTalla("");
+        infoexploracion.setOtros("");
+        infoexploracion.setAspectogeneral("");
+        infoexploracion.setCara("NO SE ENCUENTRAN DATOS RELEVANTES");
+        infoexploracion.setCardio("NO SE ENCUENTRAN DATOS RELEVANTES");
+        infoexploracion.setRespiratorio("NO SE ENCUENTRAN DATOS RELEVANTES");
+        infoexploracion.setGastro("NO SE ENCUENTRAN DATOS RELEVANTES");
+        infoexploracion.setRenal("NO SE ENCUENTRAN DATOS RELEVANTES");
+        infoexploracion.setHemato("NO SE ENCUENTRAN DATOS RELEVANTES");
+        infoexploracion.setEndo("NO SE ENCUENTRAN DATOS RELEVANTES");
+        infoexploracion.setOsteo("NO SE ENCUENTRAN DATOS RELEVANTES");
+        AtencionUrgencia.panelindex.infohsfisicoJPA = new InfoHcExpfisicaJpaController(factory);
+        AtencionUrgencia.panelindex.infohsfisicoJPA.create(infoexploracion);
+    }
+    
+    public PypInfoAntecedentesg findPiaIDPac(InfoPaciente ip){
+        EntityManager em = piajc.getEntityManager();
+        try {
+            List results = em.createQuery("SELECT p FROM PypInfoAntecedentesg p WHERE p.infoPaciente = :ip")
+                    .setParameter("ip", ip)
+                    .setHint("javax.persistence.cache.storeMode", "REFRESH")
+                    .getResultList();
+                    if (results.isEmpty()) return null;
+                    else return (PypInfoAntecedentesg) results.get(0);
+        }catch(Exception ex){
+            return null;
+        } finally {
+            em.close();
+        }
+    }
+    
+    private Integer getSelectionNivelTriage() {
+        if (jRadioButton1.isSelected()) {
+            return 0;
+        } else if (jRadioButton2.isSelected()) {
+            return 1;
+        } else if (jRadioButton3.isSelected()) {
+            return 2;
+        } else {
+            return 3;
+        }
+    }
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -174,12 +294,14 @@ public class Ftriaje extends javax.swing.JFrame {
         jRadioButton1 = new javax.swing.JRadioButton();
         jComboBox1 = new javax.swing.JComboBox();
         jLabel44 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setFocusable(false);
         setIconImage(getIconImage());
         setMinimumSize(new java.awt.Dimension(436, 323));
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -266,14 +388,26 @@ public class Ftriaje extends javax.swing.JFrame {
 
         jLabel44.setText("DESTINO:");
 
-        jButton1.setText("Aceptar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/ajax-loader.gif"))); // NOI18N
+
+        jLabel2.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("Aceptar");
+        jLabel2.setFocusable(false);
+        jLabel2.setOpaque(true);
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel2MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel2MouseReleased(evt);
             }
         });
-
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/ajax-loader.gif"))); // NOI18N
+        jLabel2.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel2MouseMoved(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -291,10 +425,10 @@ public class Ftriaje extends javax.swing.JFrame {
                         .addComponent(jLabel44, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(0, 0, 0)
                         .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -302,17 +436,17 @@ public class Ftriaje extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel37, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel26, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel44))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton1)
-                    .addComponent(jLabel1))
+                .addGap(10, 10, 10)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -336,61 +470,78 @@ public class Ftriaje extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jTextArea10KeyTyped
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        //0 es observacion ---- 3 Hospitalizacion
-        if(jComboBox1.getSelectedIndex()==0 || jComboBox1.getSelectedIndex()==3){
-            Object[] objeto ={"Si","No"};
-            int n= n = JOptionPane.showOptionDialog(this, "El paciente sera enviado a "+jComboBox1.getSelectedItem().toString()+"\n¿Desea seguir diligenciando la nota de ingreso?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
-                    JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
-            if (n == 0) {
-                AtencionUrgencia.panelindex.jpContainer.removeAll();
-                AtencionUrgencia.panelindex.hc.setBounds(0, 0, 764, 514);
-                AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.hc);
-                AtencionUrgencia.panelindex.hc.setVisible(true);
-                AtencionUrgencia.panelindex.jpContainer.validate();
-                AtencionUrgencia.panelindex.jpContainer.repaint();
-                AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());//observaciones
-                AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());//nivel de triaje
-                AtencionUrgencia.panelindex.FramEnable(true);
-                generateHC(0, jComboBox1.getSelectedItem().toString());//el estado para observacion es 1 pero aun no se ha terminado la nota de ingreso
-                this.setVisible(false);
-            }
-            //3 consulta externa --- 2 Domicilio
-        }else if(jComboBox1.getSelectedIndex()==1 || jComboBox1.getSelectedIndex()==2){
-            Object[] objeto ={"Si","No"};
-            int n=0;
-            if(jComboBox1.isEnabled()==true){
-                n = JOptionPane.showOptionDialog(this, "Se generará la nota de triaje y no podrá realizar la nota de ingreso\n¿Desea continuar?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION, 
-                    JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
-            }            
-            if(n==0){
-                jComboBox1.setEnabled(false);
-                AtencionUrgencia.panelindex.hc.jTextArea10.setText(jTextArea10.getText().toUpperCase());
-                AtencionUrgencia.panelindex.hc.setSelectionNivelTriage(getNivelTriaje());
-                generateHC(2,jComboBox1.getSelectedItem().toString());//el estado para domicilio y generar reporte de triage
-                AtencionUrgencia.panelindex.FramEnable(true);
-                hiloReporte ut = new hiloReporte(this,AtencionUrgencia.panelindex.hc.infohistoriac);
-                Thread thread = new Thread(ut);
-                thread.start();
-            }
-        }
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        Object[] objeto2 = {"Si", "No"};
-        int n = JOptionPane.showOptionDialog(this, "¿Desea terminar este proceso de triaje?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE, null, objeto2, objeto2[1]);
-        if (n == 0) {            
-            this.dispose();     
+        if(registroCreado==false){
+            Object[] objeto2 = {"Si", "No"};
+            int n = JOptionPane.showOptionDialog(this, "Esta acción retornara el paciente a la lista de espera.\n¿Desea continuar?\n", "Cancelar triaje", JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null, objeto2, objeto2[1]);
+            if (n == 0) {      
+                try{
+                AtencionUrgencia.panelindex.listaPacientes.ia.setEstado(1);
+                AtencionUrgencia.panelindex.listaPacientes.admision.edit(AtencionUrgencia.panelindex.listaPacientes.ia);
+                this.dispose();
+                } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "10003:\n" + ex.getMessage(), Ftriaje.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        }else{
+            JOptionPane.showMessageDialog(null, "Para generar nuevamente este documento diríjase al\nmódulo de archivo en el grupo de gestión administrativo", "Mensaje Informativo", JOptionPane.INFORMATION_MESSAGE);
+            AtencionUrgencia.panelindex.FramEnable(true);
+            this.dispose();
         }
     }//GEN-LAST:event_formWindowClosing
+
+    private void jLabel2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseReleased
+        if (jLabel2.isEnabled()==true){
+            //0 es observacion ---- 3 Hospitalizacion
+            if (jComboBox1.getSelectedIndex() == 0 || jComboBox1.getSelectedIndex() == 3) {
+                Object[] objeto = {"Si", "No"};
+                int n = n = JOptionPane.showOptionDialog(this, "El paciente sera enviado a " + jComboBox1.getSelectedItem().toString() + "\n¿Desea seguir diligenciando la nota de ingreso?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+                if (n == 0) {
+                    hiloGenerarHc ut = new hiloGenerarHc(this, ih);
+                    Thread thread = new Thread(ut);
+                    thread.start();
+                    
+                }
+                //1 consulta externa --- 2 Domicilio
+            } else if (jComboBox1.getSelectedIndex() == 1 || jComboBox1.getSelectedIndex() == 2) {
+                Object[] objeto = {"Si", "No"};
+                int n = 0;
+                if (jComboBox1.isEnabled() == true) {
+                    n = JOptionPane.showOptionDialog(this, "Se generará la nota de triaje y no podrá realizar la nota de ingreso\n¿Desea continuar?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION,
+                            JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+                }
+                if (n == 0) {
+                    jComboBox1.setEnabled(false);
+                    jRadioButton1.setEnabled(false);
+                    jRadioButton2.setEnabled(false);
+                    jRadioButton3.setEnabled(false);
+                    jRadioButton4.setEnabled(false);
+                    jTextArea10.setEditable(false);
+                    if(registroCreado==false) this.CrearHistoriaC(AtencionUrgencia.panelindex.listaPacientes.ia);
+                    hiloReporte ut = new hiloReporte(this, ih);
+                    Thread thread = new Thread(ut);
+                    thread.start();
+                }
+            }
+        }
+    }//GEN-LAST:event_jLabel2MouseReleased
+
+    private void jLabel2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseExited
+        jLabel2.setBackground(new java.awt.Color(255,255,255));
+    }//GEN-LAST:event_jLabel2MouseExited
+
+    private void jLabel2MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseMoved
+        jLabel2.setBackground(new java.awt.Color(194, 224, 255));
+    }//GEN-LAST:event_jLabel2MouseMoved
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton1;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel44;
     private javax.swing.JPanel jPanel1;

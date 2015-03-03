@@ -488,10 +488,10 @@ public class pPlan extends javax.swing.JPanel {
         jPanel1.removeAll();
         pMedic.setBounds(0,0,403,386);
         jPanel1.add(pMedic);
-        pMedic.buttonSeven6.setVisible(true);
-        pMedic.buttonSeven7.setVisible(true);
-        pMedic.buttonSeven8.setVisible(true);
-        pMedic.buttonSeven9.setVisible(true);
+//        pMedic.buttonSeven6.setVisible(true);
+//        pMedic.buttonSeven7.setVisible(true);
+//        pMedic.buttonSeven8.setVisible(true);
+//        pMedic.buttonSeven9.setVisible(true);
         pMedic.onEvolucion=true;
         pMedic.setVisible(true);
         jPanel1.validate();
@@ -751,10 +751,9 @@ public class pPlan extends javax.swing.JPanel {
         jPanel1.removeAll();
         pMedidaGeneral.setBounds(0,0,403,386);//[403, 386]
         jPanel1.add(pMedidaGeneral);
-        pMedidaGeneral.jButton1.setVisible(true);
-        pMedidaGeneral.jButton2.setVisible(true);
+//        pMedidaGeneral.jButton2.setVisible(true);
         pMedidaGeneral.jTextArea26.setEditable(true);
-        pMedidaGeneral.jTextArea27.setEditable(true);
+//        pMedidaGeneral.jTextArea27.setEditable(true);
         pMedidaGeneral.setVisible(true);
         jPanel1.validate();
         jPanel1.repaint();

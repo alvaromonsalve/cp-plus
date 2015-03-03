@@ -33,9 +33,12 @@ public class fListPacientes extends javax.swing.JFrame {
     private long idCambiosAdmision=0;
     private Timer timer;
     private Timer reloj;
-    InfoAdmisionJpaController admision = null;
+    public InfoAdmisionJpaController admision = null;
     InfoOtrosdatosAdmisionJpaController oadmision = null;
     InfoPacienteJpaController infopacienteJPA = null;
+    private final EntityManagerFactory factory;
+    public Ftriaje ftriaje = null;
+    public InfoAdmision ia=null;
 
     public fListPacientes(EntityManagerFactory factory) {
         initComponents();
@@ -43,6 +46,7 @@ public class fListPacientes extends javax.swing.JFrame {
         oadmision = new   InfoOtrosdatosAdmisionJpaController(factory);
         infopacienteJPA = new InfoPacienteJpaController(factory);
         this.ModeloListadoPaciente();        
+        this.factory=factory;
     }
     
         @Override
@@ -189,7 +193,7 @@ public class fListPacientes extends javax.swing.JFrame {
         if(reloj!=null){
             reloj.cancel();
         }
-        InfoAdmision ia = (InfoAdmision) jtable1.getValueAt(jtable1.getSelectedRow(), 7);
+        ia = (InfoAdmision) jtable1.getValueAt(jtable1.getSelectedRow(), 7);
         jTextField1.setText(ia.getIdDatosPersonales().getNumDoc());
         jTextField2.setText(ia.getIdDatosPersonales().getNombre1()+" "+ia.getIdDatosPersonales().getApellido1());
         jTextField3.setText(String.valueOf(ia.getEdad()));
@@ -272,6 +276,7 @@ public class fListPacientes extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextArea2 = new javax.swing.JTextArea();
         jButton1 = new javax.swing.JButton();
+        jLabel19 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Pacientes con Admisión");
@@ -520,7 +525,7 @@ public class fListPacientes extends javax.swing.JFrame {
                             .addComponent(jScrollPane2)
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 3, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -571,17 +576,39 @@ public class fListPacientes extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jLabel19.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel19.setText("Aceptar");
+        jLabel19.setFocusable(false);
+        jLabel19.setOpaque(true);
+        jLabel19.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel19MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel19MouseReleased(evt);
+            }
+        });
+        jLabel19.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel19MouseMoved(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel50, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1))
+                    .addComponent(jScrollPane1)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 417, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -589,11 +616,14 @@ public class fListPacientes extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel50)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -640,30 +670,61 @@ public class fListPacientes extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosing
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        InfoAdmision ia = (InfoAdmision) jtable1.getValueAt(jtable1.getSelectedRow(), 7);
-        if (jTextField1.getText() != null && !jTextField1.getText().equals("") && !jTextField1.getText().equals("...")) {
-            AtencionUrgencia.panelindex.hc.ftriaje = new Ftriaje();
-            AtencionUrgencia.panelindex.hc.ftriaje.setTitle(ia.getIdDatosPersonales().getNombre1() + " "
-                    + ia.getIdDatosPersonales().getApellido1() + " [" + ia.getIdDatosPersonales().getNumDoc() + "]");
-            AtencionUrgencia.panelindex.hc.ftriaje.setVisible(true);
-            AtencionUrgencia.panelindex.FramEnable(false);
-            AtencionUrgencia.panelindex.hc.infopaciente = infopacienteJPA.findInfoPaciente(ia.getIdDatosPersonales().getId());
-            ia.setEstado(5);
-            try {
-                admision.edit(ia);
-                AtencionUrgencia.panelindex.hc.infoadmision = ia;
-                AtencionUrgencia.panelindex.hc.edite = false;
-                AtencionUrgencia.panelindex.hc.auditoria=false;
-                AtencionUrgencia.panelindex.hc.CrearHistoriaC();//creo la historia clinica de esa admision
-                AtencionUrgencia.panelindex.hc.DatosAntPersonales();//crear o mostrar antecedentes personales
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "10050:\n" + ex.getMessage(), fListPacientes.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            }
-            AtencionUrgencia.panelindex.hc.jlbNombrePaciente.setText(jTextField2.getText() + " [" + jTextField1.getText() + "]    [" + jTextField5.getText() + "]");
-            closed();
-            this.dispose();
-        }
+//        InfoAdmision ia = (InfoAdmision) jtable1.getValueAt(jtable1.getSelectedRow(), 7);
+//        if (jTextField1.getText() != null && !jTextField1.getText().equals("") && !jTextField1.getText().equals("...")) {
+//            AtencionUrgencia.panelindex.hc.ftriaje = new Ftriaje();
+//            AtencionUrgencia.panelindex.hc.ftriaje.setTitle(ia.getIdDatosPersonales().getNombre1() + " "
+//                    + ia.getIdDatosPersonales().getApellido1() + " [" + ia.getIdDatosPersonales().getNumDoc() + "]");
+//            AtencionUrgencia.panelindex.hc.ftriaje.setVisible(true);
+//            AtencionUrgencia.panelindex.FramEnable(false);
+//            AtencionUrgencia.panelindex.hc.infopaciente = infopacienteJPA.findInfoPaciente(ia.getIdDatosPersonales().getId());
+//            ia.setEstado(5);
+//            try {
+//                admision.edit(ia);
+//                AtencionUrgencia.panelindex.hc.infoadmision = ia;
+////                AtencionUrgencia.panelindex.hc.edite = false;
+////                AtencionUrgencia.panelindex.hc.auditoria=false;
+//                AtencionUrgencia.panelindex.hc.CrearHistoriaC();//creo la historia clinica de esa admision
+//                AtencionUrgencia.panelindex.hc.DatosAntPersonales();//crear o mostrar antecedentes personales
+//            } catch (Exception ex) {
+//                JOptionPane.showMessageDialog(null, "10050:\n" + ex.getMessage(), fListPacientes.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+//            }
+//            AtencionUrgencia.panelindex.hc.jlbNombrePaciente.setText(jTextField2.getText() + " [" + jTextField1.getText() + "]    [" + jTextField5.getText() + "]");
+//            closed();
+//            this.dispose();
+//        }
+          AtencionUrgencia.ShowAyuda("Este es un Titulo", null);
+        
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jLabel19MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel19MouseExited
+        jLabel19.setBackground(new java.awt.Color(255,255,255));
+    }//GEN-LAST:event_jLabel19MouseExited
+
+    private void jLabel19MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel19MouseReleased
+        if (jLabel19.isEnabled() == true) {
+            ia = (InfoAdmision) jtable1.getValueAt(jtable1.getSelectedRow(), 7);
+            if (jTextField1.getText() != null && !jTextField1.getText().equals("") && !jTextField1.getText().equals("...")) {
+//                ia.setEstado(5);
+                try {
+                    admision.edit(ia);
+                    ftriaje = new Ftriaje(factory);
+                    ftriaje.setTitle(ia.getIdDatosPersonales().getNombre1() + " "
+                            + ia.getIdDatosPersonales().getApellido1() + " [" + ia.getIdDatosPersonales().getNumDoc() + "]");
+                    ftriaje.setVisible(true);                    
+                    AtencionUrgencia.panelindex.FramEnable(false);
+                    closed();
+                    this.dispose();                    
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "10050:\n" + ex.getMessage(), fListPacientes.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        }
+    }//GEN-LAST:event_jLabel19MouseReleased
+
+    private void jLabel19MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel19MouseMoved
+        jLabel19.setBackground(new java.awt.Color(194, 224, 255));
+    }//GEN-LAST:event_jLabel19MouseMoved
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -677,6 +738,7 @@ public class fListPacientes extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

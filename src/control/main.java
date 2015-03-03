@@ -3,6 +3,7 @@ package control;
 
 import java.util.Properties;
 import javax.swing.UIManager;
+import static resources.Functions.createDirReportes;
 
 /**
  *
@@ -10,7 +11,7 @@ import javax.swing.UIManager;
  */
 public class main extends javax.swing.JFrame {
     Properties props = new Properties();
-    private javax.swing.JPanel atencionU;
+    private final javax.swing.JPanel atencionU;
 
     /**
      * Creates new form main
@@ -26,6 +27,7 @@ public class main extends javax.swing.JFrame {
         jPanel1.validate();
         this.validate();
         this.pack();
+        createDirReportes();
     }
     
     private void ParametrosBD(){

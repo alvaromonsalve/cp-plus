@@ -4439,11 +4439,11 @@ public class Evo extends javax.swing.JPanel {
         }
         jPanel35.removeAll();
         pMedic.setBounds(0, 0, 380, 420);
-        jPanel35.add(pMedic);
-        pMedic.buttonSeven6.setVisible(false);
-        pMedic.buttonSeven7.setVisible(false);
-        pMedic.buttonSeven8.setVisible(false);
-        pMedic.buttonSeven9.setVisible(false);
+//        jPanel35.add(pMedic);
+//        pMedic.buttonSeven6.setVisible(false);
+//        pMedic.buttonSeven7.setVisible(false);
+//        pMedic.buttonSeven8.setVisible(false);
+//        pMedic.buttonSeven9.setVisible(false);
         pMedic.setVisible(true);
         jPanel35.validate();
         jPanel35.repaint();
@@ -4473,8 +4473,8 @@ public class Evo extends javax.swing.JPanel {
         jPanel35.removeAll();
         pLaboratorio.setBounds(0, 0, 380, 420);
         jPanel35.add(pLaboratorio);
-        pLaboratorio.buttonSeven6.setVisible(false);
-        pLaboratorio.buttonSeven7.setVisible(false);
+//        pLaboratorio.buttonSeven6.setVisible(false);
+//        pLaboratorio.buttonSeven7.setVisible(false);
         pLaboratorio.jTextArea25.setEditable(false);
         pLaboratorio.setVisible(true);
         jPanel35.validate();
@@ -4642,10 +4642,10 @@ public class Evo extends javax.swing.JPanel {
         jPanel35.removeAll();
         pMedidaGeneral.setBounds(0, 0, 380, 420);
         jPanel35.add(pMedidaGeneral);
-        pMedidaGeneral.jButton1.setVisible(false);
-        pMedidaGeneral.jButton2.setVisible(false);
+//        pMedidaGeneral.jButton1.setVisible(false);
+//        pMedidaGeneral.jButton2.setVisible(false);
         pMedidaGeneral.jTextArea26.setEditable(false);
-        pMedidaGeneral.jTextArea27.setEditable(false);
+//        pMedidaGeneral.jTextArea27.setEditable(false);
         pMedidaGeneral.setVisible(true);
         jPanel35.validate();
         jPanel35.repaint();

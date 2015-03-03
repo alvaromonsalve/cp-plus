@@ -44,7 +44,7 @@ public class HcuDestino extends javax.swing.JPanel {
         jPanel32.setBorder(javax.swing.BorderFactory.createTitledBorder("Destino"));
         jPanel32.setOpaque(false);
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "OBSERVACION", "HOSPITALIZACION" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "OBSERVACION", "CONSULTA EXTERNA (CITA PRIORITARIA)", "DOMICILIO", "HOSPITALIZACION" }));
 
         javax.swing.GroupLayout jPanel32Layout = new javax.swing.GroupLayout(jPanel32);
         jPanel32.setLayout(jPanel32Layout);

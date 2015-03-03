@@ -121,6 +121,9 @@ public class hcuAdministrador extends javax.swing.JDialog {
         @Override
         public void run(){
             jLabel2.setVisible(true);
+            while (modelo.getRowCount()>0) {
+                    modelo.removeRow(0);
+                }
             List<InfoAdmision> admisions = listAdmisiones(jTextField1.getText());
             for (InfoAdmision admision : admisions) {
                 int i = jTable1.getRowCount();
@@ -454,8 +457,8 @@ public class hcuAdministrador extends javax.swing.JDialog {
             InfoHistoriac historiac = null;
             InfoAdmision ia = (InfoAdmision) modelo.getValueAt(jTable1.getSelectedRow(), 0);
             List<InfoHistoriac> historiacs = ia.getInfoHistoriacList();
-            for (InfoHistoriac ih : historiacs) {
-                if (ih.getEstado() != 0) {
+            for (InfoHistoriac ih : historiacs){
+                if (ih.getEstado() != 5) {
                     historiac = ih;
                     break;
                 }
@@ -467,10 +470,14 @@ public class hcuAdministrador extends javax.swing.JDialog {
                 AtencionUrgencia.panelindex.jpContainer.add(AtencionUrgencia.panelindex.hc);
                 AtencionUrgencia.panelindex.hc.setVisible(true);
                 AtencionUrgencia.panelindex.jpContainer.validate();
-                AtencionUrgencia.panelindex.jpContainer.repaint();
-                AtencionUrgencia.panelindex.hc.viewClinicHistory(historiac);
-                AtencionUrgencia.panelindex.hc.auditoria=true;
-                AtencionUrgencia.panelindex.hc.DatosAntPersonales();
+                AtencionUrgencia.panelindex.jpContainer.repaint();                
+//                AtencionUrgencia.panelindex.hc.viewHCinForm(historiac,
+//                        AtencionUrgencia.panelindex.hc.hcuHistoriac2JpaC.findHcuHistoriac2(historiac.getId()));
+                if(historiac.getEstado()!=0){
+                    AtencionUrgencia.panelindex.hc.jButton10.setEnabled(false);
+                }
+//                AtencionUrgencia.panelindex.hc.auditoria=true;
+//                AtencionUrgencia.panelindex.hc.DatosAntPersonales();
                 AtencionUrgencia.panelindex.hc.jButton10.setEnabled(false);
                 this.dispose();
             }

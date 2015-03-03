@@ -3,7 +3,6 @@ package atencionurgencia;
 import static atencionurgencia.AtencionUrgencia.roles;
 import atencionurgencia.ListadoPacientes.enAtencion;
 import atencionurgencia.ListadoPacientes.fListPacientes;
-import atencionurgencia.ListadoPacientes.fListinterconsulta;
 import atencionurgencia.ListadoPacientes.fPacientesCamas;
 import atencionurgencia.documentos.jDocumentos;
 import atencionurgencia.evolucion.Evo;
@@ -11,8 +10,6 @@ import atencionurgencia.ingreso.HC;
 import entidades.AccessRoles;
 import entidades.InfoHistoriac;
 import entidades.ReportVersion;
-import java.awt.Color;
-import java.awt.Font;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -21,11 +18,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import jpa.HcuHistoriac2JpaController;
+import jpa.InfoAntPersonalesJpaController;
+import jpa.InfoHcExpfisicaJpaController;
 import jpa.InfoHistoriacJpaController;
-import jpa.ReportVersionJpaController;
 import other.hcuAdministrador;
 import tools.Funciones;
 
@@ -43,9 +41,12 @@ public class panelIndex extends javax.swing.JPanel {
     private final EntityManagerFactory factory;
     private Timer timer;
     private int tiempo=1;
-    private InfoHistoriacJpaController infoHistoriacJpaC;
+    public InfoHistoriacJpaController infoHistoriacJpaC;
     public List<ReportVersion> reportVersions;
-    
+    public fListPacientes listaPacientes = null;
+    public HcuHistoriac2JpaController hcuHistoriac2JpaC = null;
+    public InfoHcExpfisicaJpaController infohsfisicoJPA;
+    public InfoAntPersonalesJpaController antPersonalesJPA;
 
     public panelIndex(EntityManagerFactory factory) {
         initComponents();
@@ -93,7 +94,7 @@ public class panelIndex extends javax.swing.JPanel {
     public void FramEnable(boolean var) {
         JFrame casa = (JFrame) SwingUtilities.getWindowAncestor(this);
         casa.setEnabled(var);
-        
+        if(var==true) casa.setVisible(var);
     }
 
     @SuppressWarnings("unchecked")
@@ -172,19 +173,18 @@ public class panelIndex extends javax.swing.JPanel {
         jButton3.setContentAreaFilled(false);
         jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jButton3.setDoubleBuffered(true);
-        jButton3.setEnabled(false);
         jButton3.setFocusable(false);
         jButton3.setMaximumSize(new java.awt.Dimension(46, 46));
         jButton3.setMinimumSize(new java.awt.Dimension(46, 46));
         jButton3.setPreferredSize(new java.awt.Dimension(46, 46));
-        jButton3.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jButton3MouseMoved(evt);
-            }
-        });
         jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jButton3MouseExited(evt);
+            }
+        });
+        jButton3.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton3MouseMoved(evt);
             }
         });
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -357,12 +357,11 @@ public class panelIndex extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton1MouseExited
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        activeButton(false);
-        fListPacientes listaPacientes = null;
+        activeButton(false);        
         listaPacientes = new fListPacientes(factory);
         listaPacientes.setVisible(true);
         listaPacientes.setAlwaysOnTop(true);
-        hc = new HC(factory);
+//        hc = new HC(factory);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseExited
@@ -397,12 +396,12 @@ public class panelIndex extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton3MouseMoved
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-//        jButton3.setEnabled(false);
-//        fPacientesCamas pacientesCamas = null;
-//        pacientesCamas = new fPacientesCamas(factory);
-//        pacientesCamas.setVisible(true);
-//        pacientesCamas.inicio();
-//        jButton3.setContentAreaFilled(false);
+        jButton3.setEnabled(false);
+        fPacientesCamas pacientesCamas = null;
+        pacientesCamas = new fPacientesCamas(factory);
+        pacientesCamas.setVisible(true);
+        pacientesCamas.inicio();
+        jButton3.setContentAreaFilled(false);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseExited
@@ -478,25 +477,14 @@ public class panelIndex extends javax.swing.JPanel {
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         jButton6.setEnabled(false);
         jButton6.setContentAreaFilled(false);
-        boolean accede = false;
-        if(AtencionUrgencia.isAdministrador==true){
-            accede = true;
-        }
-        for (AccessRoles ar : roles) {
-            if (ar.getRuta() == 10002) {
-                accede = true;
-                break;
-            }
-        }
+        //eliminamos acceso privilegiado
         hcuAdministrador hcuAdministrador1 = new hcuAdministrador((JFrame) SwingUtilities.getWindowAncestor(this),factory);
-        if (accede==true) {            
+          
             hcuAdministrador1.setLocationRelativeTo(this);
             hcuAdministrador1.setVisible(true);
             jButton6.setEnabled(true);
             jButton6.setContentAreaFilled(true);
-        }else{
-            //codigo para los no modificadores            
-        }        
+      
     }//GEN-LAST:event_jButton6ActionPerformed
         
     public void recordatorio() {

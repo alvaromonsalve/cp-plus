@@ -13,18 +13,19 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.io.File;
 import java.util.List;
 import java.util.Properties;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import jpa.AccessConfigUserJpaController;
 import jpa.CmProfesionalesJpaController;
 import jpa.ConfigdecripcionloginJpaController;
-import tools.Funciones;
+import other.Asistente;
 
 
 /**
@@ -43,6 +44,7 @@ public class AtencionUrgencia {
     public static String sFTP ="192.168.1.102";
     public static String sUser = "userclipa_ftp";
     public static String sPassword = "Ccqf0owa58eM";
+    public static Asistente a = new Asistente();
 //    private static final Logger LOGGER = LoggerFactory.getLogger(AtencionUrgencia.class);
 
     /**
@@ -52,7 +54,6 @@ public class AtencionUrgencia {
      * @return panel principal de la clase setBounds(0, 0, 840, 540)
      */
     public static JPanel getPanelIndex(int idUsuario2, Properties props){
-        createDirDownload();
         JPanel jPanel = new Panel("images/permiso.jpg");
         JLabel label = new JLabel("CODIGO DE PERMISO: 10000");
         label.setForeground(Color.white);
@@ -124,11 +125,21 @@ public class AtencionUrgencia {
         }
     }
     
-    private static void createDirDownload(){        
-        File f = new File("C:/Downloads");        
-        File f2 = new File("C:/Clipa_logs");
-        f.mkdirs(); 
-        Funciones.reportDownload("/generales/", "rotulImg.png");
-        Funciones.reportDownload("/generales/", "rotulo.jasper");
+    public static void ShowAyuda(String title,String texto){
+        JFrame casa = (JFrame) SwingUtilities.getWindowAncestor(panelindex);
+        a.setLocation(casa.getX()+casa.getWidth(), casa.getY());
+        a.getText(title, texto);
+        a.setVisible(true);  
+        a.repaint();
+        
     }
+    
+    
+//    private static void createDirDownload(){        
+//        File f = new File("C:/Downloads");        
+//        File f2 = new File("C:/Clipa_logs");
+//        f.mkdirs(); 
+//        Funciones.reportDownload("/generales/", "rotulImg.png");
+//        Funciones.reportDownload("/generales/", "rotulo.jasper");
+//    }
 }

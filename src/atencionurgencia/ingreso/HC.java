@@ -2,15 +2,13 @@
 package atencionurgencia.ingreso;
 
 import atencionurgencia.AtencionUrgencia;
-import atencionurgencia.ListadoPacientes.Ftriaje;
 import atencionurgencia.ListadoPacientes.addMedicamentos;
 import entidades.HcuHistoriac2;
-import entidades.InfoAdmision;
 import entidades.InfoAntPersonales;
-import entidades.InfoHcExpfisica;
 import entidades.InfoHistoriac;
 import entidades.InfoPaciente;
 import entidades.InfoPruebasComplement;
+import entidades.PypInfoAntecedentesg;
 import entidades.StaticCie10;
 import java.awt.Color;
 import java.awt.Event;
@@ -18,6 +16,7 @@ import java.awt.HeadlessException;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -38,9 +37,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import jpa.HcuHistoriac2JpaController;
 import jpa.InfoAntPersonalesJpaController;
-import jpa.InfoHcExpfisicaJpaController;
 import jpa.InfoHistoriacJpaController;
 import jpa.InfoPruebasComplementJpaController;
+import jpa.PypInfoAntecedentesgJpaController;
 import jpa.StaticCie10JpaController;
 import jpa.exceptions.NonexistentEntityException;
 import other.*;
@@ -58,26 +57,26 @@ public class HC extends javax.swing.JPanel {
     FormPersonas personas = null;
     public InfoPaciente infopaciente = null;
     public InfoHistoriac infohistoriac = null;
-    public InfoAdmision infoadmision = null;
-    private InfoHcExpfisica infoexploracion = null;
+//    public InfoAdmision infoadmision = null;
+//    private InfoHcExpfisica infoexploracion = null;
+//    private InfoHcExpfisicaJpaController infohsfisicoJPA=null;
     private StaticCie10 staticCie10 = null;
     private StaticCie10JpaController staticcie = null;
     private InfoPruebasComplement infoPruebasComplement = null;
     private final EntityManagerFactory factory;
     private InfoHistoriacJpaController infohistoriaJPA = null;
-    private InfoHcExpfisicaJpaController infohsfisicoJPA = null;
     private InfoPruebasComplementJpaController infoPruebasComplementJPA = null;
     public int idDiag1 = 1, idDiag2 = 1, idDiag3 = 1, idDiag4 = 1, idDiag5 = 1;
     public DefaultTableModel modeloAyudDiag, modDestroyAyudDiag;
     private final addMedicamentos trat = null;
-    public int finalizar = 0;
+//    public int finalizar = 0;
     public Boolean edite = false;
     private final Object dato[] = null;
     private final String tipoAyudaDiag[] = {"LABORATORIO", "IMAGEN", "ENDOSCOPIA", "ANATOMIA PATOLOGICA", "ELECTROGRAMAS", "ESTUDIOS ALERGOLÓGICOS"};
     private List<InfoPruebasComplement> listaPruebas = null;
     private final String s = System.getProperty("file.separator");
     private InfoAntPersonalesJpaController antPersonalesJPA = null;
-    private InfoAntPersonales antPersonales;
+//    private InfoAntPersonales antPersonales;
     public pTratMedic pMedic = null;
     public pTratPConsultDiag pConsultDiag = null;
     public pTratLaboratorio pLaboratorio = null;
@@ -88,12 +87,16 @@ public class HC extends javax.swing.JPanel {
     public pTratOtrasInterconsultas pOtrasInterconsultas = null;
     public pTratMedidaGeneral pMedidaGeneral = null;
     public pAnexo3 pAnexo31 = null;
-    public Ftriaje ftriaje = null;
+//    public Ftriaje ftriaje = null;
     private HcuDestino hcuDestino = null;
     final long MILLSECS_PER_DAY = 24 * 60 * 60 * 1000; //Milisegundos al día 
-    private HcuHistoriac2 hcuHistoriac2;
-    private HcuHistoriac2JpaController hcuHistoriac2JpaC = null;
+    public HcuHistoriac2JpaController hcuHistoriac2JpaC = null;
     public boolean auditoria=false;
+    private PypInfoAntecedentesgJpaController piajc=null;
+    private PypInfoAntecedentesg pia=null;
+    private HcuHistoriac2 historiac2;
+    private InfoAntPersonales antPersonales;
+    
     // </editor-fold>
 
     public HC(EntityManagerFactory factory) {
@@ -102,8 +105,6 @@ public class HC extends javax.swing.JPanel {
         inicio();
         InputMap map2 = jTextArea10.getInputMap(JTextArea.WHEN_FOCUSED);
         map2.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK), "null");
-        jLabel58.setVisible(false);
-        jLabel59.setVisible(false);
         this.factory = factory;
         infohistoriaJPA = new InfoHistoriacJpaController(factory);
         hcuHistoriac2JpaC = new HcuHistoriac2JpaController(factory);
@@ -196,13 +197,145 @@ public class HC extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, "10052:\n" + ex.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
         }
     }
+    
+    public void viewHCinForm(InfoHistoriac ih, HcuHistoriac2 hh, PypInfoAntecedentesg pia){
+        this.infohistoriac = ih;
+        this.historiac2 = hh;
+        this.pia = pia;
+        this.setHistoryC();
+        this.setFisicExplorer();
+        this.setHelpDiag();
+    }
 
-    public void CrearHistoriaC() {
-        saveHistoryClinic();
-        saveFisicExplorer();
-        saveHelpDiag();
-        infohistoriac = infohistoriaJPA.findInfoHistoriac(this.infohistoriac.getId());
-        if (pImagenologia != null) {
+//    public void CrearHistoriaC(){
+////        saveHistoryClinic();
+////        saveFisicExplorer();
+////        saveHelpDiag();
+////        infohistoriac = infohistoriaJPA.findInfoHistoriac(this.infohistoriac.getId());
+//        if (pImagenologia != null) {
+//            pImagenologia.saveChanges(factory, infohistoriac);
+//        }
+//        if (pLaboratorio != null) {
+//            pLaboratorio.saveChanges(factory, infohistoriac);
+//        }
+//        if (pProcedimientos != null) {
+//            pProcedimientos.saveChanges(factory, infohistoriac);
+//        }
+//        if (pConsultDiag != null) {
+//            pConsultDiag.saveChanges(factory, infohistoriac);
+//        }
+//        if (pQuirurgico != null) {
+//            pQuirurgico.saveChanges(factory, infohistoriac);
+//        }
+//        if (pInterconsulta0 != null) {
+//            pInterconsulta0.saveChanges(infohistoriac);
+//        }
+//        if (pInterconsulta1 != null) {
+//            pInterconsulta1.saveChanges(infohistoriac);
+//        }
+//        if (pInterconsulta2 != null) {
+//            pInterconsulta2.saveChanges(infohistoriac);
+//        }
+//        if (pInterconsulta3 != null) {
+//            pInterconsulta3.saveChanges(infohistoriac);
+//        }
+//        if (pInterconsulta4 != null) {
+//            pInterconsulta4.saveChanges(infohistoriac);
+//        }
+//        if (pOtrasInterconsultas != null) {
+//            pOtrasInterconsultas.saveChanges(infohistoriac);
+//        }
+//        if (pMedidaGeneral != null) {
+//            pMedidaGeneral.saveChanges(factory, infohistoriac);
+//        }
+//        if (pMedic != null) {
+//            pMedic.saveChanges(factory, infohistoriac);
+//        }
+//    }
+
+    public void saveHistoryClinic() {
+        if (jComboBox1.getSelectedIndex() > -1) {
+            infohistoriac.setCausaExterna(jComboBox1.getSelectedItem().toString());
+        } else {
+            infohistoriac.setCausaExterna("ENFERMEDAD GENERAL O COMÚN");
+        }
+        infohistoriac.setMotivoConsulta(jTextArea10.getText().toUpperCase());
+        infohistoriac.setNivelTriaje(getSelectionNivelTriage());
+        infohistoriac.setAlergias(jTextArea11.getText().toUpperCase());
+        infohistoriac.setIngresosPrevios(jTextArea12.getText().toUpperCase());
+        infohistoriac.setTraumatismos(jTextArea22.getText().toUpperCase());
+        infohistoriac.setTratamientos(jTextArea23.getText().toUpperCase());
+        infohistoriac.setSituacionBasal(jTextArea24.getText().toUpperCase());
+        infohistoriac.setHta(jCheckBox1.isSelected());
+        infohistoriac.setDm(jCheckBox2.isSelected());
+        infohistoriac.setDislipidemia(jCheckBox3.isSelected());
+        infohistoriac.setTabaco(jCheckBox7.isSelected());
+        infohistoriac.setAlcohol(jCheckBox8.isSelected());
+        infohistoriac.setDroga(jCheckBox9.isSelected());
+        infohistoriac.setOtrosHabitos(jTextArea7.getText().toUpperCase());
+        infohistoriac.setDescHdd(jTextArea5.getText().toUpperCase());
+        infohistoriac.setAntFamiliar(jTextArea25.getText().toUpperCase());
+        infohistoriac.setEnfermedadActual(jTextArea13.getText().toUpperCase());
+        infohistoriac.setDiagnostico(idDiag1);
+        infohistoriac.setDiagnostico2(idDiag2);
+        infohistoriac.setDiagnostico3(idDiag3);
+        infohistoriac.setDiagnostico4(idDiag4);
+        infohistoriac.setDiagnostico5(idDiag5);
+        infohistoriac.setHallazgo(jTextArea19.getText().toUpperCase());
+        if (hcuDestino != null) {
+            infohistoriac.setDestino(hcuDestino.saveChanges());
+            if (infohistoriac.getDestino().equals("DOMICILIO")) {
+                infohistoriac.setEstado(2);
+            }else if(infohistoriac.getDestino().equals("CONSULTA EXTERNA (CITA PRIORITARIA)")){
+                infohistoriac.setEstado(3);
+            }else if(infohistoriac.getDestino().equals("OBSERVACION")){
+                infohistoriac.setEstado(1);
+            }else if(infohistoriac.getDestino().equals("HOSPITALIZACION")){
+                infohistoriac.setEstado(1);
+            }
+        }
+        infohistoriac.setIdConfigdecripcionlogin(AtencionUrgencia.configdecripcionlogin);
+        try {
+            Date hoy = new Date();
+            long diferencia = (hoy.getTime() - historiac2.getFIngreso().getTime());// MILLSECS_PER_DAY;
+            if (diferencia > 900000) {
+                diferencia = 900000;
+            }
+            historiac2.setTiempoConsulta((int) diferencia);
+            if(jDateChooser1.getDate()==null){
+                historiac2.setFum(new SimpleDateFormat("yyyy-MM-dd").parse("0001-01-01"));
+            }else{
+                historiac2.setFum(jDateChooser1.getDate());
+            }
+            historiac2.setNAbortos(jTextField19.getText());
+            historiac2.setNCesarias(jTextField17.getText());
+            historiac2.setNGestas(jTextField20.getText());
+            historiac2.setNPartos(jTextField18.getText());
+            historiac2.setObsAntGine(jTextArea26.getText().toUpperCase());
+            hcuHistoriac2JpaC.edit(historiac2);
+            infohistoriac.getInfoHcExpfisica().setTa(jTextField1.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setT(jTextField8.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setTam(jTextField2.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setSao2(jTextField7.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setFc(jTextField3.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setPvc("");
+            infohistoriac.getInfoHcExpfisica().setFr(jTextField4.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setPic(jTextField5.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setPeso(jTextField9.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setTalla(jTextField10.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setOtros(jTextArea2.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setAspectogeneral(jTextArea3.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setCara(jTextArea4.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setCardio(jTextArea6.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setRespiratorio(jTextArea8.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setGastro(jTextArea9.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setRenal(jTextArea14.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setHemato(jTextArea15.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setEndo(jTextArea16.getText().toUpperCase());
+            infohistoriac.getInfoHcExpfisica().setOsteo(jTextArea17.getText().toUpperCase());
+            AtencionUrgencia.panelindex.infohsfisicoJPA.edit(infohistoriac.getInfoHcExpfisica());
+            this.SaveAntPersonales();
+            if (pImagenologia != null) {
             pImagenologia.saveChanges(factory, infohistoriac);
         }
         if (pLaboratorio != null) {
@@ -241,80 +374,9 @@ public class HC extends javax.swing.JPanel {
         if (pMedic != null) {
             pMedic.saveChanges(factory, infohistoriac);
         }
-    }
-
-    public void saveHistoryClinic() {
-        if (infohistoriac == null) {
-            infohistoriac = new InfoHistoriac();
-        }
-        infohistoriac.setIdInfoAdmision(infoadmision);
-        if (jComboBox1.getSelectedIndex() > -1) {
-            infohistoriac.setCausaExterna(jComboBox1.getSelectedItem().toString());
-        } else {
-            infohistoriac.setCausaExterna("");
-        }
-        infohistoriac.setMotivoConsulta(jTextArea10.getText().toUpperCase());
-        infohistoriac.setNivelTriaje(getSelectionNivelTriage());
-        infohistoriac.setAlergias(jTextArea11.getText().toUpperCase());
-        infohistoriac.setIngresosPrevios(jTextArea12.getText().toUpperCase());
-        infohistoriac.setTraumatismos(jTextArea22.getText().toUpperCase());
-        infohistoriac.setTratamientos(jTextArea23.getText().toUpperCase());
-        infohistoriac.setSituacionBasal(jTextArea24.getText().toUpperCase());
-        infohistoriac.setHta(jCheckBox1.isSelected());
-        infohistoriac.setDm(jCheckBox2.isSelected());
-        infohistoriac.setDislipidemia(jCheckBox3.isSelected());
-        infohistoriac.setTabaco(jCheckBox7.isSelected());
-        infohistoriac.setAlcohol(jCheckBox8.isSelected());
-        infohistoriac.setDroga(jCheckBox9.isSelected());
-        infohistoriac.setOtrosHabitos(jTextArea7.getText().toUpperCase());
-        infohistoriac.setDescHdd(jTextArea5.getText().toUpperCase());
-        infohistoriac.setAntFamiliar(jTextArea25.getText().toUpperCase());
-        infohistoriac.setEnfermedadActual(jTextArea13.getText().toUpperCase());
-        infohistoriac.setDiagnostico(idDiag1);
-        infohistoriac.setDiagnostico2(idDiag2);
-        infohistoriac.setDiagnostico3(idDiag3);
-        infohistoriac.setDiagnostico4(idDiag4);
-        infohistoriac.setDiagnostico5(idDiag5);
-        infohistoriac.setHallazgo(jTextArea19.getText().toUpperCase());
-        if(auditoria ==false){
-            infohistoriac.setTipoHc(0);//0 = urgencias;
-        }        
-        if (infohistoriac.getEstado() != 2 && auditoria ==false) {
-            infohistoriac.setEstado(finalizar);
-        }
-        if (hcuDestino != null) {
-            infohistoriac.setDestino(hcuDestino.saveChanges());
-            if (infohistoriac.getDestino().equals("DOMICILIO") && auditoria ==false) {
-                infohistoriac.setEstado(2);
-            }
-        }
-        if(auditoria == false){
-            infohistoriac.setIdConfigdecripcionlogin(AtencionUrgencia.configdecripcionlogin);
-        }        
-        try {
-            if (edite == false) {
-                infohistoriaJPA.create(this.infohistoriac);
-                hcuHistoriac2 = new HcuHistoriac2();
-                hcuHistoriac2.setIdInfoHistoriac(infohistoriac.getId());
-                hcuHistoriac2.setFIngreso(new Date());
-                hcuHistoriac2.setTiempoConsulta(0);
-                hcuHistoriac2JpaC.create(hcuHistoriac2);
-            } else {
-                hcuHistoriac2 = this.FindHcuHistoriac2(infohistoriac);
-                if(hcuHistoriac2 !=null){
-                    Date hoy = new Date();
-                    long diferencia = (hoy.getTime() - hcuHistoriac2.getFIngreso().getTime());// MILLSECS_PER_DAY;
-                    if (diferencia > 900000) {
-                    diferencia = 900000;
-                    }
-                    hcuHistoriac2.setTiempoConsulta((int) diferencia);
-                    hcuHistoriac2JpaC.edit(hcuHistoriac2);
-                }
-                
-                infohistoriaJPA.edit(this.infohistoriac);
-            }
+            infohistoriaJPA.edit(this.infohistoriac);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "10055:\n" + ex.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "10055:\n" + ex.getMessage()+" "+ex.getLocalizedMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
         }
     }
     
@@ -327,65 +389,102 @@ public class HC extends javax.swing.JPanel {
             .getSingleResult();
         }catch(Exception e){
             return null;
-        } 
-        
+        }        
         finally {
             em.close();
         }
    }
 
-    public void DatosAntPersonales() {
-        if (antPersonalesJPA == null) {
-            antPersonalesJPA = new InfoAntPersonalesJpaController(factory);
-        }
-        antPersonales = antPersonalesJPA.findInfoAntPersonalesIDPac(infopaciente);
-        if (antPersonales == null) {
-            antPersonales = new InfoAntPersonales();
-            antPersonales.setIdPaciente(infopaciente.getId());
-            antPersonales.setAlcohol(false);
-            antPersonales.setAlergias("NINGUNO");
-            antPersonales.setAntFamiliares("NINGUNO");
-            antPersonales.setDescHdd("");
-            antPersonales.setDislipidemia(false);
-            antPersonales.setDm(false);
-            antPersonales.setDroga(false);
-            antPersonales.setHta(false);
-            antPersonales.setIngresosPrevios("NINGUNO");
-            antPersonales.setOtrosHabitos("NINGUNO");
-            antPersonales.setSituacionBasal("NINGUNO");
-            antPersonales.setTabaco(false);
-            antPersonales.setTratamientos("NINGUNO");
-            antPersonales.setTraumatismos("NINGUNO");
-            antPersonalesJPA.create(antPersonales);
-        } else {
-            jTextArea11.setText(antPersonales.getAlergias());
-            jTextArea11.setCaretPosition(0);
-            jTextArea12.setText(antPersonales.getIngresosPrevios());
-            jTextArea12.setCaretPosition(0);
-            jTextArea22.setText(antPersonales.getTraumatismos());
-            jTextArea22.setCaretPosition(0);
-            jTextArea23.setText(antPersonales.getTratamientos());
-            jTextArea23.setCaretPosition(0);
-            jTextArea24.setText(antPersonales.getSituacionBasal());
-            jTextArea24.setCaretPosition(0);
-            jCheckBox1.setSelected(antPersonales.getHta());
-            jCheckBox2.setSelected(antPersonales.getDm());
-            jCheckBox3.setSelected(antPersonales.getDislipidemia());
-            jCheckBox7.setSelected(antPersonales.getTabaco());
-            jCheckBox8.setSelected(antPersonales.getAlcohol());
-            jCheckBox9.setSelected(antPersonales.getDroga());
-            jTextArea7.setText(antPersonales.getOtrosHabitos());
-            jTextArea7.setCaretPosition(0);
-            jTextArea5.setText(antPersonales.getDescHdd());
-            jTextArea5.setCaretPosition(0);
-            jTextArea25.setText(antPersonales.getAntFamiliares());
-            jTextArea25.setCaretPosition(0);
-            //muestra de la cajas de texto
+//    public void DatosAntPersonales() {
+//        if (antPersonalesJPA == null) {
+//            antPersonalesJPA = new InfoAntPersonalesJpaController(factory);
+//            piajc = new PypInfoAntecedentesgJpaController(factory);
+//        }
+//        antPersonales = antPersonalesJPA.findInfoAntPersonalesIDPac(infopaciente);
+//        pia = findPiaIDPac(infopaciente);
+//        if (antPersonales == null) {
+//            antPersonales = new InfoAntPersonales();
+//            antPersonales.setIdPaciente(infopaciente.getId());
+//            antPersonales.setAlcohol(false);
+//            antPersonales.setAlergias("NINGUNO");
+//            antPersonales.setAntFamiliares("NINGUNO");
+//            antPersonales.setDescHdd("");
+//            antPersonales.setDislipidemia(false);
+//            antPersonales.setDm(false);
+//            antPersonales.setDroga(false);
+//            antPersonales.setHta(false);
+//            antPersonales.setIngresosPrevios("NINGUNO");
+//            antPersonales.setOtrosHabitos("NINGUNO");
+//            antPersonales.setSituacionBasal("NINGUNO");
+//            antPersonales.setTabaco(false);
+//            antPersonales.setTratamientos("NINGUNO");
+//            antPersonales.setTraumatismos("NINGUNO");
+//            antPersonalesJPA.create(antPersonales);
+//        } else {
+//            jTextArea11.setText(antPersonales.getAlergias());
+//            jTextArea11.setCaretPosition(0);
+//            jTextArea12.setText(antPersonales.getIngresosPrevios());
+//            jTextArea12.setCaretPosition(0);
+//            jTextArea22.setText(antPersonales.getTraumatismos());
+//            jTextArea22.setCaretPosition(0);
+//            jTextArea23.setText(antPersonales.getTratamientos());
+//            jTextArea23.setCaretPosition(0);
+//            jTextArea24.setText(antPersonales.getSituacionBasal());
+//            jTextArea24.setCaretPosition(0);
+//            jCheckBox1.setSelected(antPersonales.getHta());
+//            jCheckBox2.setSelected(antPersonales.getDm());
+//            jCheckBox3.setSelected(antPersonales.getDislipidemia());
+//            jCheckBox7.setSelected(antPersonales.getTabaco());
+//            jCheckBox8.setSelected(antPersonales.getAlcohol());
+//            jCheckBox9.setSelected(antPersonales.getDroga());
+//            jTextArea7.setText(antPersonales.getOtrosHabitos());
+//            jTextArea7.setCaretPosition(0);
+//            jTextArea5.setText(antPersonales.getDescHdd());
+//            jTextArea5.setCaretPosition(0);
+//            jTextArea25.setText(antPersonales.getAntFamiliares());
+//            jTextArea25.setCaretPosition(0);
+//            //muestra de la cajas de texto
+//        }
+//        if(pia==null){
+//            pia = new PypInfoAntecedentesg();
+//            pia.setInfoPaciente(infopaciente);
+//            pia.setAbortos(jTextField19.getText());
+//            pia.setCesareas(jTextField17.getText());
+//            pia.setFum(jDateChooser1.getDate());
+//            pia.setPartos(jTextField18.getText());
+//            pia.setGestas(jTextField20.getText());
+//            pia.setObservaciones(jTextArea26.getText().toUpperCase());  
+//            piajc.create(pia);
+//        }else{
+//            jTextArea26.setText(pia.getObservaciones());
+//            jTextField20.setText(pia.getGestas());
+//            jTextField18.setText(pia.getPartos());
+//            jTextField17.setText(pia.getCesareas());
+//            jTextField19.setText(pia.getAbortos());
+//            if(pia.getFum()!=null) jDateChooser1.setDate(pia.getFum());            
+//        }
+//    }
+    
+    public PypInfoAntecedentesg findPiaIDPac(InfoPaciente ip){
+        EntityManager em = piajc.getEntityManager();
+        try {
+            List results = em.createQuery("SELECT p FROM PypInfoAntecedentesg p WHERE p.infoPaciente = :ip")
+                    .setParameter("ip", ip)
+                    .setHint("javax.persistence.cache.storeMode", "REFRESH")
+                    .getResultList();
+                    if (results.isEmpty()) return null;
+                    else return (PypInfoAntecedentesg) results.get(0);
+        }catch(Exception ex){
+            return null;
+        } finally {
+            em.close();
         }
     }
 
     private void SaveAntPersonales() {
-        antPersonales = antPersonalesJPA.findInfoAntPersonalesIDPac(infopaciente);
+        if(piajc==null) piajc = new PypInfoAntecedentesgJpaController(factory);
+        if(antPersonalesJPA==null)antPersonalesJPA = new InfoAntPersonalesJpaController(factory);
+        antPersonales = AtencionUrgencia.panelindex.antPersonalesJPA.findInfoAntPersonalesIDPac(infohistoriac.getIdInfoAdmision().getIdDatosPersonales());  
         antPersonales.setAlcohol(jCheckBox8.isSelected());
         antPersonales.setAlergias(jTextArea11.getText().toUpperCase());
         antPersonales.setAntFamiliares(jTextArea25.getText().toUpperCase());
@@ -400,8 +499,15 @@ public class HC extends javax.swing.JPanel {
         antPersonales.setTabaco(jCheckBox7.isSelected());
         antPersonales.setTratamientos(jTextArea23.getText().toUpperCase());
         antPersonales.setTraumatismos(jTextArea22.getText().toUpperCase());
+            pia.setAbortos(jTextField19.getText());
+            pia.setCesareas(jTextField17.getText());
+            pia.setFum(jDateChooser1.getDate());
+            pia.setPartos(jTextField18.getText());
+            pia.setGestas(jTextField20.getText());
+            pia.setObservaciones(jTextArea26.getText().toUpperCase());  
         try {
-            antPersonalesJPA.edit(antPersonales);
+            piajc.edit(pia);
+             antPersonalesJPA.edit(antPersonales);            
         } catch (NonexistentEntityException ex) {
             JOptionPane.showMessageDialog(null, "10063:\n" + ex.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception ex) {
@@ -409,19 +515,20 @@ public class HC extends javax.swing.JPanel {
         }
     }
 
-    public void viewClinicHistory(InfoHistoriac infoHistoriac) {
-        this.infohistoriac = infoHistoriac;
-        edite = true;
-        auditoria=false;
-        setHistoryC();
-        setFisicExplorer();
-        setHelpDiag();
-    }
+//    public void viewClinicHistory(InfoHistoriac infoHistoriac) {
+//        this.infohistoriac = infoHistoriac;
+//        edite = true;
+//        auditoria=false;
+//        setHistoryC();
+//        setFisicExplorer();
+//        setHelpDiag();
+//    }
 
     private void setHistoryC() {
-        infoadmision = infohistoriac.getIdInfoAdmision();
-        infopaciente = infoadmision.getIdDatosPersonales();
-        jlbNombrePaciente.setText(infopaciente.getNombre1() + " " + infopaciente.getApellido1() + " [" + infopaciente.getNumDoc() + "]     [" + infohistoriac.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad() + "]");
+        jlbNombrePaciente.setText(infohistoriac.getIdInfoAdmision().getIdDatosPersonales().getNombre1() + " " + 
+                infohistoriac.getIdInfoAdmision().getIdDatosPersonales().getApellido1() + " [" + 
+                infohistoriac.getIdInfoAdmision().getIdDatosPersonales().getNumDoc() + "]     [" + 
+                infohistoriac.getIdInfoAdmision().getIdEntidadAdmision().getNombreEntidad() + "]");
         jTextArea10.setText(infohistoriac.getMotivoConsulta());
         jTextArea10.setCaretPosition(0);
         jComboBox1.setSelectedItem(infohistoriac.getCausaExterna());
@@ -488,101 +595,100 @@ public class HC extends javax.swing.JPanel {
             jTextArea15.setToolTipText(myStringsFunctions.stringToDIVstring(jTextArea15.getText()));
             idDiag5 = infohistoriac.getDiagnostico5();
         }
-
         jTextArea19.setText(infohistoriac.getHallazgo());
+        jDateChooser1.setDate(null);
     }
 
     private void setFisicExplorer() {
-        infoexploracion = infohistoriac.getInfoHcExpfisica();
-        jTextField1.setText(infoexploracion.getTa());
+        jTextField1.setText(infohistoriac.getInfoHcExpfisica().getTa());
         jTextField1.setCaretPosition(0);
-        jTextField8.setText(infoexploracion.getT());
+        jTextField8.setText(infohistoriac.getInfoHcExpfisica().getT());
         jTextField8.setCaretPosition(0);
-        jTextField2.setText(infoexploracion.getTam());
+        jTextField2.setText(infohistoriac.getInfoHcExpfisica().getTam());
         jTextField2.setCaretPosition(0);
-        jTextField7.setText(infoexploracion.getSao2());
+        jTextField7.setText(infohistoriac.getInfoHcExpfisica().getSao2());
         jTextField7.setCaretPosition(0);
-        jTextField3.setText(infoexploracion.getFc());
+        jTextField3.setText(infohistoriac.getInfoHcExpfisica().getFc());
         jTextField3.setCaretPosition(0);
         jTextField6.setText("");
         jTextField6.setCaretPosition(0);
-        jTextField4.setText(infoexploracion.getFr());
+        jTextField4.setText(infohistoriac.getInfoHcExpfisica().getFr());
         jTextField4.setCaretPosition(0);
-        jTextField5.setText(infoexploracion.getPic());
+        jTextField5.setText(infohistoriac.getInfoHcExpfisica().getPic());
         jTextField5.setCaretPosition(0);
-        jTextField9.setText(infoexploracion.getPeso());
+        jTextField9.setText(infohistoriac.getInfoHcExpfisica().getPeso());
         jTextField9.setCaretPosition(0);
-        jTextField10.setText(infoexploracion.getTalla());
+        jTextField10.setText(infohistoriac.getInfoHcExpfisica().getTalla());
         jTextField10.setCaretPosition(0);
-        jTextArea2.setText(infoexploracion.getOtros());
+        jTextArea2.setText(infohistoriac.getInfoHcExpfisica().getOtros());
         jTextArea2.setCaretPosition(0);
-        jTextArea3.setText(infoexploracion.getAspectogeneral());
+        jTextArea3.setText(infohistoriac.getInfoHcExpfisica().getAspectogeneral());
         jTextArea3.setCaretPosition(0);
-        jTextArea4.setText(infoexploracion.getCara());
+        jTextArea4.setText(infohistoriac.getInfoHcExpfisica().getCara());
         jTextArea4.setCaretPosition(0);
-        jTextArea6.setText(infoexploracion.getCardio());
+        jTextArea6.setText(infohistoriac.getInfoHcExpfisica().getCardio());
         jTextArea6.setCaretPosition(0);
-        jTextArea8.setText(infoexploracion.getRespiratorio());
+        jTextArea8.setText(infohistoriac.getInfoHcExpfisica().getRespiratorio());
         jTextArea8.setCaretPosition(0);
-        jTextArea9.setText(infoexploracion.getGastro());
+        jTextArea9.setText(infohistoriac.getInfoHcExpfisica().getGastro());
         jTextArea9.setCaretPosition(0);
-        jTextArea14.setText(infoexploracion.getRenal());
+        jTextArea14.setText(infohistoriac.getInfoHcExpfisica().getRenal());
         jTextArea14.setCaretPosition(0);
-        jTextArea15.setText(infoexploracion.getHemato());
+        jTextArea15.setText(infohistoriac.getInfoHcExpfisica().getHemato());
         jTextArea15.setCaretPosition(0);
-        jTextArea16.setText(infoexploracion.getEndo());
+        jTextArea16.setText(infohistoriac.getInfoHcExpfisica().getEndo());
         jTextArea16.setCaretPosition(0);
-        jTextArea17.setText(infoexploracion.getOsteo());
+        jTextArea17.setText(infohistoriac.getInfoHcExpfisica().getOsteo());
         jTextArea17.setCaretPosition(0);
     }
 
-    private void saveFisicExplorer() {
-        if (infoexploracion == null) {
-            infoexploracion = new InfoHcExpfisica();
-        }
-        infoexploracion.setIdInfohistoriac(infohistoriac);
-        infoexploracion.setTa(jTextField1.getText().toUpperCase());
-        infoexploracion.setT(jTextField8.getText().toUpperCase());
-        infoexploracion.setTam(jTextField2.getText().toUpperCase());
-        infoexploracion.setSao2(jTextField7.getText().toUpperCase());
-        infoexploracion.setFc(jTextField3.getText().toUpperCase());
-        infoexploracion.setPvc("");
-        infoexploracion.setFr(jTextField4.getText().toUpperCase());
-        infoexploracion.setPic(jTextField5.getText().toUpperCase());
-        infoexploracion.setPeso(jTextField9.getText().toUpperCase());
-        infoexploracion.setTalla(jTextField10.getText().toUpperCase());
-        infoexploracion.setOtros(jTextArea2.getText().toUpperCase());
-        infoexploracion.setAspectogeneral(jTextArea3.getText().toUpperCase());
-        infoexploracion.setCara(jTextArea4.getText().toUpperCase());
-        infoexploracion.setCardio(jTextArea6.getText().toUpperCase());
-        infoexploracion.setRespiratorio(jTextArea8.getText().toUpperCase());
-        infoexploracion.setGastro(jTextArea9.getText().toUpperCase());
-        infoexploracion.setRenal(jTextArea14.getText().toUpperCase());
-        infoexploracion.setHemato(jTextArea15.getText().toUpperCase());
-        infoexploracion.setEndo(jTextArea16.getText().toUpperCase());
-        infoexploracion.setOsteo(jTextArea17.getText().toUpperCase());
-        Boolean active = false;
-        if (infohsfisicoJPA == null) {
-            infohsfisicoJPA = new InfoHcExpfisicaJpaController(factory);
-            if (edite==false) {
-                infohsfisicoJPA.create(infoexploracion);
-                edite=true;
-            } else {
-                active = true;
-            }
-        } else {
-            active = true;
-        }
-        if (active) {
-            try {
-                infohsfisicoJPA.edit(infoexploracion);
-            } catch (NonexistentEntityException ex) {
-                JOptionPane.showMessageDialog(null, "10056:\n" + ex.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "10057:\n" + ex.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
-    }
+//    private void saveFisicExplorer() {
+//        if (infoexploracion == null) {
+//            infoexploracion = new InfoHcExpfisica();
+//        }
+//        infoexploracion.setIdInfohistoriac(infohistoriac);
+//        infoexploracion.setTa(jTextField1.getText().toUpperCase());
+//        infoexploracion.setT(jTextField8.getText().toUpperCase());
+//        infoexploracion.setTam(jTextField2.getText().toUpperCase());
+//        infoexploracion.setSao2(jTextField7.getText().toUpperCase());
+//        infoexploracion.setFc(jTextField3.getText().toUpperCase());
+//        infoexploracion.setPvc("");
+//        infoexploracion.setFr(jTextField4.getText().toUpperCase());
+//        infoexploracion.setPic(jTextField5.getText().toUpperCase());
+//        infoexploracion.setPeso(jTextField9.getText().toUpperCase());
+//        infoexploracion.setTalla(jTextField10.getText().toUpperCase());
+//        infoexploracion.setOtros(jTextArea2.getText().toUpperCase());
+//        infoexploracion.setAspectogeneral(jTextArea3.getText().toUpperCase());
+//        infoexploracion.setCara(jTextArea4.getText().toUpperCase());
+//        infoexploracion.setCardio(jTextArea6.getText().toUpperCase());
+//        infoexploracion.setRespiratorio(jTextArea8.getText().toUpperCase());
+//        infoexploracion.setGastro(jTextArea9.getText().toUpperCase());
+//        infoexploracion.setRenal(jTextArea14.getText().toUpperCase());
+//        infoexploracion.setHemato(jTextArea15.getText().toUpperCase());
+//        infoexploracion.setEndo(jTextArea16.getText().toUpperCase());
+//        infoexploracion.setOsteo(jTextArea17.getText().toUpperCase());
+//        Boolean active = false;
+//        if (infohsfisicoJPA == null) {
+//            infohsfisicoJPA = new InfoHcExpfisicaJpaController(factory);
+//            if (edite==false) {
+//                infohsfisicoJPA.create(infoexploracion);
+//                edite=true;
+//            } else {
+//                active = true;
+//            }
+//        } else {
+//            active = true;
+//        }
+//        if (active) {
+//            try {
+//                infohsfisicoJPA.edit(infoexploracion);
+//            } catch (NonexistentEntityException ex) {
+//                JOptionPane.showMessageDialog(null, "10056:\n" + ex.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+//            } catch (Exception ex) {
+//                JOptionPane.showMessageDialog(null, "10057:\n" + ex.getMessage(), HC.class.getName(), JOptionPane.INFORMATION_MESSAGE);
+//            }
+//        }
+//    }
 
     private void setHelpDiag() {
         ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("images/Delete16x16.png"));
@@ -672,8 +778,8 @@ public class HC extends javax.swing.JPanel {
 
     public void cerrarPanel() {
         Funciones.setLabelInfo("GUARDANDO...");
-        CrearHistoriaC();
-        SaveAntPersonales();
+//        CrearHistoriaC();
+//        SaveAntPersonales();
         atencionurgencia.AtencionUrgencia.panelindex.jpContainer.removeAll();
         atencionurgencia.AtencionUrgencia.panelindex.jpContainer.validate();
         atencionurgencia.AtencionUrgencia.panelindex.jpContainer.repaint();
@@ -686,10 +792,10 @@ public class HC extends javax.swing.JPanel {
      */
     private String ReturnPathdiagHelpSaveFile(String tipo) {
         Calendar ahoraCal = Calendar.getInstance();
-        ahoraCal.setTime(infoadmision.getFechaIngreso());
+        ahoraCal.setTime(infohistoriac.getIdInfoAdmision().getFechaIngreso());
         String year = String.valueOf(ahoraCal.get(Calendar.YEAR));
         String month = String.valueOf(ahoraCal.get(Calendar.MONTH));
-        return infoadmision.getIdDatosPersonales().getNumDoc() + s + year + s + month + s + infoadmision.getId() + s + tipo;
+        return infohistoriac.getIdInfoAdmision().getIdDatosPersonales().getNumDoc() + s + year + s + month + s + infohistoriac.getIdInfoAdmision().getId() + s + tipo;
     }
 
     private Boolean getValidaFirma() {
@@ -856,6 +962,20 @@ public class HC extends javax.swing.JPanel {
         jPanel20 = new javax.swing.JPanel();
         jScrollPane25 = new javax.swing.JScrollPane();
         jTextArea25 = new javax.swing.JTextArea();
+        jTabbedPane5 = new javax.swing.JTabbedPane();
+        jPanel37 = new javax.swing.JPanel();
+        jScrollPane24 = new javax.swing.JScrollPane();
+        jTextArea26 = new javax.swing.JTextArea();
+        jLabel22 = new javax.swing.JLabel();
+        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        jLabel57 = new javax.swing.JLabel();
+        jTextField17 = new javax.swing.JTextField();
+        jLabel61 = new javax.swing.JLabel();
+        jTextField18 = new javax.swing.JTextField();
+        jLabel62 = new javax.swing.JLabel();
+        jTextField19 = new javax.swing.JTextField();
+        jLabel63 = new javax.swing.JLabel();
+        jTextField20 = new javax.swing.JTextField();
         jpEnfActual = new javax.swing.JPanel();
         jPanel10 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -936,52 +1056,53 @@ public class HC extends javax.swing.JPanel {
         jtbTratamiento4 = new javax.swing.JTable();
         jLabel34 = new javax.swing.JLabel();
         jTextField16 = new javax.swing.JTextField();
-        jButton8 = new javax.swing.JButton();
         jLabel42 = new javax.swing.JLabel();
+        jLabel70 = new javax.swing.JLabel();
         jpDiagMedico = new javax.swing.JPanel();
         jPanel28 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
         jLabel28 = new javax.swing.JLabel();
         jTextField11 = new javax.swing.JTextField();
         jTextField12 = new javax.swing.JTextField();
         jLabel29 = new javax.swing.JLabel();
         jTextField13 = new javax.swing.JTextField();
         jLabel30 = new javax.swing.JLabel();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
         jLabel31 = new javax.swing.JLabel();
         jTextField14 = new javax.swing.JTextField();
-        jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
         jTextField15 = new javax.swing.JTextField();
         jLabel32 = new javax.swing.JLabel();
         jLabel43 = new javax.swing.JLabel();
+        jLabel64 = new javax.swing.JLabel();
+        jLabel65 = new javax.swing.JLabel();
+        jLabel66 = new javax.swing.JLabel();
+        jLabel67 = new javax.swing.JLabel();
+        jLabel68 = new javax.swing.JLabel();
         jpTratamiento = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jLabel35 = new javax.swing.JLabel();
         jPanel29 = new javax.swing.JPanel();
         jPanel35 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jXTaskPane1 = new org.jdesktop.swingx.JXTaskPane();
-        jLabel46 = new javax.swing.JLabel();
-        jXTaskPane2 = new org.jdesktop.swingx.JXTaskPane();
-        jLabel36 = new javax.swing.JLabel();
-        jLabel45 = new javax.swing.JLabel();
-        jLabel49 = new javax.swing.JLabel();
-        jLabel50 = new javax.swing.JLabel();
-        jLabel51 = new javax.swing.JLabel();
-        jXTaskPane3 = new org.jdesktop.swingx.JXTaskPane();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel71 = new javax.swing.JLabel();
+        jLabel72 = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel73 = new javax.swing.JLabel();
+        jLabel74 = new javax.swing.JLabel();
+        jPanel31 = new javax.swing.JPanel();
+        jLabel77 = new javax.swing.JLabel();
+        jLabel78 = new javax.swing.JLabel();
+        jLabel79 = new javax.swing.JLabel();
+        jLabel80 = new javax.swing.JLabel();
+        jLabel81 = new javax.swing.JLabel();
+        jPanel38 = new javax.swing.JPanel();
+        jLabel82 = new javax.swing.JLabel();
         jLabel48 = new javax.swing.JLabel();
         jLabel52 = new javax.swing.JLabel();
         jLabel53 = new javax.swing.JLabel();
         jLabel54 = new javax.swing.JLabel();
         jLabel55 = new javax.swing.JLabel();
         jLabel56 = new javax.swing.JLabel();
-        jXTaskPane4 = new org.jdesktop.swingx.JXTaskPane();
-        jLabel47 = new javax.swing.JLabel();
-        jXTaskPane5 = new org.jdesktop.swingx.JXTaskPane();
-        jLabel58 = new javax.swing.JLabel();
-        jLabel59 = new javax.swing.JLabel();
+        jPanel80 = new javax.swing.JPanel();
+        jLabel165 = new javax.swing.JLabel();
         jLabel60 = new javax.swing.JLabel();
         jFileChooser1 = new javax.swing.JFileChooser();
         jpCentro = new javax.swing.JPanel();
@@ -992,12 +1113,12 @@ public class HC extends javax.swing.JPanel {
         jLabel27 = new javax.swing.JLabel();
         jLabel33 = new javax.swing.JLabel();
         jlbNombrePaciente = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
         jButton10 = new javax.swing.JButton();
         jButton11 = new javax.swing.JButton();
         jLabel44 = new javax.swing.JLabel();
+        jLabel69 = new javax.swing.JLabel();
 
         jpMotivoC.setMaximumSize(new java.awt.Dimension(584, 472));
         jpMotivoC.setMinimumSize(new java.awt.Dimension(584, 472));
@@ -1195,7 +1316,7 @@ public class HC extends javax.swing.JPanel {
         );
         jPanel30Layout.setVerticalGroup(
             jPanel30Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
         );
 
         jTabbedPane3.addTab("Alergias a Medicamentos", jPanel30);
@@ -1237,7 +1358,7 @@ public class HC extends javax.swing.JPanel {
         );
         jPanel33Layout.setVerticalGroup(
             jPanel33Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
+            .addComponent(jScrollPane8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
         );
 
         jTabbedPane3.addTab("Ingresos previos y cirugías", jPanel33);
@@ -1279,7 +1400,7 @@ public class HC extends javax.swing.JPanel {
         );
         jPanel34Layout.setVerticalGroup(
             jPanel34Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane21, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
+            .addComponent(jScrollPane21, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
         );
 
         jTabbedPane3.addTab("Traumatismos, accidentes", jPanel34);
@@ -1321,7 +1442,7 @@ public class HC extends javax.swing.JPanel {
         );
         jPanel36Layout.setVerticalGroup(
             jPanel36Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane22, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
+            .addComponent(jScrollPane22, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
         );
 
         jTabbedPane3.addTab("Tratamientos habituales", jPanel36);
@@ -1386,7 +1507,7 @@ public class HC extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel39)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE))
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE))
         );
 
         jTabbedPane4.addTab("HTA, DM, DISLIPIDEMIA", jPanel8);
@@ -1457,7 +1578,7 @@ public class HC extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE))
+                .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE))
         );
 
         jTabbedPane4.addTab("Hábitos Tóxicos", jPanel9);
@@ -1499,7 +1620,7 @@ public class HC extends javax.swing.JPanel {
         );
         jPanel19Layout.setVerticalGroup(
             jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane23, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
+            .addComponent(jScrollPane23, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
         );
 
         jTabbedPane4.addTab("Situación basal (crónicos)", jPanel19);
@@ -1541,10 +1662,103 @@ public class HC extends javax.swing.JPanel {
         );
         jPanel20Layout.setVerticalGroup(
             jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane25, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
+            .addComponent(jScrollPane25, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
         );
 
         jTabbedPane4.addTab("Antecedentes Familiares de Interes", jPanel20);
+
+        jPanel37.setOpaque(false);
+
+        jScrollPane24.setMaximumSize(new java.awt.Dimension(164, 20));
+        jScrollPane24.setMinimumSize(new java.awt.Dimension(164, 20));
+        jScrollPane24.setPreferredSize(new java.awt.Dimension(164, 20));
+
+        jTextArea26.setColumns(20);
+        jTextArea26.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jTextArea26.setForeground(new java.awt.Color(0, 102, 255));
+        jTextArea26.setLineWrap(true);
+        jTextArea26.setRows(2);
+        jTextArea26.setText("NINGUNO");
+        jTextArea26.setMaximumSize(new java.awt.Dimension(164, 40));
+        jTextArea26.setMinimumSize(new java.awt.Dimension(164, 40));
+        jTextArea26.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTextArea26FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextArea26FocusLost(evt);
+            }
+        });
+        jTextArea26.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextArea26KeyPressed(evt);
+            }
+        });
+        jScrollPane24.setViewportView(jTextArea26);
+
+        jLabel22.setText("FUM");
+        jLabel22.setToolTipText("FECHA ULTIMA MENSTRUACION");
+
+        jLabel57.setText("Cesarias");
+
+        jLabel61.setText("Partos");
+
+        jLabel62.setText("Abortos");
+
+        jLabel63.setText("Gestaciones");
+
+        javax.swing.GroupLayout jPanel37Layout = new javax.swing.GroupLayout(jPanel37);
+        jPanel37.setLayout(jPanel37Layout);
+        jPanel37Layout.setHorizontalGroup(
+            jPanel37Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane24, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)
+            .addGroup(jPanel37Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jDateChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel57, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextField17, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel61, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextField18, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel62, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextField19, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel63, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextField20, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel37Layout.setVerticalGroup(
+            jPanel37Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel37Layout.createSequentialGroup()
+                .addGap(0, 2, Short.MAX_VALUE)
+                .addGroup(jPanel37Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jDateChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel37Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel63, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jTextField20, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel37Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel62, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jTextField19, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel37Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel61, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jTextField18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel37Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel57, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jTextField17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane24, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        jTabbedPane5.addTab("Ginecobstetricos", jPanel37);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -1555,7 +1769,8 @@ public class HC extends javax.swing.JPanel {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTabbedPane3)
                     .addComponent(jLabel38, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTabbedPane4))
+                    .addComponent(jTabbedPane4)
+                    .addComponent(jTabbedPane5, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -1563,9 +1778,11 @@ public class HC extends javax.swing.JPanel {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jLabel38, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTabbedPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -2212,7 +2429,6 @@ public class HC extends javax.swing.JPanel {
         jpPruebasDiag.setPreferredSize(new java.awt.Dimension(584, 472));
 
         jPanel27.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel27.setBorder(new org.jdesktop.swingx.border.DropShadowBorder());
 
         jPanel32.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "HALLAZGOS", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 10))); // NOI18N
         jPanel32.setOpaque(false);
@@ -2267,17 +2483,16 @@ public class HC extends javax.swing.JPanel {
         jTextField16.setForeground(new java.awt.Color(0, 102, 255));
         jTextField16.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
-        jButton8.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton8.setText("...");
-        jButton8.setFocusable(false);
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton8ActionPerformed(evt);
-            }
-        });
-
         jLabel42.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel42.setText("PRUEBAS COMPLEMENTARIAS");
+
+        jLabel70.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel70.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/001_38.png"))); // NOI18N
+        jLabel70.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel70MouseReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel27Layout = new javax.swing.GroupLayout(jPanel27);
         jPanel27.setLayout(jPanel27Layout);
@@ -2289,12 +2504,12 @@ public class HC extends javax.swing.JPanel {
                     .addComponent(jScrollPane27, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel32, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel27Layout.createSequentialGroup()
-                        .addGap(0, 17, Short.MAX_VALUE)
+                        .addGap(0, 46, Short.MAX_VALUE)
                         .addComponent(jLabel34, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField16, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jTextField16, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel70))
                     .addComponent(jLabel42, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -2308,9 +2523,9 @@ public class HC extends javax.swing.JPanel {
                 .addGroup(jPanel27Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel34)
-                    .addComponent(jButton8))
+                    .addComponent(jLabel70))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane27, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                .addComponent(jScrollPane27, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -2331,15 +2546,6 @@ public class HC extends javax.swing.JPanel {
 
         jPanel28.setBackground(new java.awt.Color(255, 255, 255));
         jPanel28.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        jButton2.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton2.setText("...");
-        jButton2.setFocusable(false);
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
 
         jLabel28.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel28.setText("DIAGNOSTICO PRINCIPAL");
@@ -2377,24 +2583,6 @@ public class HC extends javax.swing.JPanel {
         jLabel30.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel30.setText("DIAGNOSTICO RELACIONADO 2");
 
-        jButton4.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton4.setText("...");
-        jButton4.setFocusable(false);
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-
-        jButton5.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton5.setText("...");
-        jButton5.setFocusable(false);
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
-            }
-        });
-
         jLabel31.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel31.setText("DIAGNOSTICO RELACIONADO 3");
 
@@ -2404,24 +2592,6 @@ public class HC extends javax.swing.JPanel {
         jTextField14.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextField14KeyReleased(evt);
-            }
-        });
-
-        jButton6.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton6.setText("...");
-        jButton6.setFocusable(false);
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
-            }
-        });
-
-        jButton7.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton7.setText("...");
-        jButton7.setFocusable(false);
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
             }
         });
 
@@ -2440,6 +2610,101 @@ public class HC extends javax.swing.JPanel {
         jLabel43.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel43.setText("DIAGNOSTICO MEDICO");
 
+        jLabel64.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel64.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel64.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/001_38.png"))); // NOI18N
+        jLabel64.setFocusable(false);
+        jLabel64.setOpaque(true);
+        jLabel64.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel64MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel64MouseReleased(evt);
+            }
+        });
+        jLabel64.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel64MouseMoved(evt);
+            }
+        });
+
+        jLabel65.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel65.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel65.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/001_38.png"))); // NOI18N
+        jLabel65.setFocusable(false);
+        jLabel65.setOpaque(true);
+        jLabel65.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel65MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel65MouseReleased(evt);
+            }
+        });
+        jLabel65.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel65MouseMoved(evt);
+            }
+        });
+
+        jLabel66.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel66.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel66.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/001_38.png"))); // NOI18N
+        jLabel66.setFocusable(false);
+        jLabel66.setOpaque(true);
+        jLabel66.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel66MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel66MouseReleased(evt);
+            }
+        });
+        jLabel66.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel66MouseMoved(evt);
+            }
+        });
+
+        jLabel67.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel67.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel67.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/001_38.png"))); // NOI18N
+        jLabel67.setFocusable(false);
+        jLabel67.setOpaque(true);
+        jLabel67.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel67MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel67MouseReleased(evt);
+            }
+        });
+        jLabel67.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel67MouseMoved(evt);
+            }
+        });
+
+        jLabel68.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel68.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel68.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/001_38.png"))); // NOI18N
+        jLabel68.setFocusable(false);
+        jLabel68.setOpaque(true);
+        jLabel68.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel68MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel68MouseReleased(evt);
+            }
+        });
+        jLabel68.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel68MouseMoved(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel28Layout = new javax.swing.GroupLayout(jPanel28);
         jPanel28.setLayout(jPanel28Layout);
         jPanel28Layout.setHorizontalGroup(
@@ -2447,69 +2712,77 @@ public class HC extends javax.swing.JPanel {
             .addGroup(jPanel28Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField15)
-                    .addComponent(jTextField14, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextField13, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextField11, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel43, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel28Layout.createSequentialGroup()
                         .addComponent(jLabel28, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel28Layout.createSequentialGroup()
-                        .addComponent(jLabel29, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jTextField12)
-                    .addGroup(jPanel28Layout.createSequentialGroup()
-                        .addComponent(jLabel30, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28))
                     .addGroup(jPanel28Layout.createSequentialGroup()
                         .addComponent(jLabel31, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(202, 202, 202))
                     .addGroup(jPanel28Layout.createSequentialGroup()
                         .addComponent(jLabel32, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(165, 165, 165))
+                    .addGroup(jPanel28Layout.createSequentialGroup()
+                        .addComponent(jLabel30, javax.swing.GroupLayout.DEFAULT_SIZE, 353, Short.MAX_VALUE)
+                        .addGap(207, 207, 207))
+                    .addGroup(jPanel28Layout.createSequentialGroup()
+                        .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jTextField14, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+                                .addComponent(jTextField15))
+                            .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jTextField12, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+                                .addComponent(jTextField13)
+                                .addComponent(jTextField11)
+                                .addComponent(jLabel29, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel66, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel68, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel67, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel64, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel65, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         jPanel28Layout.setVerticalGroup(
             jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel28Layout.createSequentialGroup()
-                .addComponent(jLabel43, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel28)
-                    .addComponent(jButton2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel28Layout.createSequentialGroup()
+                        .addComponent(jLabel43, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel28)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel64, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(12, 12, 12)
-                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel29)
-                    .addComponent(jButton4))
+                .addComponent(jLabel29)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel30)
-                    .addComponent(jButton5))
+                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel28Layout.createSequentialGroup()
+                        .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel30))
+                    .addComponent(jLabel65, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel31)
-                    .addComponent(jButton6))
+                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel28Layout.createSequentialGroup()
+                        .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel31))
+                    .addComponent(jLabel66, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel32)
-                    .addComponent(jButton7))
+                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel28Layout.createSequentialGroup()
+                        .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel32))
+                    .addComponent(jLabel67, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(138, Short.MAX_VALUE))
+                .addGroup(jPanel28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel68, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(178, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jpDiagMedicoLayout = new javax.swing.GroupLayout(jpDiagMedico);
@@ -2549,7 +2822,7 @@ public class HC extends javax.swing.JPanel {
         jPanel35.setLayout(jPanel35Layout);
         jPanel35Layout.setHorizontalGroup(
             jPanel35Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 380, Short.MAX_VALUE)
+            .addGap(0, 392, Short.MAX_VALUE)
         );
         jPanel35Layout.setVerticalGroup(
             jPanel35Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2560,182 +2833,249 @@ public class HC extends javax.swing.JPanel {
         jPanel29.setLayout(jPanel29Layout);
         jPanel29Layout.setHorizontalGroup(
             jPanel29Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel35, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel29Layout.createSequentialGroup()
+                .addComponent(jPanel35, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel29Layout.setVerticalGroup(
             jPanel29Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel29Layout.createSequentialGroup()
                 .addComponent(jPanel35, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        jPanel2.setOpaque(false);
+        jPanel4.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel4.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(214, 223, 247), 1, true));
+        jPanel4.setMaximumSize(new java.awt.Dimension(134, 45));
+        jPanel4.setMinimumSize(new java.awt.Dimension(134, 45));
+        jPanel4.setPreferredSize(new java.awt.Dimension(134, 45));
 
-        jXTaskPane1.setExpanded(false);
-        jXTaskPane1.setTitle("MEDICAMENTOS");
-        jXTaskPane1.setAnimated(false);
-        jXTaskPane1.setFocusable(false);
-        jXTaskPane1.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
-        jXTaskPane1.setOpaque(true);
-        jXTaskPane1.addMouseListener(new java.awt.event.MouseAdapter() {
+        jLabel71.setBackground(new java.awt.Color(214, 223, 247));
+        jLabel71.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel71.setText("MEDIDAS GENERALES");
+        jLabel71.setOpaque(true);
+
+        jLabel72.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel72.setText("Medidas Generales");
+        jLabel72.setOpaque(true);
+        jLabel72.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel72MouseExited(evt);
+            }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                jXTaskPane1MouseReleased(evt);
+                jLabel72MouseReleased(evt);
             }
         });
-
-        jLabel46.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel46.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Pills.png"))); // NOI18N
-        jLabel46.setText("Medicamentos");
-        jLabel46.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel46.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel46MouseClicked(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jLabel46MouseExited(evt);
-            }
-        });
-        jLabel46.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        jLabel72.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel46MouseMoved(evt);
+                jLabel72MouseMoved(evt);
             }
         });
-        jXTaskPane1.getContentPane().add(jLabel46);
 
-        jXTaskPane2.setExpanded(false);
-        jXTaskPane2.setTitle("PROCEDIMIENTOS");
-        jXTaskPane2.setAnimated(false);
-        jXTaskPane2.setFocusable(false);
-        jXTaskPane2.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
-        jXTaskPane2.setOpaque(true);
-        jXTaskPane2.addMouseListener(new java.awt.event.MouseAdapter() {
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel71, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel72, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addComponent(jLabel71)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel72)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel6.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel6.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(214, 223, 247), 1, true));
+        jPanel6.setMaximumSize(new java.awt.Dimension(134, 45));
+        jPanel6.setMinimumSize(new java.awt.Dimension(134, 45));
+        jPanel6.setPreferredSize(new java.awt.Dimension(134, 45));
+
+        jLabel73.setBackground(new java.awt.Color(214, 223, 247));
+        jLabel73.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel73.setText("MEDICAMENTOS");
+        jLabel73.setOpaque(true);
+
+        jLabel74.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel74.setText("Lista de Medicamentos");
+        jLabel74.setOpaque(true);
+        jLabel74.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel74MouseExited(evt);
+            }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                jXTaskPane2MouseReleased(evt);
+                jLabel74MouseReleased(evt);
             }
         });
-
-        jLabel36.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel36.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/bag_icon.png"))); // NOI18N
-        jLabel36.setText("<html><p> Monitorización y Tratamientos Diagnósticos</p></html>");
-        jLabel36.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel36.setDoubleBuffered(true);
-        jLabel36.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel36MouseClicked(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jLabel36MouseExited(evt);
-            }
-        });
-        jLabel36.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        jLabel74.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel36MouseMoved(evt);
+                jLabel74MouseMoved(evt);
             }
         });
-        jXTaskPane2.getContentPane().add(jLabel36);
 
-        jLabel45.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel45.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/microscope_icon.png"))); // NOI18N
-        jLabel45.setText("<html><p>Laboratorio Clinico</p></html>");
-        jLabel45.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel45.setDoubleBuffered(true);
-        jLabel45.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel45MouseClicked(evt);
-            }
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel73, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel74, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addComponent(jLabel73)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel74)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel31.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel31.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(214, 223, 247), 1, true));
+        jPanel31.setMaximumSize(new java.awt.Dimension(144, 113));
+        jPanel31.setMinimumSize(new java.awt.Dimension(144, 113));
+        jPanel31.setPreferredSize(new java.awt.Dimension(144, 113));
+
+        jLabel77.setBackground(new java.awt.Color(214, 223, 247));
+        jLabel77.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel77.setText("PROCEDIMIENTOS");
+        jLabel77.setOpaque(true);
+
+        jLabel78.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel78.setText("Laboratorio Clinico");
+        jLabel78.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabel78.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jLabel78.setOpaque(true);
+        jLabel78.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        jLabel78.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                jLabel45MouseExited(evt);
+                jLabel78MouseExited(evt);
             }
-        });
-        jLabel45.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel45MouseMoved(evt);
-            }
-        });
-        jXTaskPane2.getContentPane().add(jLabel45);
-
-        jLabel49.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel49.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/XRay.png"))); // NOI18N
-        jLabel49.setText("Imagenologia");
-        jLabel49.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel49.setDoubleBuffered(true);
-        jLabel49.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel49MouseClicked(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jLabel49MouseExited(evt);
-            }
-        });
-        jLabel49.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel49MouseMoved(evt);
-            }
-        });
-        jXTaskPane2.getContentPane().add(jLabel49);
-
-        jLabel50.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel50.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Skalpell.png"))); // NOI18N
-        jLabel50.setText("Quirúrgicos");
-        jLabel50.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel50.setDoubleBuffered(true);
-        jLabel50.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel50MouseClicked(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jLabel50MouseExited(evt);
-            }
-        });
-        jLabel50.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel50MouseMoved(evt);
-            }
-        });
-        jXTaskPane2.getContentPane().add(jLabel50);
-
-        jLabel51.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel51.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Hospital.png"))); // NOI18N
-        jLabel51.setText("Mas Procedimientos");
-        jLabel51.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel51.setDoubleBuffered(true);
-        jLabel51.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel51MouseClicked(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jLabel51MouseExited(evt);
-            }
-        });
-        jLabel51.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel51MouseMoved(evt);
-            }
-        });
-        jXTaskPane2.getContentPane().add(jLabel51);
-
-        jXTaskPane3.setExpanded(false);
-        jXTaskPane3.setTitle("VALORACION ESPECIALISTA");
-        jXTaskPane3.setAnimated(false);
-        jXTaskPane3.setFocusable(false);
-        jXTaskPane3.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
-        jXTaskPane3.setOpaque(true);
-        jXTaskPane3.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                jXTaskPane3MouseReleased(evt);
+                jLabel78MouseReleased(evt);
+            }
+        });
+        jLabel78.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel78MouseMoved(evt);
             }
         });
 
-        jLabel48.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel48.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/surgeon_icon.png"))); // NOI18N
+        jLabel79.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel79.setText("Imagenologia");
+        jLabel79.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabel79.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jLabel79.setOpaque(true);
+        jLabel79.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        jLabel79.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel79MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel79MouseReleased(evt);
+            }
+        });
+        jLabel79.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel79MouseMoved(evt);
+            }
+        });
+
+        jLabel80.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel80.setText("Quirúrgicos");
+        jLabel80.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabel80.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jLabel80.setOpaque(true);
+        jLabel80.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        jLabel80.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel80MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel80MouseReleased(evt);
+            }
+        });
+        jLabel80.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel80MouseMoved(evt);
+            }
+        });
+
+        jLabel81.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel81.setText("Otros Procedimientos");
+        jLabel81.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabel81.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jLabel81.setOpaque(true);
+        jLabel81.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        jLabel81.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel81MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel81MouseReleased(evt);
+            }
+        });
+        jLabel81.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel81MouseMoved(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel31Layout = new javax.swing.GroupLayout(jPanel31);
+        jPanel31.setLayout(jPanel31Layout);
+        jPanel31Layout.setHorizontalGroup(
+            jPanel31Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel77, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel31Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel31Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel78, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel79, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel80, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel81, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(8, 8, 8))
+        );
+        jPanel31Layout.setVerticalGroup(
+            jPanel31Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel31Layout.createSequentialGroup()
+                .addComponent(jLabel77)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel78)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel79)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel80)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel81)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel38.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel38.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(214, 223, 247), 1, true));
+        jPanel38.setPreferredSize(new java.awt.Dimension(164, 159));
+
+        jLabel82.setBackground(new java.awt.Color(214, 223, 247));
+        jLabel82.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel82.setText("VALORACION ESPECIALISTA");
+        jLabel82.setOpaque(true);
+
+        jLabel48.setBackground(new java.awt.Color(255, 255, 255));
         jLabel48.setText("Cirugia General");
-        jLabel48.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel48.setOpaque(true);
         jLabel48.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel48MouseClicked(evt);
-            }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel48MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel48MouseReleased(evt);
             }
         });
         jLabel48.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -2743,18 +3083,16 @@ public class HC extends javax.swing.JPanel {
                 jLabel48MouseMoved(evt);
             }
         });
-        jXTaskPane3.getContentPane().add(jLabel48);
 
-        jLabel52.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel52.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Female_icon.png"))); // NOI18N
+        jLabel52.setBackground(new java.awt.Color(255, 255, 255));
         jLabel52.setText("Ginecología");
-        jLabel52.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel52.setOpaque(true);
         jLabel52.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel52MouseClicked(evt);
-            }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel52MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel52MouseReleased(evt);
             }
         });
         jLabel52.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -2762,18 +3100,16 @@ public class HC extends javax.swing.JPanel {
                 jLabel52MouseMoved(evt);
             }
         });
-        jXTaskPane3.getContentPane().add(jLabel52);
 
-        jLabel53.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel53.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Head_physician_icon.png"))); // NOI18N
+        jLabel53.setBackground(new java.awt.Color(255, 255, 255));
         jLabel53.setText("Medicina Interna");
-        jLabel53.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel53.setOpaque(true);
         jLabel53.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel53MouseClicked(evt);
-            }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel53MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel53MouseReleased(evt);
             }
         });
         jLabel53.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -2781,18 +3117,16 @@ public class HC extends javax.swing.JPanel {
                 jLabel53MouseMoved(evt);
             }
         });
-        jXTaskPane3.getContentPane().add(jLabel53);
 
-        jLabel54.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel54.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/plaster_icon.png"))); // NOI18N
+        jLabel54.setBackground(new java.awt.Color(255, 255, 255));
         jLabel54.setText("Ortopedia");
-        jLabel54.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel54.setOpaque(true);
         jLabel54.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel54MouseClicked(evt);
-            }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel54MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel54MouseReleased(evt);
             }
         });
         jLabel54.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -2800,18 +3134,16 @@ public class HC extends javax.swing.JPanel {
                 jLabel54MouseMoved(evt);
             }
         });
-        jXTaskPane3.getContentPane().add(jLabel54);
 
-        jLabel55.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel55.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/stethoscope-icon.png"))); // NOI18N
+        jLabel55.setBackground(new java.awt.Color(255, 255, 255));
         jLabel55.setText("Pediatria");
-        jLabel55.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel55.setOpaque(true);
         jLabel55.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel55MouseClicked(evt);
-            }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel55MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel55MouseReleased(evt);
             }
         });
         jLabel55.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -2819,18 +3151,16 @@ public class HC extends javax.swing.JPanel {
                 jLabel55MouseMoved(evt);
             }
         });
-        jXTaskPane3.getContentPane().add(jLabel55);
 
-        jLabel56.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel56.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Hospital.png"))); // NOI18N
+        jLabel56.setBackground(new java.awt.Color(255, 255, 255));
         jLabel56.setText("Otras Especialidades");
-        jLabel56.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel56.setOpaque(true);
         jLabel56.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel56MouseClicked(evt);
-            }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel56MouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel56MouseReleased(evt);
             }
         });
         jLabel56.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -2838,101 +3168,57 @@ public class HC extends javax.swing.JPanel {
                 jLabel56MouseMoved(evt);
             }
         });
-        jXTaskPane3.getContentPane().add(jLabel56);
 
-        jXTaskPane4.setTitle("MEDIDAS GENERALES");
-        jXTaskPane4.setAnimated(false);
-        jXTaskPane4.setFocusable(false);
-        jXTaskPane4.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
-        jXTaskPane4.setOpaque(true);
-        jXTaskPane4.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                jXTaskPane4MouseReleased(evt);
-            }
-        });
+        javax.swing.GroupLayout jPanel38Layout = new javax.swing.GroupLayout(jPanel38);
+        jPanel38.setLayout(jPanel38Layout);
+        jPanel38Layout.setHorizontalGroup(
+            jPanel38Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel82, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel38Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel38Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel48, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel52, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel53, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel54, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel55, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel56, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel38Layout.setVerticalGroup(
+            jPanel38Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel38Layout.createSequentialGroup()
+                .addComponent(jLabel82)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel48)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel52)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel53)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel54)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel55)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel56)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
-        jLabel47.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel47.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Edit.png"))); // NOI18N
-        jLabel47.setText("Medidas generales");
-        jLabel47.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel47.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel47MouseClicked(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jLabel47MouseExited(evt);
-            }
-        });
-        jLabel47.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel47MouseMoved(evt);
-            }
-        });
-        jXTaskPane4.getContentPane().add(jLabel47);
+        jPanel80.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel80.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(214, 223, 247), 1, true));
+        jPanel80.setMaximumSize(new java.awt.Dimension(134, 45));
+        jPanel80.setMinimumSize(new java.awt.Dimension(134, 45));
+        jPanel80.setPreferredSize(new java.awt.Dimension(134, 45));
 
-        jXTaskPane5.setExpanded(false);
-        jXTaskPane5.setTitle("DESTINO");
-        jXTaskPane5.setAnimated(false);
-        jXTaskPane5.setFocusable(false);
-        jXTaskPane5.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
-        jXTaskPane5.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                jXTaskPane5MouseReleased(evt);
-            }
-        });
+        jLabel165.setBackground(new java.awt.Color(214, 223, 247));
+        jLabel165.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel165.setText("DESTINO");
+        jLabel165.setOpaque(true);
 
-        jLabel58.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel58.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/product-sales-report-icon.png"))); // NOI18N
-        jLabel58.setText("Anexo 3");
-        jLabel58.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel58.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel58MouseMoved(evt);
-            }
-        });
-        jLabel58.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel58MouseClicked(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jLabel58MouseExited(evt);
-            }
-        });
-        jXTaskPane5.getContentPane().add(jLabel58);
-
-        jLabel59.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel59.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/report-icon.png"))); // NOI18N
-        jLabel59.setText("CTC");
-        jLabel59.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel59.setEnabled(false);
-        jLabel59.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel59MouseClicked(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jLabel59MouseExited(evt);
-            }
-        });
-        jLabel59.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel59MouseMoved(evt);
-            }
-        });
-        jXTaskPane5.getContentPane().add(jLabel59);
-
-        jLabel60.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel60.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Edit.png"))); // NOI18N
+        jLabel60.setBackground(new java.awt.Color(255, 255, 255));
         jLabel60.setText("Destino");
-        jLabel60.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel60.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel60MouseMoved(evt);
-            }
-        });
+        jLabel60.setOpaque(true);
         jLabel60.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel60MouseClicked(evt);
-            }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel60MouseExited(evt);
             }
@@ -2940,34 +3226,28 @@ public class HC extends javax.swing.JPanel {
                 jLabel60MouseReleased(evt);
             }
         });
-        jXTaskPane5.getContentPane().add(jLabel60);
+        jLabel60.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel60MouseMoved(evt);
+            }
+        });
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jXTaskPane5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jXTaskPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jXTaskPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jXTaskPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jXTaskPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel80Layout = new javax.swing.GroupLayout(jPanel80);
+        jPanel80.setLayout(jPanel80Layout);
+        jPanel80Layout.setHorizontalGroup(
+            jPanel80Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel165, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel80Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jXTaskPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel60, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel80Layout.setVerticalGroup(
+            jPanel80Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel80Layout.createSequentialGroup()
+                .addComponent(jLabel165)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jXTaskPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jXTaskPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jXTaskPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jXTaskPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel60)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -2977,9 +3257,18 @@ public class HC extends javax.swing.JPanel {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel35, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel29, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
+                    .addComponent(jPanel31, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
+                    .addComponent(jPanel38, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jPanel80, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel29, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2987,8 +3276,18 @@ public class HC extends javax.swing.JPanel {
                 .addComponent(jLabel35, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel29, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jPanel29, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel38, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel80, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(14, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout jpTratamientoLayout = new javax.swing.GroupLayout(jpTratamiento);
@@ -3001,9 +3300,7 @@ public class HC extends javax.swing.JPanel {
         );
         jpTratamientoLayout.setVerticalGroup(
             jpTratamientoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpTratamientoLayout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         setBackground(new java.awt.Color(255, 255, 255));
@@ -3030,6 +3327,7 @@ public class HC extends javax.swing.JPanel {
         jLabel23.setBackground(new java.awt.Color(255, 255, 255));
         jLabel23.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel23.setText(" Antecedentes Personales");
+        jLabel23.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(194, 224, 255)));
         jLabel23.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jLabel23.setOpaque(true);
         jLabel23.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -3049,6 +3347,7 @@ public class HC extends javax.swing.JPanel {
         jLabel24.setBackground(new java.awt.Color(255, 255, 255));
         jLabel24.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel24.setText(" Enfermedad Actual");
+        jLabel24.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(194, 224, 255)));
         jLabel24.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jLabel24.setOpaque(true);
         jLabel24.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -3068,6 +3367,7 @@ public class HC extends javax.swing.JPanel {
         jLabel25.setBackground(new java.awt.Color(255, 255, 255));
         jLabel25.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel25.setText(" Exploracion Fisica");
+        jLabel25.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(194, 224, 255)));
         jLabel25.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jLabel25.setOpaque(true);
         jLabel25.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -3087,6 +3387,7 @@ public class HC extends javax.swing.JPanel {
         jLabel26.setBackground(new java.awt.Color(255, 255, 255));
         jLabel26.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel26.setText(" Diagnostico Medico");
+        jLabel26.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(194, 224, 255)));
         jLabel26.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jLabel26.setOpaque(true);
         jLabel26.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -3106,6 +3407,7 @@ public class HC extends javax.swing.JPanel {
         jLabel27.setBackground(new java.awt.Color(255, 255, 255));
         jLabel27.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel27.setText(" Pruebas Complementarias");
+        jLabel27.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(194, 224, 255)));
         jLabel27.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jLabel27.setOpaque(true);
         jLabel27.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -3125,6 +3427,7 @@ public class HC extends javax.swing.JPanel {
         jLabel33.setBackground(new java.awt.Color(255, 255, 255));
         jLabel33.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel33.setText(" Ordenes Medicas");
+        jLabel33.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(194, 224, 255)));
         jLabel33.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jLabel33.setOpaque(true);
         jLabel33.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -3146,31 +3449,20 @@ public class HC extends javax.swing.JPanel {
         jlbNombrePaciente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/user.png"))); // NOI18N
         jlbNombrePaciente.setText("NOMBRE");
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/add_22x22.png"))); // NOI18N
-        jButton3.setToolTipText("Mas datos del paciente");
-        jButton3.setFocusable(false);
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Save.png"))); // NOI18N
-        jButton1.setBorderPainted(false);
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/save_large.png"))); // NOI18N
         jButton1.setContentAreaFilled(false);
         jButton1.setFocusable(false);
         jButton1.setMaximumSize(new java.awt.Dimension(32, 32));
         jButton1.setMinimumSize(new java.awt.Dimension(32, 32));
         jButton1.setPreferredSize(new java.awt.Dimension(32, 32));
-        jButton1.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Save1.png"))); // NOI18N
-        jButton1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jButton1MouseMoved(evt);
-            }
-        });
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jButton1MouseExited(evt);
+            }
+        });
+        jButton1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton1MouseMoved(evt);
             }
         });
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -3179,22 +3471,21 @@ public class HC extends javax.swing.JPanel {
             }
         });
 
-        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/editdelete.png"))); // NOI18N
+        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/cerrar.png"))); // NOI18N
         jButton9.setBorderPainted(false);
         jButton9.setContentAreaFilled(false);
         jButton9.setFocusable(false);
         jButton9.setMaximumSize(new java.awt.Dimension(32, 32));
         jButton9.setMinimumSize(new java.awt.Dimension(32, 32));
         jButton9.setPreferredSize(new java.awt.Dimension(32, 32));
-        jButton9.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/images/editdelete1.png"))); // NOI18N
-        jButton9.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jButton9MouseMoved(evt);
-            }
-        });
         jButton9.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jButton9MouseExited(evt);
+            }
+        });
+        jButton9.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton9MouseMoved(evt);
             }
         });
         jButton9.addActionListener(new java.awt.event.ActionListener() {
@@ -3203,22 +3494,21 @@ public class HC extends javax.swing.JPanel {
             }
         });
 
-        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/final.png"))); // NOI18N
+        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/unlock.png"))); // NOI18N
         jButton10.setBorderPainted(false);
         jButton10.setContentAreaFilled(false);
         jButton10.setFocusable(false);
         jButton10.setMaximumSize(new java.awt.Dimension(32, 32));
         jButton10.setMinimumSize(new java.awt.Dimension(32, 32));
         jButton10.setPreferredSize(new java.awt.Dimension(32, 32));
-        jButton10.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/images/final1.png"))); // NOI18N
-        jButton10.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jButton10MouseMoved(evt);
-            }
-        });
         jButton10.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jButton10MouseExited(evt);
+            }
+        });
+        jButton10.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton10MouseMoved(evt);
             }
         });
         jButton10.addActionListener(new java.awt.event.ActionListener() {
@@ -3227,22 +3517,21 @@ public class HC extends javax.swing.JPanel {
             }
         });
 
-        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/print_22x22.png"))); // NOI18N
+        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/print.png"))); // NOI18N
         jButton11.setBorderPainted(false);
         jButton11.setContentAreaFilled(false);
         jButton11.setFocusable(false);
         jButton11.setMaximumSize(new java.awt.Dimension(32, 32));
         jButton11.setMinimumSize(new java.awt.Dimension(32, 32));
         jButton11.setPreferredSize(new java.awt.Dimension(32, 32));
-        jButton11.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/images/print_22x22_1.png"))); // NOI18N
-        jButton11.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jButton11MouseMoved(evt);
-            }
-        });
         jButton11.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jButton11MouseExited(evt);
+            }
+        });
+        jButton11.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jButton11MouseMoved(evt);
             }
         });
         jButton11.addActionListener(new java.awt.event.ActionListener() {
@@ -3254,18 +3543,30 @@ public class HC extends javax.swing.JPanel {
         jLabel44.setBackground(new java.awt.Color(255, 255, 255));
         jLabel44.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel44.setText(" Motivo de Consulta");
+        jLabel44.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(194, 224, 255)));
         jLabel44.setOpaque(true);
-        jLabel44.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabel44MouseMoved(evt);
-            }
-        });
         jLabel44.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel44MouseExited(evt);
             }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 jLabel44MouseReleased(evt);
+            }
+        });
+        jLabel44.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabel44MouseMoved(evt);
+            }
+        });
+
+        jLabel69.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel69.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel69.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/add32x32.png"))); // NOI18N
+        jLabel69.setToolTipText("Ver mas datos del paciente");
+        jLabel69.setOpaque(true);
+        jLabel69.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jLabel69MouseReleased(evt);
             }
         });
 
@@ -3276,42 +3577,43 @@ public class HC extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel26, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel27, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel27, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
                             .addComponent(jLabel25, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel24, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel23, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel33, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
+                            .addComponent(jLabel33, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel44, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(23, 23, 23)))
+                        .addGap(23, 23, 23))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addComponent(jpCentro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jlbNombrePaciente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jLabel69, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jlbNombrePaciente, javax.swing.GroupLayout.PREFERRED_SIZE, 686, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jlbNombrePaciente)
-                    .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jlbNombrePaciente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel69, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jpCentro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(1, Short.MAX_VALUE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(3, 3, 3)
                         .addComponent(jLabel44, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -3328,128 +3630,13 @@ public class HC extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel33, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(43, 43, 43))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(25, 25, 25))))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        if (personas == null) {
-            personas = new FormPersonas();
-            personas.infopaciente = this.infopaciente;
-            //mostrar datos personas
-        } else {
-            personas.infopaciente = this.infopaciente;
-        }
-        personas.setVisible(true);
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if (cie == null) {
-            cie = new cie10();
-            cie.setLocationRelativeTo(this);
-            cie.setVisible(true);
-        } else {
-            cie.setVisible(true);
-        }
-        cie.diag = 1;
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        if (cie == null) {
-            cie = new cie10();
-            cie.setLocationRelativeTo(this);
-            cie.setVisible(true);
-        } else {
-            cie.setVisible(true);
-        }
-        cie.diag = 2;
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        if (cie == null) {
-            cie = new cie10();
-            cie.setLocationRelativeTo(this);
-            cie.setVisible(true);
-        } else {
-            cie.setVisible(true);
-        }
-        cie.diag = 3;
-    }//GEN-LAST:event_jButton5ActionPerformed
-
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        if (cie == null) {
-            cie = new cie10();
-            cie.setLocationRelativeTo(this);
-            cie.setVisible(true);
-        } else {
-            cie.setVisible(true);
-        }
-        cie.diag = 4;
-    }//GEN-LAST:event_jButton6ActionPerformed
-
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        if (cie == null) {
-            cie = new cie10();
-            cie.setLocationRelativeTo(this);
-            cie.setVisible(true);
-        } else {
-            cie.setVisible(true);
-        }
-        cie.diag = 5;
-    }//GEN-LAST:event_jButton7ActionPerformed
-
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        jFileChooser1 = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG & PNG", "jpg", "png");
-        jFileChooser1.setMultiSelectionEnabled(false);
-        jFileChooser1.setFileFilter(filter);
-        int result = jFileChooser1.showOpenDialog(null);
-        File file = null;
-        if (result == JFileChooser.APPROVE_OPTION) {
-            String seleccion = (String) JOptionPane.showInputDialog(this, "Tipo de Archivo Adjunto", "Mensaje",
-                    JOptionPane.QUESTION_MESSAGE, null, tipoAyudaDiag, "LABORATORIO");
-            file = jFileChooser1.getSelectedFile();
-            jTextField16.setText(file.getAbsolutePath());
-            ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/images/Delete16x16.png"));
-            ImageIcon icon2 = new javax.swing.ImageIcon(getClass().getResource("/images/download.png"));
-            int indexRow = jtbTratamiento4.getRowCount();
-            if (modeloAyudDiag.getRowCount() == 0) {
-                modeloAyudDiag.addRow(dato);
-                modeloAyudDiag.setValueAt(file.getName(), indexRow, 2);
-                modeloAyudDiag.setValueAt(new JLabel(icon), indexRow, 0);
-                modeloAyudDiag.setValueAt(new JLabel(icon2), indexRow, 1);
-                modeloAyudDiag.setValueAt(file, indexRow, 3);
-                modeloAyudDiag.setValueAt(seleccion, indexRow, 4);
-                modeloAyudDiag.setValueAt(ReturnPathdiagHelpSaveFile(seleccion), indexRow, 5);
-                modeloAyudDiag.setValueAt("0", indexRow, 6);//identifica que aun no ha sido guardado en la bd
-            } else {
-                Boolean exist = null;
-                for (int i = 0; i < modeloAyudDiag.getRowCount(); i++) {
-                    if (((String) modeloAyudDiag.getValueAt(i, 2)).equals(file.getName())) {
-                        exist = true;
-                        break;
-                    } else {
-                        exist = false;
-                    }
-                }
-                if (!exist) {
-                    modeloAyudDiag.addRow(dato);
-                    modeloAyudDiag.setValueAt(file.getName(), indexRow, 2);
-                    modeloAyudDiag.setValueAt(new JLabel(icon), indexRow, 0);
-                    modeloAyudDiag.setValueAt(new JLabel(icon2), indexRow, 1);
-                    modeloAyudDiag.setValueAt(file, indexRow, 3);
-                    modeloAyudDiag.setValueAt(seleccion, indexRow, 4);
-                    modeloAyudDiag.setValueAt(ReturnPathdiagHelpSaveFile(seleccion), indexRow, 5);
-                    modeloAyudDiag.setValueAt("0", indexRow, 6);//identifica que aun no ha sido guardado en la bd
-                }
-            }
-        }
-    }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jtbTratamiento4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtbTratamiento4MouseClicked
         if (SwingUtilities.isLeftMouseButton(evt)) {
@@ -3510,351 +3697,80 @@ public class HC extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jTextArea10KeyTyped
 
-    private void jLabel50MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel50MouseMoved
-        Funciones.setLabelInfo("PROCEDIMIENTOS E INTERVENCIONES QUIRÚRGICAS");
-        jLabel50.setForeground(Color.blue);
-    }//GEN-LAST:event_jLabel50MouseMoved
-
-    private void jLabel50MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel50MouseExited
-        Funciones.setLabelInfo();
-        jLabel50.setForeground(Color.black);
-    }//GEN-LAST:event_jLabel50MouseExited
-
-    private void jLabel49MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel49MouseMoved
-        Funciones.setLabelInfo("IMAGENOLOGIA");
-        jLabel49.setForeground(Color.blue);
-    }//GEN-LAST:event_jLabel49MouseMoved
-
-    private void jLabel49MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel49MouseExited
-        Funciones.setLabelInfo();
-        jLabel49.setForeground(Color.black);
-    }//GEN-LAST:event_jLabel49MouseExited
-
-    private void jLabel45MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel45MouseMoved
-        Funciones.setLabelInfo("LABORATORIO CLINICO");
-        jLabel45.setForeground(Color.blue);
-    }//GEN-LAST:event_jLabel45MouseMoved
-
-    private void jLabel45MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel45MouseExited
-        Funciones.setLabelInfo();
-        jLabel45.setForeground(Color.black);
-    }//GEN-LAST:event_jLabel45MouseExited
-
-    private void jLabel36MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel36MouseMoved
-        Funciones.setLabelInfo("CONSULTA, MONITORIZACION Y PROCEDIMIENTOS DIAGNOSTICOS");
-        jLabel36.setForeground(Color.blue);
-    }//GEN-LAST:event_jLabel36MouseMoved
-
-    private void jLabel36MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel36MouseExited
-        Funciones.setLabelInfo();
-        jLabel36.setForeground(Color.black);
-    }//GEN-LAST:event_jLabel36MouseExited
-
-    private void jLabel51MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel51MouseExited
-        Funciones.setLabelInfo();
-        jLabel51.setForeground(Color.black);
-    }//GEN-LAST:event_jLabel51MouseExited
-
-    private void jLabel51MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel51MouseMoved
-        Funciones.setLabelInfo("TODOS LOS PROCEDIMIENTOS Y SERVICIOS");
-        jLabel51.setForeground(Color.blue);
-    }//GEN-LAST:event_jLabel51MouseMoved
-
-    private void jLabel46MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel46MouseExited
-        Funciones.setLabelInfo();
-        jLabel46.setForeground(Color.black);
-    }//GEN-LAST:event_jLabel46MouseExited
-
-    private void jLabel46MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel46MouseMoved
-        Funciones.setLabelInfo("LISTADO DE MEDICAMENTOS");
-        jLabel46.setForeground(Color.blue);
-    }//GEN-LAST:event_jLabel46MouseMoved
-
     private void jLabel48MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel48MouseExited
         Funciones.setLabelInfo();
-        jLabel48.setForeground(Color.black);
+        jLabel48.setBackground(new java.awt.Color(255,255,255));
     }//GEN-LAST:event_jLabel48MouseExited
 
     private void jLabel48MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel48MouseMoved
         Funciones.setLabelInfo("CIRUGIA GENERAL");
-        jLabel48.setForeground(Color.blue);
+        jLabel48.setBackground(new java.awt.Color(194, 224, 255));
     }//GEN-LAST:event_jLabel48MouseMoved
 
     private void jLabel52MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel52MouseExited
         Funciones.setLabelInfo();
-        jLabel52.setForeground(Color.black);
+        jLabel52.setBackground(new java.awt.Color(255,255,255));
     }//GEN-LAST:event_jLabel52MouseExited
 
     private void jLabel52MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel52MouseMoved
         Funciones.setLabelInfo("GINECOLOGIA");
-        jLabel52.setForeground(Color.blue);
+        jLabel52.setBackground(new java.awt.Color(194, 224, 255));
     }//GEN-LAST:event_jLabel52MouseMoved
 
     private void jLabel53MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel53MouseExited
         Funciones.setLabelInfo();
-        jLabel53.setForeground(Color.black);
+        jLabel53.setBackground(new java.awt.Color(255,255,255));
     }//GEN-LAST:event_jLabel53MouseExited
 
     private void jLabel53MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel53MouseMoved
         Funciones.setLabelInfo("MEDICINA INTERNA");
-        jLabel53.setForeground(Color.blue);
+        jLabel53.setBackground(new java.awt.Color(194, 224, 255));
     }//GEN-LAST:event_jLabel53MouseMoved
 
     private void jLabel54MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel54MouseExited
         Funciones.setLabelInfo();
-        jLabel54.setForeground(Color.black);
+        jLabel54.setBackground(new java.awt.Color(255,255,255));
     }//GEN-LAST:event_jLabel54MouseExited
 
     private void jLabel54MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel54MouseMoved
         Funciones.setLabelInfo("ORTOPEDIA");
-        jLabel54.setForeground(Color.blue);
+        jLabel54.setBackground(new java.awt.Color(194, 224, 255));
     }//GEN-LAST:event_jLabel54MouseMoved
 
     private void jLabel55MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel55MouseExited
         Funciones.setLabelInfo();
-        jLabel55.setForeground(Color.black);
+        jLabel55.setBackground(new java.awt.Color(255,255,255));
     }//GEN-LAST:event_jLabel55MouseExited
 
     private void jLabel55MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel55MouseMoved
         Funciones.setLabelInfo("PEDIATRIA");
-        jLabel55.setForeground(Color.blue);
+        jLabel55.setBackground(new java.awt.Color(194, 224, 255));
     }//GEN-LAST:event_jLabel55MouseMoved
 
     private void jLabel56MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel56MouseExited
         Funciones.setLabelInfo();
-        jLabel56.setForeground(Color.black);
+        jLabel56.setBackground(new java.awt.Color(255,255,255));
     }//GEN-LAST:event_jLabel56MouseExited
 
     private void jLabel56MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel56MouseMoved
         Funciones.setLabelInfo("OTRAS ESPECIALIDADES");
-        jLabel56.setForeground(Color.blue);
+        jLabel56.setBackground(new java.awt.Color(194, 224, 255));
     }//GEN-LAST:event_jLabel56MouseMoved
-
-    private void jLabel47MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel47MouseExited
-        Funciones.setLabelInfo();
-        jLabel47.setForeground(Color.black);
-    }//GEN-LAST:event_jLabel47MouseExited
-
-    private void jLabel47MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel47MouseMoved
-        Funciones.setLabelInfo("MEDIDAS GENERALES");
-        jLabel47.setForeground(Color.blue);
-    }//GEN-LAST:event_jLabel47MouseMoved
-
-    private void jXTaskPane1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jXTaskPane1MouseReleased
-        jXTaskPane2.setExpanded(false);
-        jXTaskPane3.setExpanded(false);
-        jXTaskPane4.setExpanded(false);
-        jXTaskPane5.setExpanded(false);
-    }//GEN-LAST:event_jXTaskPane1MouseReleased
-
-    private void jXTaskPane2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jXTaskPane2MouseReleased
-        jXTaskPane1.setExpanded(false);
-        jXTaskPane3.setExpanded(false);
-        jXTaskPane4.setExpanded(false);
-        jXTaskPane5.setExpanded(false);
-    }//GEN-LAST:event_jXTaskPane2MouseReleased
-
-    private void jXTaskPane3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jXTaskPane3MouseReleased
-        jXTaskPane2.setExpanded(false);
-        jXTaskPane1.setExpanded(false);
-        jXTaskPane4.setExpanded(false);
-        jXTaskPane5.setExpanded(false);
-    }//GEN-LAST:event_jXTaskPane3MouseReleased
-
-    private void jXTaskPane4MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jXTaskPane4MouseReleased
-        jXTaskPane2.setExpanded(false);
-        jXTaskPane3.setExpanded(false);
-        jXTaskPane1.setExpanded(false);
-        jXTaskPane5.setExpanded(false);
-    }//GEN-LAST:event_jXTaskPane4MouseReleased
-
-    private void jLabel46MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel46MouseClicked
-        if (pMedic == null) {
-            pMedic = new pTratMedic();
-            pMedic.showListExistentes(factory, infohistoriac);
-        }
-        jPanel35.removeAll();
-        pMedic.setBounds(0, 0, 380, 420);
-        jPanel35.add(pMedic);
-        pMedic.setVisible(true);
-        jPanel35.validate();
-        jPanel35.repaint();
-    }//GEN-LAST:event_jLabel46MouseClicked
-
-    private void jLabel36MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel36MouseClicked
-        if (pConsultDiag == null) {
-            pConsultDiag = new pTratPConsultDiag();
-            pConsultDiag.showListExistentes(factory, infohistoriac);
-        }
-        jPanel35.removeAll();
-        pConsultDiag.setBounds(0, 0, 380, 420);
-        jPanel35.add(pConsultDiag);
-        pConsultDiag.setVisible(true);
-        jPanel35.validate();
-        jPanel35.repaint();
-        pConsultDiag.formularioOpen();
-    }//GEN-LAST:event_jLabel36MouseClicked
-
-    private void jLabel45MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel45MouseClicked
-        if (pLaboratorio == null) {
-            pLaboratorio = new pTratLaboratorio();
-            pLaboratorio.showListExistentes(factory, infohistoriac);
-        }
-        jPanel35.removeAll();
-        pLaboratorio.setBounds(0, 0, 380, 420);
-        jPanel35.add(pLaboratorio);
-        pLaboratorio.setVisible(true);
-        jPanel35.validate();
-        jPanel35.repaint();
-        pLaboratorio.formularioOpen();
-    }//GEN-LAST:event_jLabel45MouseClicked
-
-    private void jLabel49MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel49MouseClicked
-        if (pImagenologia == null) {
-            pImagenologia = new pTratImagenologia();
-            pImagenologia.showListExistentes(factory, infohistoriac);
-        }
-        jPanel35.removeAll();
-        pImagenologia.setBounds(0, 0, 380, 420);
-        jPanel35.add(pImagenologia);
-        pImagenologia.setVisible(true);
-        jPanel35.validate();
-        jPanel35.repaint();
-        pImagenologia.formularioOpen();
-    }//GEN-LAST:event_jLabel49MouseClicked
-
-    private void jLabel50MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel50MouseClicked
-        if (pQuirurgico == null) {
-            pQuirurgico = new pTratQuirurgico();
-            pQuirurgico.showListExistentes(factory, infohistoriac);
-        }
-        jPanel35.removeAll();
-        pQuirurgico.setBounds(0, 0, 380, 420);
-        jPanel35.add(pQuirurgico);
-        pQuirurgico.setVisible(true);
-        jPanel35.validate();
-        jPanel35.repaint();
-        pQuirurgico.formularioOpen();
-    }//GEN-LAST:event_jLabel50MouseClicked
-
-    private void jLabel51MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel51MouseClicked
-        if (pProcedimientos == null) {
-            pProcedimientos = new pTratMasProcedimientos(false);
-            pProcedimientos.showListExistentes(factory, infohistoriac);
-        }
-        jPanel35.removeAll();
-        pProcedimientos.setBounds(0, 0, 380, 420);
-        jPanel35.add(pProcedimientos);
-        pProcedimientos.setVisible(true);
-        jPanel35.validate();
-        jPanel35.repaint();
-        pProcedimientos.formularioOpen(0);
-    }//GEN-LAST:event_jLabel51MouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Funciones.setLabelInfo("GUARDANDO...");
-        CrearHistoriaC();//guardo en hc
-        SaveAntPersonales();
+        this.saveHistoryClinic();
+//        CrearHistoriaC();//guardo en hc
+//        SaveAntPersonales();
         //guardo en antecedentes
         Funciones.setLabelInfo("DATOS GUARDADOS");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        atencionurgencia.AtencionUrgencia.panelindex.jpContainer.removeAll();
-        atencionurgencia.AtencionUrgencia.panelindex.jpContainer.validate();
-        atencionurgencia.AtencionUrgencia.panelindex.jpContainer.repaint();
+        AtencionUrgencia.panelindex.jpContainer.removeAll();
+        AtencionUrgencia.panelindex.jpContainer.validate();
+        AtencionUrgencia.panelindex.jpContainer.repaint();
     }//GEN-LAST:event_jButton9ActionPerformed
-
-    private void jLabel48MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel48MouseClicked
-        if (pInterconsulta0 == null) {
-            pInterconsulta0 = new pTratInterconsulta(0);//cirugia
-            pInterconsulta0.showExistente(infohistoriac);
-        }
-        jPanel35.removeAll();
-        pInterconsulta0.setBounds(0, 0, 380, 420);
-        jPanel35.add(pInterconsulta0);
-        pInterconsulta0.setVisible(true);
-        jPanel35.validate();
-        jPanel35.repaint();
-    }//GEN-LAST:event_jLabel48MouseClicked
-
-    private void jLabel52MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel52MouseClicked
-        if (pInterconsulta1 == null) {
-            pInterconsulta1 = new pTratInterconsulta(1);//Ginecologia
-            pInterconsulta1.showExistente(infohistoriac);
-        }
-        jPanel35.removeAll();
-        pInterconsulta1.setBounds(0, 0, 380, 420);
-        jPanel35.add(pInterconsulta1);
-        pInterconsulta1.setVisible(true);
-        jPanel35.validate();
-        jPanel35.repaint();
-    }//GEN-LAST:event_jLabel52MouseClicked
-
-    private void jLabel53MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel53MouseClicked
-        if (pInterconsulta2 == null) {
-            pInterconsulta2 = new pTratInterconsulta(2);//Medicina Interna
-            pInterconsulta2.showExistente(infohistoriac);
-        }
-        jPanel35.removeAll();
-        pInterconsulta2.setBounds(0, 0, 380, 420);
-        jPanel35.add(pInterconsulta2);
-        pInterconsulta2.setVisible(true);
-        jPanel35.validate();
-        jPanel35.repaint();
-    }//GEN-LAST:event_jLabel53MouseClicked
-
-    private void jLabel54MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel54MouseClicked
-        if (pInterconsulta3 == null) {
-            pInterconsulta3 = new pTratInterconsulta(3);//Ortopedia
-            pInterconsulta3.showExistente(infohistoriac);
-        }
-        jPanel35.removeAll();
-        pInterconsulta3.setBounds(0, 0, 380, 420);
-        jPanel35.add(pInterconsulta3);
-        pInterconsulta3.setVisible(true);
-        jPanel35.validate();
-        jPanel35.repaint();
-    }//GEN-LAST:event_jLabel54MouseClicked
-
-    private void jLabel55MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel55MouseClicked
-        if (pInterconsulta4 == null) {
-            pInterconsulta4 = new pTratInterconsulta(4);//Pediatria
-            pInterconsulta4.showExistente(infohistoriac);
-        }
-        jPanel35.removeAll();
-        pInterconsulta4.setBounds(0, 0, 380, 420);
-        jPanel35.add(pInterconsulta4);
-        pInterconsulta4.setVisible(true);
-        jPanel35.validate();
-        jPanel35.repaint();
-    }//GEN-LAST:event_jLabel55MouseClicked
-
-    private void jLabel56MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel56MouseClicked
-        if (pOtrasInterconsultas == null) {
-            pOtrasInterconsultas = new pTratOtrasInterconsultas();
-            pOtrasInterconsultas.showLista(infohistoriac);
-        }
-        jPanel35.removeAll();
-        pOtrasInterconsultas.setBounds(0, 0, 380, 420);
-        jPanel35.add(pOtrasInterconsultas);
-        pOtrasInterconsultas.setVisible(true);
-        jPanel35.validate();
-        jPanel35.repaint();
-    }//GEN-LAST:event_jLabel56MouseClicked
-
-    private void jLabel47MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel47MouseClicked
-        if (pMedidaGeneral == null) {
-            pMedidaGeneral = new pTratMedidaGeneral();
-            pMedidaGeneral.showListExistentes(factory, infohistoriac);
-        }
-        jPanel35.removeAll();
-        pMedidaGeneral.setBounds(0, 0, 380, 420);
-        jPanel35.add(pMedidaGeneral);
-        pMedidaGeneral.setVisible(true);
-        jPanel35.validate();
-        jPanel35.repaint();
-    }//GEN-LAST:event_jLabel47MouseClicked
 
     private void jLabel23MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel23MouseMoved
         jLabel23.setBackground(new java.awt.Color(194, 224, 255));
@@ -3916,75 +3832,32 @@ public class HC extends javax.swing.JPanel {
         Funciones.setLabelInfo();
     }//GEN-LAST:event_jLabel33MouseExited
 
-    private void jLabel58MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel58MouseClicked
-//        if(pAnexo31==null){
-//            pAnexo31 = new pAnexo3();
-//            pAnexo31.showLista(infohistoriac,factory);
-//        }
-//        jPanel35.removeAll();
-//        pAnexo31.setBounds(0,0,380,420);
-//        jPanel35.add(pAnexo31);
-//        pAnexo31.setVisible(true);
-//        jPanel35.validate();
-//        jPanel35.repaint();
-    }//GEN-LAST:event_jLabel58MouseClicked
-
-    private void jLabel58MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel58MouseExited
-        Funciones.setLabelInfo();
-        jLabel58.setForeground(Color.black);
-    }//GEN-LAST:event_jLabel58MouseExited
-
-    private void jLabel58MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel58MouseMoved
-        Funciones.setLabelInfo("ANEXO 3");
-        jLabel58.setForeground(Color.blue);
-    }//GEN-LAST:event_jLabel58MouseMoved
-
-    private void jLabel59MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel59MouseClicked
-
-    }//GEN-LAST:event_jLabel59MouseClicked
-
-    private void jLabel59MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel59MouseExited
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel59MouseExited
-
-    private void jLabel59MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel59MouseMoved
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel59MouseMoved
-
-    private void jXTaskPane5MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jXTaskPane5MouseReleased
-        jXTaskPane1.setExpanded(false);
-        jXTaskPane2.setExpanded(false);
-        jXTaskPane3.setExpanded(false);
-        jXTaskPane4.setExpanded(false);
-    }//GEN-LAST:event_jXTaskPane5MouseReleased
-
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        if (getValidaFirma()) {
-            if (getCamposObligatoriosVacios() == false) {
-                Object[] objeto = {"Si", "No"};
-                int n = JOptionPane.showOptionDialog(this, "¿Desea Finalizar la Nota de Ingreso?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
-                if (n == 0) {
-                    finalizar = 1;
-                    CrearHistoriaC();//guardo en hc
-                    SaveAntPersonales();
-                    
-                    
-                    
-                    impresionesHC imp = new impresionesHC(factory);
-                    imp.setidHC(this.infohistoriac);
-                    imp.activarLinks();
-                    imp.setdestinoHc(this.infohistoriac.getDestino());
-                    imp.setLocationRelativeTo(null);
-                    imp.setNoValido(false);
-                    imp.setVisible(true);
-                } else {
-                    finalizar = 0;
-                    CrearHistoriaC();//guardo en hc
-                    SaveAntPersonales();
-                }
-            }
-        }
+//        if (getValidaFirma()) {
+//            if (getCamposObligatoriosVacios() == false) {
+//                Object[] objeto = {"Si", "No"};
+//                int n = JOptionPane.showOptionDialog(this, "¿Desea Finalizar la Nota de Ingreso?", "Mensaje", JOptionPane.YES_NO_CANCEL_OPTION,
+//                        JOptionPane.QUESTION_MESSAGE, null, objeto, objeto[1]);
+//                if (n == 0) {
+////                    finalizar = 1;
+//                    CrearHistoriaC();//guardo en hc
+////                    SaveAntPersonales();    
+//                    
+//                    jButton10.setEnabled(false);
+//                    impresionesHC imp = new impresionesHC(factory);
+//                    imp.setidHC(this.infohistoriac);
+//                    imp.activarLinks();
+//                    imp.setdestinoHc(this.infohistoriac.getDestino());
+//                    imp.setLocationRelativeTo(null);
+//                    imp.setNoValido(false);
+//                    imp.setVisible(true);
+//                } else {
+////                    finalizar = 0;
+//                    CrearHistoriaC();//guardo en hc
+////                    SaveAntPersonales();
+//                }
+//            }
+//        }
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseExited
@@ -4500,16 +4373,14 @@ public class HC extends javax.swing.JPanel {
         jpCentro.repaint();
     }//GEN-LAST:event_jLabel33MouseReleased
 
-    private void jLabel60MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel60MouseClicked
-
-    }//GEN-LAST:event_jLabel60MouseClicked
-
     private void jLabel60MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel60MouseExited
-        // TODO add your handling code here:
+        Funciones.setLabelInfo();
+        jLabel60.setBackground(new java.awt.Color(255,255,255));
     }//GEN-LAST:event_jLabel60MouseExited
 
     private void jLabel60MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel60MouseMoved
-
+        Funciones.setLabelInfo("DESTINO");
+        jLabel60.setBackground(new java.awt.Color(194, 224, 255));
     }//GEN-LAST:event_jLabel60MouseMoved
 
     private void jLabel60MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel60MouseReleased
@@ -4576,6 +4447,392 @@ public class HC extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jTextField1FocusLost
 
+    private void jTextArea26FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea26FocusGained
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextArea26FocusGained
+
+    private void jTextArea26FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextArea26FocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextArea26FocusLost
+
+    private void jTextArea26KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea26KeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextArea26KeyPressed
+
+    private void jLabel64MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel64MouseReleased
+                if (cie == null) {
+            cie = new cie10();
+            cie.setLocationRelativeTo(this);
+            cie.setVisible(true);
+        } else {
+            cie.setVisible(true);
+        }
+        cie.diag = 1;
+    }//GEN-LAST:event_jLabel64MouseReleased
+
+    private void jLabel65MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel65MouseReleased
+               if (cie == null) {
+            cie = new cie10();
+            cie.setLocationRelativeTo(this);
+            cie.setVisible(true);
+        } else {
+            cie.setVisible(true);
+        }
+        cie.diag = 2;
+    }//GEN-LAST:event_jLabel65MouseReleased
+
+    private void jLabel66MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel66MouseReleased
+        if (cie == null) {
+            cie = new cie10();
+            cie.setLocationRelativeTo(this);
+            cie.setVisible(true);
+        } else {
+            cie.setVisible(true);
+        }
+        cie.diag = 3;
+    }//GEN-LAST:event_jLabel66MouseReleased
+
+    private void jLabel67MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel67MouseReleased
+        if (cie == null) {
+            cie = new cie10();
+            cie.setLocationRelativeTo(this);
+            cie.setVisible(true);
+        } else {
+            cie.setVisible(true);
+        }
+        cie.diag = 4;
+    }//GEN-LAST:event_jLabel67MouseReleased
+
+    private void jLabel68MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel68MouseReleased
+        if (cie == null) {
+            cie = new cie10();
+            cie.setLocationRelativeTo(this);
+            cie.setVisible(true);
+        } else {
+            cie.setVisible(true);
+        }
+        cie.diag = 5;
+    }//GEN-LAST:event_jLabel68MouseReleased
+
+    private void jLabel64MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel64MouseExited
+        jLabel64.setBackground(new java.awt.Color(255,255,255));
+    }//GEN-LAST:event_jLabel64MouseExited
+
+    private void jLabel65MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel65MouseExited
+        jLabel65.setBackground(new java.awt.Color(255,255,255));
+    }//GEN-LAST:event_jLabel65MouseExited
+
+    private void jLabel66MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel66MouseExited
+        jLabel66.setBackground(new java.awt.Color(255,255,255));
+    }//GEN-LAST:event_jLabel66MouseExited
+
+    private void jLabel67MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel67MouseExited
+        jLabel67.setBackground(new java.awt.Color(255,255,255));
+    }//GEN-LAST:event_jLabel67MouseExited
+
+    private void jLabel68MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel68MouseExited
+        jLabel68.setBackground(new java.awt.Color(255,255,255));
+    }//GEN-LAST:event_jLabel68MouseExited
+
+    private void jLabel64MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel64MouseMoved
+        jLabel64.setBackground(new java.awt.Color(194, 224, 255));
+    }//GEN-LAST:event_jLabel64MouseMoved
+
+    private void jLabel65MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel65MouseMoved
+        jLabel65.setBackground(new java.awt.Color(194, 224, 255));
+    }//GEN-LAST:event_jLabel65MouseMoved
+
+    private void jLabel66MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel66MouseMoved
+        jLabel66.setBackground(new java.awt.Color(194, 224, 255));
+    }//GEN-LAST:event_jLabel66MouseMoved
+
+    private void jLabel67MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel67MouseMoved
+        jLabel67.setBackground(new java.awt.Color(194, 224, 255));
+    }//GEN-LAST:event_jLabel67MouseMoved
+
+    private void jLabel68MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel68MouseMoved
+        jLabel68.setBackground(new java.awt.Color(194, 224, 255));
+    }//GEN-LAST:event_jLabel68MouseMoved
+
+    private void jLabel69MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel69MouseReleased
+        if (personas == null) {
+            personas = new FormPersonas();
+            personas.infopaciente = infohistoriac.getIdInfoAdmision().getIdDatosPersonales();
+            //mostrar datos personas
+        } else {
+            personas.infopaciente = infohistoriac.getIdInfoAdmision().getIdDatosPersonales();
+        }
+        personas.setVisible(true);
+    }//GEN-LAST:event_jLabel69MouseReleased
+
+    private void jLabel70MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel70MouseReleased
+                jFileChooser1 = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG & PNG", "jpg", "png");
+        jFileChooser1.setMultiSelectionEnabled(false);
+        jFileChooser1.setFileFilter(filter);
+        int result = jFileChooser1.showOpenDialog(null);
+        File file = null;
+        if (result == JFileChooser.APPROVE_OPTION) {
+            String seleccion = (String) JOptionPane.showInputDialog(this, "Tipo de Archivo Adjunto", "Mensaje",
+                    JOptionPane.QUESTION_MESSAGE, null, tipoAyudaDiag, "LABORATORIO");
+            file = jFileChooser1.getSelectedFile();
+            jTextField16.setText(file.getAbsolutePath());
+            ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/images/Delete16x16.png"));
+            ImageIcon icon2 = new javax.swing.ImageIcon(getClass().getResource("/images/download.png"));
+            int indexRow = jtbTratamiento4.getRowCount();
+            if (modeloAyudDiag.getRowCount() == 0) {
+                modeloAyudDiag.addRow(dato);
+                modeloAyudDiag.setValueAt(file.getName(), indexRow, 2);
+                modeloAyudDiag.setValueAt(new JLabel(icon), indexRow, 0);
+                modeloAyudDiag.setValueAt(new JLabel(icon2), indexRow, 1);
+                modeloAyudDiag.setValueAt(file, indexRow, 3);
+                modeloAyudDiag.setValueAt(seleccion, indexRow, 4);
+                modeloAyudDiag.setValueAt(ReturnPathdiagHelpSaveFile(seleccion), indexRow, 5);
+                modeloAyudDiag.setValueAt("0", indexRow, 6);//identifica que aun no ha sido guardado en la bd
+            } else {
+                Boolean exist = null;
+                for (int i = 0; i < modeloAyudDiag.getRowCount(); i++) {
+                    if (((String) modeloAyudDiag.getValueAt(i, 2)).equals(file.getName())) {
+                        exist = true;
+                        break;
+                    } else {
+                        exist = false;
+                    }
+                }
+                if (!exist) {
+                    modeloAyudDiag.addRow(dato);
+                    modeloAyudDiag.setValueAt(file.getName(), indexRow, 2);
+                    modeloAyudDiag.setValueAt(new JLabel(icon), indexRow, 0);
+                    modeloAyudDiag.setValueAt(new JLabel(icon2), indexRow, 1);
+                    modeloAyudDiag.setValueAt(file, indexRow, 3);
+                    modeloAyudDiag.setValueAt(seleccion, indexRow, 4);
+                    modeloAyudDiag.setValueAt(ReturnPathdiagHelpSaveFile(seleccion), indexRow, 5);
+                    modeloAyudDiag.setValueAt("0", indexRow, 6);//identifica que aun no ha sido guardado en la bd
+                }
+            }
+        }
+    }//GEN-LAST:event_jLabel70MouseReleased
+
+    private void jLabel72MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel72MouseMoved
+        Funciones.setLabelInfo("MEDIDAS GENERALES");
+        jLabel72.setBackground(new java.awt.Color(194, 224, 255));
+    }//GEN-LAST:event_jLabel72MouseMoved
+
+    private void jLabel72MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel72MouseExited
+        Funciones.setLabelInfo();
+        jLabel72.setBackground(new java.awt.Color(255,255,255));
+    }//GEN-LAST:event_jLabel72MouseExited
+
+    private void jLabel72MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel72MouseReleased
+        if (pMedidaGeneral == null) {
+            pMedidaGeneral = new pTratMedidaGeneral();
+            pMedidaGeneral.showListExistentes(factory, infohistoriac);
+        }
+        jPanel35.removeAll();
+        pMedidaGeneral.setBounds(0, 0, 380, 420);
+        jPanel35.add(pMedidaGeneral);
+        pMedidaGeneral.setVisible(true);
+        jPanel35.validate();
+        jPanel35.repaint();
+    }//GEN-LAST:event_jLabel72MouseReleased
+
+    private void jLabel74MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel74MouseExited
+        Funciones.setLabelInfo();
+        jLabel74.setBackground(new java.awt.Color(255,255,255));
+    }//GEN-LAST:event_jLabel74MouseExited
+
+    private void jLabel74MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel74MouseReleased
+                if (pMedic == null) {
+            pMedic = new pTratMedic();
+            pMedic.showListExistentes(factory, infohistoriac);
+        }
+        jPanel35.removeAll();
+        pMedic.setBounds(0, 0, 380, 420);
+        jPanel35.add(pMedic);
+        pMedic.setVisible(true);
+        jPanel35.validate();
+        jPanel35.repaint();
+    }//GEN-LAST:event_jLabel74MouseReleased
+
+    private void jLabel74MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel74MouseMoved
+        Funciones.setLabelInfo("LISTA DE MEDICAMENTOS");
+        jLabel74.setBackground(new java.awt.Color(194, 224, 255));
+    }//GEN-LAST:event_jLabel74MouseMoved
+
+    private void jLabel78MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel78MouseExited
+        Funciones.setLabelInfo();
+        jLabel78.setBackground(new java.awt.Color(255,255,255));
+    }//GEN-LAST:event_jLabel78MouseExited
+
+    private void jLabel78MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel78MouseReleased
+        if (pLaboratorio == null) {
+            pLaboratorio = new pTratLaboratorio();
+            pLaboratorio.showListExistentes(factory, infohistoriac);
+        }
+        jPanel35.removeAll();
+        pLaboratorio.setBounds(0, 0, 380, 420);
+        jPanel35.add(pLaboratorio);
+        pLaboratorio.setVisible(true);
+        jPanel35.validate();
+        jPanel35.repaint();
+//        pLaboratorio.formularioOpen();
+    }//GEN-LAST:event_jLabel78MouseReleased
+
+    private void jLabel78MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel78MouseMoved
+        Funciones.setLabelInfo("LABORATORIOS");
+        jLabel78.setBackground(new java.awt.Color(194, 224, 255));
+    }//GEN-LAST:event_jLabel78MouseMoved
+
+    private void jLabel79MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel79MouseExited
+        Funciones.setLabelInfo();
+        jLabel79.setBackground(new java.awt.Color(255,255,255));
+    }//GEN-LAST:event_jLabel79MouseExited
+
+    private void jLabel79MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel79MouseReleased
+        if (pImagenologia == null) {
+            pImagenologia = new pTratImagenologia();
+            pImagenologia.showListExistentes(factory, infohistoriac);
+        }
+        jPanel35.removeAll();
+        pImagenologia.setBounds(0, 0, 380, 420);
+        jPanel35.add(pImagenologia);
+        pImagenologia.setVisible(true);
+        jPanel35.validate();
+        jPanel35.repaint();
+        pImagenologia.formularioOpen();
+    }//GEN-LAST:event_jLabel79MouseReleased
+
+    private void jLabel79MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel79MouseMoved
+        Funciones.setLabelInfo("IMAGENOLOGIA");
+        jLabel79.setBackground(new java.awt.Color(194, 224, 255));
+    }//GEN-LAST:event_jLabel79MouseMoved
+
+    private void jLabel80MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel80MouseExited
+        Funciones.setLabelInfo();
+        jLabel80.setBackground(new java.awt.Color(255,255,255));
+    }//GEN-LAST:event_jLabel80MouseExited
+
+    private void jLabel80MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel80MouseReleased
+        if (pQuirurgico == null) {
+            pQuirurgico = new pTratQuirurgico();
+            pQuirurgico.showListExistentes(factory, infohistoriac);
+        }
+        jPanel35.removeAll();
+        pQuirurgico.setBounds(0, 0, 380, 420);
+        jPanel35.add(pQuirurgico);
+        pQuirurgico.setVisible(true);
+        jPanel35.validate();
+        jPanel35.repaint();
+        pQuirurgico.formularioOpen();
+    }//GEN-LAST:event_jLabel80MouseReleased
+
+    private void jLabel80MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel80MouseMoved
+        Funciones.setLabelInfo("QUIRURGICOS");
+        jLabel80.setBackground(new java.awt.Color(194, 224, 255));
+    }//GEN-LAST:event_jLabel80MouseMoved
+
+    private void jLabel81MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel81MouseExited
+        Funciones.setLabelInfo();
+        jLabel81.setBackground(new java.awt.Color(255,255,255));
+    }//GEN-LAST:event_jLabel81MouseExited
+
+    private void jLabel81MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel81MouseReleased
+        if (pProcedimientos == null) {
+            pProcedimientos = new pTratMasProcedimientos(false);
+            pProcedimientos.showListExistentes(factory, infohistoriac);
+        }
+        jPanel35.removeAll();
+        pProcedimientos.setBounds(0, 0, 380, 420);
+        jPanel35.add(pProcedimientos);
+        pProcedimientos.setVisible(true);
+        jPanel35.validate();
+        jPanel35.repaint();
+        pProcedimientos.formularioOpen(0);
+    }//GEN-LAST:event_jLabel81MouseReleased
+
+    private void jLabel81MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel81MouseMoved
+        Funciones.setLabelInfo("OTROS PROCEDIMIENTOS");
+        jLabel81.setBackground(new java.awt.Color(194, 224, 255));
+    }//GEN-LAST:event_jLabel81MouseMoved
+
+    private void jLabel48MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel48MouseReleased
+        if (pInterconsulta0 == null) {
+            pInterconsulta0 = new pTratInterconsulta(0);//cirugia
+            pInterconsulta0.showExistente(infohistoriac);
+        }
+        jPanel35.removeAll();
+        pInterconsulta0.setBounds(0, 0, 380, 420);
+        jPanel35.add(pInterconsulta0);
+        pInterconsulta0.setVisible(true);
+        jPanel35.validate();
+        jPanel35.repaint();
+    }//GEN-LAST:event_jLabel48MouseReleased
+
+    private void jLabel52MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel52MouseReleased
+        if (pInterconsulta1 == null) {
+            pInterconsulta1 = new pTratInterconsulta(1);//Ginecologia
+            pInterconsulta1.showExistente(infohistoriac);
+        }
+        jPanel35.removeAll();
+        pInterconsulta1.setBounds(0, 0, 380, 420);
+        jPanel35.add(pInterconsulta1);
+        pInterconsulta1.setVisible(true);
+        jPanel35.validate();
+        jPanel35.repaint();
+    }//GEN-LAST:event_jLabel52MouseReleased
+
+    private void jLabel53MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel53MouseReleased
+        if (pInterconsulta2 == null) {
+            pInterconsulta2 = new pTratInterconsulta(2);//Medicina Interna
+            pInterconsulta2.showExistente(infohistoriac);
+        }
+        jPanel35.removeAll();
+        pInterconsulta2.setBounds(0, 0, 380, 420);
+        jPanel35.add(pInterconsulta2);
+        pInterconsulta2.setVisible(true);
+        jPanel35.validate();
+        jPanel35.repaint();
+    }//GEN-LAST:event_jLabel53MouseReleased
+
+    private void jLabel54MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel54MouseReleased
+        if (pInterconsulta3 == null) {
+            pInterconsulta3 = new pTratInterconsulta(3);//Ortopedia
+            pInterconsulta3.showExistente(infohistoriac);
+        }
+        jPanel35.removeAll();
+        pInterconsulta3.setBounds(0, 0, 380, 420);
+        jPanel35.add(pInterconsulta3);
+        pInterconsulta3.setVisible(true);
+        jPanel35.validate();
+        jPanel35.repaint();
+    }//GEN-LAST:event_jLabel54MouseReleased
+
+    private void jLabel55MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel55MouseReleased
+        if (pInterconsulta4 == null) {
+            pInterconsulta4 = new pTratInterconsulta(4);//Pediatria
+            pInterconsulta4.showExistente(infohistoriac);
+        }
+        jPanel35.removeAll();
+        pInterconsulta4.setBounds(0, 0, 380, 420);
+        jPanel35.add(pInterconsulta4);
+        pInterconsulta4.setVisible(true);
+        jPanel35.validate();
+        jPanel35.repaint();
+    }//GEN-LAST:event_jLabel55MouseReleased
+
+    private void jLabel56MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel56MouseReleased
+        if (pOtrasInterconsultas == null) {
+            pOtrasInterconsultas = new pTratOtrasInterconsultas();
+            pOtrasInterconsultas.showLista(infohistoriac);
+        }
+        jPanel35.removeAll();
+        pOtrasInterconsultas.setBounds(0, 0, 380, 420);
+        jPanel35.add(pOtrasInterconsultas);
+        pOtrasInterconsultas.setVisible(true);
+        jPanel35.validate();
+        jPanel35.repaint();
+    }//GEN-LAST:event_jLabel56MouseReleased
+
     // </editor-fold>
     // <editor-fold desc="Variables declaration - do not modify"> 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -4583,13 +4840,6 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JButton jButton1;
     public javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
@@ -4598,6 +4848,7 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JCheckBox jCheckBox8;
     private javax.swing.JCheckBox jCheckBox9;
     public javax.swing.JComboBox jComboBox1;
+    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -4607,12 +4858,14 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel165;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
@@ -4627,7 +4880,6 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel35;
-    private javax.swing.JLabel jLabel36;
     private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel38;
     private javax.swing.JLabel jLabel39;
@@ -4637,25 +4889,38 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel42;
     private javax.swing.JLabel jLabel43;
     private javax.swing.JLabel jLabel44;
-    private javax.swing.JLabel jLabel45;
-    private javax.swing.JLabel jLabel46;
-    private javax.swing.JLabel jLabel47;
     private javax.swing.JLabel jLabel48;
-    private javax.swing.JLabel jLabel49;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel50;
-    private javax.swing.JLabel jLabel51;
     private javax.swing.JLabel jLabel52;
     private javax.swing.JLabel jLabel53;
     private javax.swing.JLabel jLabel54;
     private javax.swing.JLabel jLabel55;
     private javax.swing.JLabel jLabel56;
-    private javax.swing.JLabel jLabel58;
-    private javax.swing.JLabel jLabel59;
+    private javax.swing.JLabel jLabel57;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel60;
+    private javax.swing.JLabel jLabel61;
+    private javax.swing.JLabel jLabel62;
+    private javax.swing.JLabel jLabel63;
+    private javax.swing.JLabel jLabel64;
+    private javax.swing.JLabel jLabel65;
+    private javax.swing.JLabel jLabel66;
+    private javax.swing.JLabel jLabel67;
+    private javax.swing.JLabel jLabel68;
+    private javax.swing.JLabel jLabel69;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel70;
+    private javax.swing.JLabel jLabel71;
+    private javax.swing.JLabel jLabel72;
+    private javax.swing.JLabel jLabel73;
+    private javax.swing.JLabel jLabel74;
+    private javax.swing.JLabel jLabel77;
+    private javax.swing.JLabel jLabel78;
+    private javax.swing.JLabel jLabel79;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel80;
+    private javax.swing.JLabel jLabel81;
+    private javax.swing.JLabel jLabel82;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
@@ -4668,7 +4933,6 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel19;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel20;
     private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel23;
@@ -4680,14 +4944,20 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel29;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel30;
+    private javax.swing.JPanel jPanel31;
     private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel33;
     private javax.swing.JPanel jPanel34;
     private javax.swing.JPanel jPanel35;
     private javax.swing.JPanel jPanel36;
+    private javax.swing.JPanel jPanel37;
+    private javax.swing.JPanel jPanel38;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel80;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
@@ -4706,6 +4976,7 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane21;
     private javax.swing.JScrollPane jScrollPane22;
     private javax.swing.JScrollPane jScrollPane23;
+    private javax.swing.JScrollPane jScrollPane24;
     private javax.swing.JScrollPane jScrollPane25;
     private javax.swing.JScrollPane jScrollPane26;
     private javax.swing.JScrollPane jScrollPane27;
@@ -4719,6 +4990,7 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
     private javax.swing.JTabbedPane jTabbedPane4;
+    private javax.swing.JTabbedPane jTabbedPane5;
     public javax.swing.JTextArea jTextArea10;
     private javax.swing.JTextArea jTextArea11;
     private javax.swing.JTextArea jTextArea12;
@@ -4733,6 +5005,7 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JTextArea jTextArea23;
     private javax.swing.JTextArea jTextArea24;
     private javax.swing.JTextArea jTextArea25;
+    private javax.swing.JTextArea jTextArea26;
     private javax.swing.JTextArea jTextArea3;
     private javax.swing.JTextArea jTextArea4;
     private javax.swing.JTextArea jTextArea5;
@@ -4748,7 +5021,11 @@ public class HC extends javax.swing.JPanel {
     public javax.swing.JTextField jTextField14;
     public javax.swing.JTextField jTextField15;
     public javax.swing.JTextField jTextField16;
+    private javax.swing.JTextField jTextField17;
+    private javax.swing.JTextField jTextField18;
+    private javax.swing.JTextField jTextField19;
     private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField jTextField20;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
@@ -4756,11 +5033,6 @@ public class HC extends javax.swing.JPanel {
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
-    private org.jdesktop.swingx.JXTaskPane jXTaskPane1;
-    private org.jdesktop.swingx.JXTaskPane jXTaskPane2;
-    private org.jdesktop.swingx.JXTaskPane jXTaskPane3;
-    private org.jdesktop.swingx.JXTaskPane jXTaskPane4;
-    private org.jdesktop.swingx.JXTaskPane jXTaskPane5;
     public javax.swing.JLabel jlbNombrePaciente;
     private javax.swing.JPanel jpAntPersonales;
     private javax.swing.JPanel jpCentro;
